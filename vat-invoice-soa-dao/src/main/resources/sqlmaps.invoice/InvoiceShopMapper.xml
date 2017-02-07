@@ -1,0 +1,353 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.lenovo.invoice.dao.InvoiceShopMapper" >
+  <resultMap id="InvoiceShopMap" type="com.lenovo.invoice.domain.InvoiceShop" >
+    <id column="ID" property="id"/>
+    <id column="UUID" property="uuid"/>
+    <id column="CustomerName" property="customerName"/>
+    <id column="LenovoID" property="lenovoID"/>
+    <id column="InvoiceType" property="invoiceType"/>
+    <id column="PayManType" property="payManType"/>
+    <id column="PayMan" property="payMan"/>
+    <id column="TaxNo" property="taxNo"/>
+    <id column="BankName" property="bankName"/>
+    <id column="AccountNo" property="accountNo"/>
+    <id column="SubAreaCode" property="subAreaCode"/>
+    <id column="SubAreaName" property="subAreaName"/>
+    <id column="Zip" property="zip"/>
+    <id column="ProvinceCode" property="provinceCode"/>
+    <id column="ProvinceName" property="provinceName"/>
+    <id column="CityCode" property="cityCode"/>
+    <id column="CityName" property="cityName"/>
+    <id column="CountyCode" property="countyCode"/>
+    <id column="CountyName" property="countyName"/>
+    <id column="Address" property="address"/>
+    <id column="PhoneNo" property="phoneNo"/>
+    <id column="IsDefault" property="isDefault"/>
+    <id column="ApprovalStatus" property="approvalStatus"/>
+    <id column="Approver" property="approver"/>
+    <id column="ApprovalDate" property="approvalDate"/>
+    <id column="SoldToCode" property="soldToCode"/>
+    <id column="IsShow" property="isShow"/>
+    <id column="CreateTime" property="createTime"/>
+    <id column="CreateBy" property="createBy"/>
+    <id column="UpdateTime" property="updateTime"/>
+    <id column="IsConfirmPersonal" property="isConfirmPersonal"/>
+    <id column="UpdateBy" property="updateBy"/>
+    <id column="ShopId" property="shopId"/>
+  </resultMap>
+
+  <resultMap id="InvoiceShopModifyLogMap" type="com.lenovo.invoice.domain.InvoiceShopModifyLog" >
+    <id column="Log_ID" property="log_ID"/>
+    <id column="ID" property="id"/>
+    <id column="UUID" property="uuid"/>
+    <id column="CustomerName" property="customerName"/>
+    <id column="LenovoID" property="lenovoID"/>
+    <id column="InvoiceType" property="invoiceType"/>
+    <id column="PayManType" property="payManType"/>
+    <id column="PayMan" property="payMan"/>
+    <id column="TaxNo" property="taxNo"/>
+    <id column="BankName" property="bankName"/>
+    <id column="AccountNo" property="accountNo"/>
+    <id column="SubAreaCode" property="subAreaCode"/>
+    <id column="SubAreaName" property="subAreaName"/>
+    <id column="Zip" property="zip"/>
+    <id column="ProvinceCode" property="provinceCode"/>
+    <id column="ProvinceName" property="provinceName"/>
+    <id column="CityCode" property="cityCode"/>
+    <id column="CityName" property="cityName"/>
+    <id column="CountyCode" property="countyCode"/>
+    <id column="CountyName" property="countyName"/>
+    <id column="Address" property="address"/>
+    <id column="PhoneNo" property="phoneNo"/>
+    <id column="IsDefault" property="isDefault"/>
+    <id column="ApprovalStatus" property="approvalStatus"/>
+    <id column="Approver" property="approver"/>
+    <id column="ApprovalDate" property="approvalDate"/>
+    <id column="SoldToCode" property="soldToCode"/>
+    <id column="IsShow" property="isShow"/>
+    <id column="CreateTime" property="createTime"/>
+    <id column="CreateBy" property="createBy"/>
+    <id column="UpdateTime" property="updateTime"/>
+    <id column="IsConfirmPersonal" property="isConfirmPersonal"/>
+    <id column="UpdateBy" property="updateBy"/>
+    <id column="ShopId" property="shopId"/>
+    <id column="SynType" property="synType"/>
+    <id column="State" property="state"/>
+  </resultMap>
+
+
+
+  <insert id="addInvoiceShop" parameterType="com.lenovo.invoice.domain.InvoiceShop">
+    <selectKey resultType="java.lang.Integer" keyProperty="id" order="AFTER">
+      SELECT @@IDENTITY
+    </selectKey>
+
+      INSERT INTO memberinvoiceinfoes
+      (UUID,
+        CustomerName,
+        LenovoID,
+        InvoiceType,
+        PayManType,
+        PayMan,
+        TaxNo,
+        BankName,
+        AccountNo,
+        SubAreaCode,
+        SubAreaName,
+        Zip,
+        ProvinceCode,
+        ProvinceName,
+        CityCode,
+        CityName,
+        CountyCode,
+        CountyName,
+        Address,
+        PhoneNo,
+        IsDefault,
+        ApprovalStatus,
+        Approver,
+        ApprovalDate,
+        SoldToCode,
+        CreateTime,
+        CreateBy,
+        UpdateTime,
+        IsConfirmPersonal,
+        UpdateBy,shopId)
+      VALUES
+      (#{uuid},
+        #{customerName},
+        #{lenovoID},
+        ${invoiceType},
+        #{payManType},
+        #{payMan},
+        #{taxNo},
+        #{bankName},
+        #{accountNo},
+        #{subAreaCode},
+        #{subAreaName},
+        #{zip},
+        #{provinceCode},
+        #{provinceName},
+        #{cityCode},
+        #{cityName},
+        #{countyCode},
+        #{countyName},
+        #{address},
+        #{phoneNo},
+        #{isDefault},
+        #{approvalStatus},
+        #{approver},
+        #{approvalDate},
+        #{soldToCode},
+        #{createTime},
+        #{createBy},
+        #{updateTime},
+        #{isConfirmPersonal},
+        #{updateBy},${shopId})
+  </insert>
+
+  <sql id="updateSet">
+    <set>
+      <if test="customerName != null and customerName!=''" >
+        CustomerName=#{customerName},
+      </if>
+      <if test="invoiceType != null" >
+        InvoiceType=${invoiceType},
+      </if>
+
+      <if test="payManType != null" >
+        payManType=${payManType},
+      </if>
+
+      <if test="payMan != null and payMan!=''" >
+        payMan=#{payMan},
+      </if>
+
+      <if test="taxNo != null and taxNo!=''" >
+        taxNo=#{taxNo},
+      </if>
+      <if test="bankName != null and bankName!=''" >
+        bankName=#{bankName},
+      </if>
+
+      <if test="accountNo != null and accountNo!=''" >
+        accountNo=#{accountNo},
+      </if>
+      <if test="subAreaCode != null and subAreaCode!=''" >
+        subAreaCode=#{subAreaCode},
+      </if>
+      <if test="subAreaName != null and subAreaName!=''" >
+        subAreaName=#{subAreaName},
+      </if>
+      <if test="zip != null and zip!=''" >
+        zip=#{zip},
+      </if>
+      <if test="provinceCode != null and provinceCode!=''" >
+        provinceCode=#{provinceCode},
+      </if>
+      <if test="provinceName != null and provinceName!=''" >
+        provinceName=#{provinceName},
+      </if>
+      <if test="cityCode != null and cityCode!=''" >
+        cityCode=#{cityCode},
+      </if>
+      <if test="cityName != null and cityName!=''" >
+        cityName=#{cityName},
+      </if>
+      <if test="countyCode != null and countyCode!=''" >
+        countyCode=#{countyCode},
+      </if>
+      <if test="countyName != null and countyName!=''" >
+        countyName=#{countyName},
+      </if>
+      <if test="address != null and address!=''" >
+        address=#{address},
+      </if>
+      <if test="phoneNo != null and phoneNo!=''" >
+        PhoneNo=#{phoneNo},
+      </if>
+      <if test="isDefault == 1" >
+        isDefault=${isDefault},
+      </if>
+
+      <if test="approvalStatus != null" >
+        approvalStatus=${approvalStatus},
+      </if>
+
+      <if test="approver != null and approver!=''" >
+        approver=#{approver},
+      </if>
+      <if test="approvalDate != null and approvalDate!=''" >
+        approvalDate=#{approvalDate},
+      </if>
+      <if test="soldToCode != null and soldToCode!=''" >
+        soldToCode=#{soldToCode},
+      </if>
+      <if test="isShow != null" >
+        isShow=${isShow},
+      </if>
+      <if test="updateTime != null and updateTime!=''" >
+        updateTime=#{updateTime},
+      </if>
+      <if test="isConfirmPersonal != null" >
+        isConfirmPersonal=${isConfirmPersonal},
+      </if>
+      <if test="updateBy != null and updateBy!=''" >
+        updateBy=#{updateBy},
+      </if>
+
+    </set>
+  </sql>
+
+  <update id="editInvoiceShop" parameterType="com.lenovo.invoice.domain.InvoiceShop">
+      UPDATE memberinvoiceinfoes
+      <include refid="updateSet"></include>
+      WHERE id =#{id} and LenovoID=#{lenovoID}
+  </update>
+
+  <delete id="delInvoiceShop">
+    DELETE from memberinvoiceinfoes WHERE id in(${ids}) and LenovoID=#{lenovoID}
+  </delete>
+
+
+  <select id="queryInvoiceShop" resultMap="InvoiceShopMap">
+      SELECT * FROM  memberinvoiceinfoes WHERE LenovoID=#{lenovoid} ORDER BY id DESC
+  </select>
+
+  <select id="queryInvoiceForId" resultMap="InvoiceShopMap">
+    SELECT * FROM  memberinvoiceinfoes WHERE id=${invoiceId}
+    <if test="lenovoid != null and lenovoid!=''">
+        and LenovoID=#{lenovoid}
+    </if>
+  </select>
+
+  <select id="queryInvoiceLog" resultMap="InvoiceShopModifyLogMap">
+      SELECT * FROM  memberinvoiceinfoes_modify_log WHERE State=0 ORDER BY Log_ID limit ${invoiceCount}
+  </select>
+
+  <update id="updateLog">
+      UPDATE memberinvoiceinfoes_modify_log SET State=1 WHERE Log_ID in(${ids})
+  </update>
+
+  <select id="getIdByUUID" resultType="java.lang.Integer">
+      SELECT id from memberinvoiceinfoes WHERE UUID=#{uuid} limit 1
+  </select>
+
+
+
+  <insert id="addInvoiceShopLog" parameterType="com.lenovo.invoice.domain.InvoiceShopModifyLog">
+    INSERT INTO memberinvoiceinfoes_modify_log
+    (ID,
+    UUID,
+    CustomerName,
+    LenovoID,
+    InvoiceType,
+    PayManType,
+    PayMan,
+    TaxNo,
+    BankName,
+    AccountNo,
+    SubAreaCode,
+    SubAreaName,
+    Zip,
+    ProvinceCode,
+    ProvinceName,
+    CityCode,
+    CityName,
+    CountyCode,
+    CountyName,
+    Address,
+    PhoneNo,
+    IsDefault,
+    ApprovalStatus,
+    Approver,
+    ApprovalDate,
+    SoldToCode,
+    CreateTime,
+    CreateBy,
+    UpdateTime,
+    IsConfirmPersonal,
+    UpdateBy,shopId,SynType,State)
+    VALUES
+    (#{id},
+    #{uuid},
+    #{customerName},
+    #{lenovoID},
+    #{invoiceType},
+    #{payManType},
+    #{payMan},
+    #{taxNo},
+    #{bankName},
+    #{accountNo},
+    #{subAreaCode},
+    #{subAreaName},
+    #{zip},
+    #{provinceCode},
+    #{provinceName},
+    #{cityCode},
+    #{cityName},
+    #{countyCode},
+    #{countyName},
+    #{address},
+    #{phoneNo},
+    #{isDefault},
+    #{approvalStatus},
+    #{approver},
+    #{approvalDate},
+    #{soldToCode},
+    #{createTime},
+    #{createBy},
+    #{updateTime},
+    #{isConfirmPersonal},
+    #{updateBy},${shopId},${synType},0)
+  </insert>
+
+  <update id="editInvoiceIsDefault">
+    UPDATE memberinvoiceinfoes set IsDefault=0 WHERE LenovoID=#{lenovoid} and IsDefault=1
+  </update>
+
+  <select id="validationInvoice" resultType="java.lang.Integer">
+    SELECT count(1) FROM memberinvoiceinfoes  WHERE  LenovoID=#{lenovoid} and (CustomerName=#{customerName} OR TaxNo=#{taxNo})
+  </select>
+</mapper>

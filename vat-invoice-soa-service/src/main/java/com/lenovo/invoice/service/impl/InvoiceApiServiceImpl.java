@@ -1,0 +1,579 @@
+package com.lenovo.invoice.service.impl;
+
+import com.alibaba.dubbo.common.utils.CollectionUtils;
+import com.google.common.base.Strings;
+import com.lenovo.invoice.api.InvoiceApiService;
+import com.lenovo.invoice.common.CacheConstant;
+import com.lenovo.invoice.common.utils.ErrorUtils;
+import com.lenovo.invoice.common.utils.JacksonUtil;
+import com.lenovo.invoice.common.utils.O2oFaIdUtil;
+import com.lenovo.invoice.dao.MemberVatInvoiceMapper;
+import com.lenovo.invoice.dao.VatInvoiceMapper;
+import com.lenovo.invoice.domain.MemberVatInvoice;
+import com.lenovo.invoice.domain.O2oVatInvoice;
+import com.lenovo.invoice.domain.VatInvoice;
+import com.lenovo.invoice.domain.param.AddVatInvoiceInfoParam;
+import com.lenovo.invoice.domain.param.GetVatInvoiceInfoParam;
+import com.lenovo.invoice.domain.result.AddVatInvoiceInfoResult;
+import com.lenovo.invoice.domain.result.GetVatInvoiceInfoResult;
+import com.lenovo.invoice.service.BaseService;
+import com.lenovo.invoice.service.MemberVatInvoiceService;
+import com.lenovo.invoice.service.redisObject.RedisObjectManager;
+import com.lenovo.m2.arch.framework.domain.RemoteResult;
+import com.lenovo.m2.arch.framework.domain.Tenant;
+import com.lenovo.m2.arch.tool.util.StringUtils;
+import com.lenovo.m2.stock.soa.api.service.StoreInfoApiService;
+import com.lenovo.m2.stock.soa.domain.param.GetStoreInfoIdParam;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import java.util.Date;
+import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
+/**
+ * Created by mayan3 on 2016/6/20.
+ */
+@Service("invoiceApiService")
+public class InvoiceApiServiceImpl extends BaseService implements InvoiceApiService {
+
+    private static final Logger logger = LoggerFactory.getLogger(InvoiceApiServiceImpl.class);
+
+    @Autowired
+    private VatInvoiceMapper vatInvoiceMapper;
+    @Autowired
+    private MemberVatInvoiceMapper memberVatInvoiceMapper;
+
+    @Autowired
+    private MemberVatInvoiceService memberVatInvoiceService;
+
+    @Autowired
+    private RedisObjectManager redisObjectManager;
+
+    @Autowired
+    private StoreInfoApiService storeInfoApiService;
+
+    @Override
+    public RemoteResult<GetVatInvoiceInfoResult> getVatInvoiceInfo(GetVatInvoiceInfoParam param,Tenant tenant) {
+        logger.info("GetVatInvoiceInfo Start:" + JacksonUtil.toJson(param));
+        RemoteResult<GetVatInvoiceInfoResult> remoteResult = new RemoteResult<GetVatInvoiceInfoResult>(false);
+        try {
+            String customername = !Strings.isNullOrEmpty(param.getCustomerName()) ? param.getCustomerName().trim() : param.getCustomerName();
+            String taxno = param.getTaxNo();
+            String lenovoId = param.getLenovoId();
+            int shopId = param.getShopId();
+            String type =null;
+
+            //判断入参是否为空
+            if (StringUtils.isEmpty(lenovoId)||param.getFaid()==null) {
+                remoteResult.setResultCode(ErrorUtils.ERR_CODE_COM_REQURIE);
+                remoteResult.setResultMsg("必填的参数错误");
+                return remoteResult;
+            }
+
+            //判断lenovoid是否有对应的增票映射
+            MemberVatInvoice memberVatInvoice = null;
+            VatInvoice vatInvoice = null;
+
+
+            String storeId=null;
+            String faid=null;
+            String cacheKey=CacheConstant.CACHE_PREFIX_INIT_FAID+param.getFaid();
+            if(redisObjectManager.existsKey(cacheKey)){//获取fatype,没有增加缓存
+                type=redisObjectManager.getString(cacheKey);
+            }else {
+                type=getFaType(param.getFaid());
+                redisObjectManager.setString(cacheKey, type);
+            }
+//            if(param.getFaid().equals(O2oFaIdUtil.getProperty("o2ofaid"))){
+//                GetStoreInfoIdParam storeInfoIdParam = new GetStoreInfoIdParam();
+//                storeInfoIdParam.setFaid(param.getFaid());
+//                storeInfoIdParam.setRegion(param.getRegion());
+//                RemoteResult remoteResultStoreInfo = storeInfoApiService.getStoreInfoId(storeInfoIdParam);
+//                if (remoteResultStoreInfo.isSuccess()) {
+//                    storeId = (String) remoteResultStoreInfo.getT();
+//                }else {
+//                    remoteResult.setResultCode(ErrorUtils.ERR_CODE_COM_REQURIE);
+//                    remoteResult.setResultMsg("获取storeID错误");
+//                    return remoteResult;
+//                }
+//            }
+            if(type.equals("0")){
+                faid=param.getFaid();
+            }
+
+
+            if (Strings.isNullOrEmpty(customername) && Strings.isNullOrEmpty(taxno)) {
+                List<MemberVatInvoice> memberVatInvoiceList = memberVatInvoiceMapper.getMemberVatInvoiceByLenovoId(lenovoId, type,faid,storeId);
+
+                //按lenovoId增票信息
+                if (CollectionUtils.isEmpty(memberVatInvoiceList)) {
+                    remoteResult.setResultCode(ErrorUtils.ERR_CODE_NOTEXIST_VAT);
+                    remoteResult.setResultMsg("未找到映射，用户:" + lenovoId + "未曾保存过" + customername + ":" + taxno + "增票");
+                    return remoteResult;
+                }
+                //获取最新的一条增票信息
+                long zid = memberVatInvoiceList.get(0) == null ? 0 : memberVatInvoiceList.get(0).getInvoiceinfoid();
+                vatInvoice = vatInvoiceMapper.getVatInvoiceInfoById(zid);
+                if (vatInvoice == null) {
+                    remoteResult.setResultCode(ErrorUtils.ERR_CODE_NOTEXIST_VAT);
+                    remoteResult.setResultMsg("增值税发票信息不存在或未通过审核或未共享");
+                    return remoteResult;
+                }
+            } else {
+                //按customername,taxno取增票信息
+                List<VatInvoice> vatInvoiceList = vatInvoiceMapper.getVatInvoice(customername, taxno, type);
+                if (CollectionUtils.isEmpty(vatInvoiceList)) {
+                    //判断是否是自己填写的资质
+                    List<MemberVatInvoice> memberVatInvoiceList = memberVatInvoiceMapper.getMemberVatInvoiceByLenovoId(lenovoId, type,faid,storeId);
+                    if (CollectionUtils.isEmpty(memberVatInvoiceList)) {
+                        remoteResult.setResultCode(ErrorUtils.ERR_CODE_NOTEXIST_VAT);
+                        remoteResult.setResultMsg("未找到映射，用户:" + lenovoId + "未曾保存过" + customername + ":" + taxno + "增票");
+                        return remoteResult;
+                    }
+                    logger.error("####:"+JacksonUtil.toJson(memberVatInvoiceList));
+                    for (MemberVatInvoice memberVatInvoice1 : memberVatInvoiceList) {
+                        long zid = memberVatInvoice1.getInvoiceinfoid();
+                        VatInvoice tVatInvoice = vatInvoiceMapper.getVatInvoiceInfoById(zid);
+
+                        if(tVatInvoice!=null){
+                            String tCustomerName = tVatInvoice.getCustomername();
+                            String tTaxno = tVatInvoice.getTaxno();
+
+                            if (tCustomerName.equals(customername) && tTaxno.equals(taxno)) {
+                                vatInvoice = tVatInvoice;
+                                break;
+                            }
+                        }
+                    }
+                } else {
+                    vatInvoice = vatInvoiceList.get(0);
+//                    //写映射表
+//
+//                    memberVatInvoice = memberVatInvoiceService.getMemberVatInvoice(vatInvoice.getId(), lenovoId, shopId);
+//                    if (memberVatInvoice == null) {
+//                        memberVatInvoiceService.insertMemberVatInvoice(vatInvoice.getId(), lenovoId, shopId);
+//                    }
+                }
+            }
+            if (vatInvoice != null) {
+                remoteResult.setSuccess(true);
+                remoteResult.setResultCode(ErrorUtils.INVOICE_SUCCESS);
+                remoteResult.setT(parseGetVatInvoiceInfoResult(vatInvoice, lenovoId));
+            }
+
+        } catch (Exception e) {
+            remoteResult.setResultCode(ErrorUtils.SYSTEM_UNKNOWN_EXCEPTION);
+            remoteResult.setResultMsg("系统异常错误");
+            logger.error(e.getMessage(), e);
+        }
+        logger.info("GetVatInvoiceInfo End:" + JacksonUtil.toJson(remoteResult));
+        return remoteResult;
+    }
+
+    @Override
+    public RemoteResult<GetVatInvoiceInfoResult> getVatInvoiceInfo(GetVatInvoiceInfoParam param) {
+        Tenant tenant=new Tenant();
+        return getVatInvoiceInfo(param,tenant);
+    }
+
+    private GetVatInvoiceInfoResult parseGetVatInvoiceInfoResult(VatInvoice vatInvoice, String lenovoId) {
+        GetVatInvoiceInfoResult result = new GetVatInvoiceInfoResult();
+        result.setId(vatInvoice.getId());
+        result.setPhoneNo(vatInvoice.getPhoneno());
+        result.setTaxNo(vatInvoice.getTaxno());
+        result.setAddress(vatInvoice.getAddress());
+        result.setCustomerName(vatInvoice.getCustomername());
+        result.setBankName(vatInvoice.getBankname());
+        result.setLenovoId(lenovoId);
+        result.setAccountNo(vatInvoice.getAccountno());
+        result.setIsShared(vatInvoice.getIsshared() == null || vatInvoice.getIsshared() == 0 ? false : true);
+        result.setIsCheck(vatInvoice.getIscheck());
+        result.setIsNeedMerge(vatInvoice.getIsNeedMerge() == null || vatInvoice.getIsNeedMerge() == 0 ? false : true);
+        result.setShopId(vatInvoice.getShopid());
+        result.setType(vatInvoice.getType());
+        result.setFaid(vatInvoice.getFaid());
+        result.setStoresid(vatInvoice.getStoresid());
+        return result;
+    }
+
+    private AddVatInvoiceInfoResult parseAddVatInvoiceInfoResult(Object obj, String lenovoId) {
+        AddVatInvoiceInfoResult result = new AddVatInvoiceInfoResult();
+        if (obj instanceof VatInvoice) {
+            VatInvoice vatInvoice = (VatInvoice) obj;
+            result.setVatInvoiceId(vatInvoice.getId());
+            result.setPhoneNo(vatInvoice.getPhoneno());
+            result.setTaxNo(vatInvoice.getTaxno());
+            result.setAddress(vatInvoice.getAddress());
+            result.setCustomerName(vatInvoice.getCustomername());
+            result.setBankName(vatInvoice.getBankname());
+            result.setLenovoId(lenovoId);
+            result.setAccountNo(vatInvoice.getAccountno());
+            result.setIsShared(vatInvoice.getIsshared() == null || vatInvoice.getIsshared() == 0 ? false : true);
+            result.setIsCheck(vatInvoice.getIscheck());
+            result.setIsNeedMerge(vatInvoice.getIsNeedMerge() == null || vatInvoice.getIsNeedMerge() == 0 ? false : true);
+            result.setShopId(vatInvoice.getShopid());
+            result.setType(vatInvoice.getType());
+            result.setFaid(vatInvoice.getFaid());
+            result.setStoreId(vatInvoice.getStoresid());
+        }
+        if (obj instanceof O2oVatInvoice) {
+            O2oVatInvoice vatInvoice = (O2oVatInvoice) obj;
+            result.setVatInvoiceId(vatInvoice.getId());
+            result.setPhoneNo(vatInvoice.getPhoneno());
+            result.setTaxNo(vatInvoice.getTaxno());
+            result.setAddress(vatInvoice.getAddress());
+            result.setCustomerName(vatInvoice.getCustomername());
+            result.setBankName(vatInvoice.getBankname());
+            result.setLenovoId(lenovoId);
+            result.setAccountNo(vatInvoice.getAccountno());
+            result.setShopId(vatInvoice.getShopid());
+            result.setFaid(vatInvoice.getFaid());
+            result.setStoreId(vatInvoice.getStoreId());
+        }
+        return result;
+    }
+
+
+    @Override
+    public RemoteResult addVatInvoiceInfo(AddVatInvoiceInfoParam param,Tenant tenant) {
+        logger.info("AddVatInvoiceInfo Start:" + JacksonUtil.toJson(param));
+        RemoteResult remoteResult = new RemoteResult(false);
+        try {
+            String lenovoId = param.getLenovoId();
+            String customerName = param.getCustomerName();
+            String taxNo = param.getTaxNo();
+            String bankName = param.getBankName();
+            String accountNo = param.getAccountNo();
+            String address = param.getAddress();
+            String phoneNo = param.getPhoneNo();
+            boolean isShard = param.getIsShard();
+            boolean isNeedMerge = param.getIsNeedMerge();
+            int shopId = param.getShopId();
+
+            //判断入参是否为空
+            if (isNull(lenovoId, customerName, taxNo, bankName, accountNo, address, phoneNo, isShard,param.getFaid())) {
+                remoteResult.setResultCode(ErrorUtils.ERR_CODE_COM_REQURIE);
+                remoteResult.setResultMsg("必填的参数错误");
+                return remoteResult;
+            }
+            String faid;
+            String storeId=null;
+            String type =getFaType(param.getFaid());
+
+            if("1".equals(type)){
+               faid= null;
+            }else if ("0".equals(type)){
+                faid=param.getFaid();
+            }else{
+                remoteResult.setResultMsg("获取直营失败！");
+                return remoteResult;
+            }
+
+//            if(param.getFaid().equals(O2oFaIdUtil.getProperty("o2ofaid"))){
+//                GetStoreInfoIdParam storeInfoIdParam = new GetStoreInfoIdParam();
+//                storeInfoIdParam.setFaid(param.getFaid());
+//                storeInfoIdParam.setRegion(param.getRegion());
+//                RemoteResult remoteResultStoreInfo = storeInfoApiService.getStoreInfoId(storeInfoIdParam);
+//                if (remoteResultStoreInfo.isSuccess()) {
+//                    storeId = (String) remoteResultStoreInfo.getT();
+//                }else {
+//                    remoteResult.setResultCode(ErrorUtils.ERR_CODE_COM_REQURIE);
+//                    remoteResult.setResultMsg("获取storeID错误");
+//                    return remoteResult;
+//                }
+//            }
+
+            //验证位数，转大写
+            Pattern pattern = Pattern.compile("^.{15}$|^.{18}$|^.{20}$");
+            Matcher matcher = pattern.matcher(taxNo);
+            if (matcher.matches()) {
+                taxNo = taxNo.toUpperCase();
+            } else {
+                return remoteResult;
+            }
+
+            //判断customername,taxno 是否有单独存在的
+//            List<VatInvoice> vatInvoiceListTmp = vatInvoiceMapper.getVatInvoiceInfo(customerName, taxNo, type);
+//            if (CollectionUtils.isNotEmpty(vatInvoiceListTmp)) {
+//                remoteResult.setResultCode(ErrorUtils.ERR_CODE_CUSTOMERNAME_TAXNO_EXIST);
+//                remoteResult.setResultMsg("公司名和税号不匹配，请核对后再试！");
+//                return remoteResult;
+//            }
+
+            VatInvoice vatInvoice = vatInvoiceMapper.getVatInvoiceBySelected(new VatInvoice(customerName, taxNo, bankName, accountNo, address, phoneNo,type,faid,storeId));
+            Long id = null;
+            if (vatInvoice == null) {
+                //新建增值税发票
+                vatInvoice = new VatInvoice();
+                vatInvoice.setAddress(address);
+                vatInvoice.setAccountno(accountNo);
+                vatInvoice.setBankname(bankName);
+                vatInvoice.setTaxno(taxNo);
+                vatInvoice.setCustomername(customerName);
+                vatInvoice.setPhoneno(phoneNo);
+                vatInvoice.setCreateby(lenovoId);
+                vatInvoice.setIsshared(isShard ? 1 : 0);
+                vatInvoice.setIsNeedMerge(isNeedMerge ? 1 : 0);
+                vatInvoice.setShopid(shopId);
+                vatInvoice.setFaid(param.getFaid());
+                vatInvoice.setType(type);
+                vatInvoice.setStoresid(storeId);
+
+                if (isShard) {
+                    vatInvoice.setShardedby(lenovoId);
+                    vatInvoice.setShardedtime(new Date());
+                }
+                long rows = vatInvoiceMapper.insertVatInvoiceInfo(vatInvoice);
+                if (rows > 0) {
+                    //写映射表
+                    MemberVatInvoice memberVatInvoice = memberVatInvoiceService.getMemberVatInvoice(vatInvoice.getId(), lenovoId);
+                    if (memberVatInvoice == null) {
+                        memberVatInvoiceService.insertMemberVatInvoice(vatInvoice.getId(), lenovoId, shopId,type,param.getFaid(),storeId);
+                    }
+
+                    remoteResult.setT(parseAddVatInvoiceInfoResult(vatInvoice, lenovoId));
+                    remoteResult.setSuccess(true);
+                    remoteResult.setResultCode(ErrorUtils.INVOICE_SUCCESS);
+                } else {
+                    remoteResult.setResultCode(ErrorUtils.SYSTEM_UNKNOWN_EXCEPTION);
+                    remoteResult.setResultMsg("系统异常错误");
+                }
+            } else {
+                if (isShard) {
+                    Integer isSharded = vatInvoice.getIsshared();
+                    id = vatInvoice.getId();
+                    if (isSharded.intValue() == 0) {
+                        vatInvoice.setShardedby(lenovoId);
+                        vatInvoice.setIsshared(isShard ? 1 : 0);
+                        vatInvoice.setShardedtime(new Date());
+                        long rows = vatInvoiceMapper.updateVatInvoice(vatInvoice);
+                        if (rows > 0) {
+                            remoteResult.setT(parseAddVatInvoiceInfoResult(vatInvoice, lenovoId));
+                            remoteResult.setSuccess(true);
+                            remoteResult.setResultCode(ErrorUtils.INVOICE_SUCCESS);
+                        } else {
+                            remoteResult.setResultCode(ErrorUtils.SYSTEM_UNKNOWN_EXCEPTION);
+                            remoteResult.setResultMsg("系统异常错误");
+                        }
+                    } else {
+                        remoteResult.setT(parseAddVatInvoiceInfoResult(vatInvoice, lenovoId));
+                        remoteResult.setSuccess(true);
+                        remoteResult.setResultCode(ErrorUtils.INVOICE_SUCCESS);
+
+                    }
+                } else {
+                    remoteResult.setT(parseAddVatInvoiceInfoResult(vatInvoice, lenovoId));
+                    remoteResult.setSuccess(true);
+                    remoteResult.setResultCode(ErrorUtils.INVOICE_SUCCESS);
+                }
+                MemberVatInvoice memberVatInvoice = memberVatInvoiceService.getMemberVatInvoice(vatInvoice.getId(), lenovoId);
+                if (memberVatInvoice == null) {
+                    memberVatInvoiceService.insertMemberVatInvoice(vatInvoice.getId(), lenovoId, shopId,type,param.getFaid(),storeId);
+                }
+            }
+
+        } catch (Exception e) {
+            remoteResult.setResultCode(ErrorUtils.SYSTEM_UNKNOWN_EXCEPTION);
+            remoteResult.setResultMsg("系统异常错误");
+            logger.error(e.getMessage(), e);
+        }
+        logger.info("addVatInvoiceInfo End:{}", JacksonUtil.toJson(remoteResult));
+        return remoteResult;
+    }
+
+    @Override
+    public RemoteResult addVatInvoiceInfo(AddVatInvoiceInfoParam param) {
+        Tenant tenant=new Tenant();
+        return addVatInvoiceInfo(param,tenant);
+    }
+
+    @Override
+    public RemoteResult checkVatInvoiceInfo(String id, String lenovoId,String region,Tenant tenant) {
+        logger.info("CheckVatInvoiceInfo Start:{},{},{}" + id, lenovoId, region);
+        RemoteResult remoteResult = new RemoteResult(false);
+        String storeId=null;
+        try {
+            //判断入参是否为空
+            if (isNull(id, lenovoId)) {
+                remoteResult.setResultCode(ErrorUtils.ERR_CODE_COM_REQURIE);
+                remoteResult.setResultMsg("必填的参数错误");
+                return remoteResult;
+            }
+
+            Long zid = Long.valueOf(id);
+            VatInvoice vatInvoice = vatInvoiceMapper.getVatInvoiceInfoById(zid);
+            if (vatInvoice == null) {
+                remoteResult.setResultCode(ErrorUtils.ERR_CODE_NOTEXIST_VAT);
+                remoteResult.setResultMsg("增值税发票信息不存在或未通过审核或未共享");
+                return remoteResult;
+            }
+
+            //检查是否有映射关系
+            MemberVatInvoice memberVatInvoice = memberVatInvoiceService.getMemberVatInvoice(zid, lenovoId);
+            if (memberVatInvoice != null) {
+                remoteResult.setSuccess(true);
+                remoteResult.setResultCode(ErrorUtils.INVOICE_SUCCESS);
+                remoteResult.setT(parseGetVatInvoiceInfoResult(vatInvoice, lenovoId));
+
+                //补全门店
+                if(vatInvoice.getFaid().equals(O2oFaIdUtil.getProperty("o2ofaid"))){
+                    if(memberVatInvoice.getStoresid()==null||"".equals(memberVatInvoice.getStoresid())){
+                        GetStoreInfoIdParam storeInfoIdParam = new GetStoreInfoIdParam();
+                        storeInfoIdParam.setFaid(vatInvoice.getFaid());
+                        storeInfoIdParam.setRegion(region);
+                        RemoteResult remoteResultStoreInfo = storeInfoApiService.getStoreInfoId(storeInfoIdParam);
+                        if (remoteResultStoreInfo.isSuccess()) {
+                            storeId = (String) remoteResultStoreInfo.getT();
+                        }else {
+                            remoteResult.setResultCode(ErrorUtils.ERR_CODE_COM_REQURIE);
+                            remoteResult.setResultMsg("获取storeID错误");
+                            return remoteResult;
+                        }
+
+                        VatInvoice vat = vatInvoiceMapper.getVatInvoiceBySelected(new VatInvoice(vatInvoice.getCustomername(), vatInvoice.getTaxno(), vatInvoice.getBankname(), vatInvoice.getAccountno(), vatInvoice.getAddress(), vatInvoice.getPhoneno(),vatInvoice.getType(),vatInvoice.getFaid(),storeId));
+                        if(vat!=null){
+                            memberVatInvoiceService.delVatInvoice(id,lenovoId);
+                            remoteResult.setT(parseGetVatInvoiceInfoResult(vat, lenovoId));
+                        }else {
+                            memberVatInvoiceService.updateVatInvoice(id, lenovoId, vatInvoice.getFaid(), storeId);
+                        }
+                    }
+                }
+            } else {
+                remoteResult.setSuccess(false);
+                remoteResult.setResultCode(ErrorUtils.ERR_CODE_NOTEXIST_VAT);
+
+            }
+        } catch (Exception e) {
+            remoteResult.setResultCode(ErrorUtils.SYSTEM_UNKNOWN_EXCEPTION);
+            remoteResult.setResultMsg("系统异常错误");
+            logger.error(e.getMessage(), e);
+        }
+        logger.info("CheckVatInvoiceInfo End:" + JacksonUtil.toJson(remoteResult));
+
+        return remoteResult;
+    }
+
+    @Override
+    public RemoteResult checkVatInvoiceInfo(String id, String lenovoId, String region) {
+        return checkVatInvoiceInfo(id,lenovoId,region,new Tenant());
+    }
+
+    @Override
+    public RemoteResult changeVatInvoiceState(String id, boolean isThrough,Tenant tenant) {
+        logger.info("ChangeVatInvoiceState Start:增值发票{}审核状态：{}", id, isThrough);
+        RemoteResult remoteResult = new RemoteResult(false);
+        try {
+            //判断入参是否为空
+            if (isNull(id)) {
+                remoteResult.setResultCode(ErrorUtils.ERR_CODE_COM_REQURIE);
+                remoteResult.setResultMsg("必填的参数错误");
+                return remoteResult;
+            }
+            long rows = vatInvoiceMapper.updateVatInvoiceCheckState(id, isThrough ? 2 : 3);
+            if (rows > 0) {
+                remoteResult.setSuccess(true);
+                remoteResult.setResultMsg("update Success!~");
+                return remoteResult;
+            }
+        } catch (Exception e) {
+            remoteResult.setResultCode(ErrorUtils.SYSTEM_UNKNOWN_EXCEPTION);
+            remoteResult.setResultMsg("系统异常错误");
+            logger.error(e.getMessage(), e);
+        }
+        logger.info("ChangeVatInvoiceState End:" + JacksonUtil.toJson(remoteResult));
+        remoteResult.setResultMsg("update Failure!~");
+        return remoteResult;
+    }
+
+    @Override
+    public RemoteResult changeVatInvoiceState(String id, boolean isThrough) {
+        return changeVatInvoiceState(id,isThrough,new Tenant());
+    }
+
+    @Override
+    public RemoteResult queryVatInvoiceInfo(String id) {
+        logger.info("QueryVatInvoiceInfo Start:获取增值税发票", id);
+        RemoteResult remoteResult = new RemoteResult(false);
+        try {
+            //判断入参是否为空
+            if (isNull(id)) {
+                remoteResult.setResultCode(ErrorUtils.ERR_CODE_COM_REQURIE);
+                remoteResult.setResultMsg("必填的参数错误");
+                return remoteResult;
+            }
+            VatInvoice vatInvoice = vatInvoiceMapper.getVatInvoiceInfoById(Long.valueOf(id));
+            if (vatInvoice != null) {
+                remoteResult.setSuccess(true);
+                remoteResult.setT(vatInvoice);
+            }
+        } catch (Exception e) {
+            logger.error(e.getMessage(), e);
+        }
+        logger.info("QueryVatInvoiceInfo end:返回", JacksonUtil.toJson(remoteResult));
+        return remoteResult;
+    }
+
+
+    public String getFaType(String faid){
+
+        if("7ef1d628-5bd3-4651-9530-793678cc02af".equals(faid) ||"e5c62c8b-cfae-4771-b585-bfe718a5d57a".equals(faid)||"00f4a0a1-6860-417f-a72b-0545d20d6521".equals(faid)){
+            return "1";
+        }else {
+            return "0";
+        }
+
+//        PageMap pageMap = new PageMap();
+//        List<String> falist = new ArrayList<>();
+//        falist.add(faid);
+//        pageMap.putSelectParams("faIds", falist);
+//        PageMap resultMap = ServicesClient.getInstance().getService(FaBaseInfoesService.class).PageQuery(pageMap);
+//        List<FaBaseInfoes> pageList = (List<FaBaseInfoes>) resultMap.getPageList();
+//        FaBaseInfoes faBaseInfo=null;
+//        if (pageList!=null&&pageList.size()>0) {
+//            faBaseInfo = pageList.get(0);
+//        }
+//        if (faBaseInfo == null) {
+//            return "9";
+//        }
+//        int faType = faBaseInfo.getFaType();//faType 0、3直营 1、2、4非直营
+//        if(faType==0||faType==3){
+//            return "1";
+//        }else {
+//            return "0";
+//        }
+    }
+
+    @Override
+    public RemoteResult<List<VatInvoice>> queryVatInvoiceInfo(List<String> listZid) {
+        RemoteResult remoteResult = new RemoteResult(false);
+        try {
+            //判断入参是否为空
+            if (CollectionUtils.isEmpty(listZid)) {
+                remoteResult.setResultCode(ErrorUtils.ERR_CODE_COM_REQURIE);
+                remoteResult.setResultMsg("必填的参数错误");
+                return remoteResult;
+            }
+            StringBuilder sb = new StringBuilder();
+            for (int i = 0; i < listZid.size() - 1; i++) {
+                sb.append(listZid.get(i)).append(",");
+            }
+            sb.append(listZid.get(listZid.size() - 1));
+
+            List<VatInvoice> list = vatInvoiceMapper.queryVatInvoiceInfo(sb.toString());
+
+            remoteResult.setSuccess(true);
+            remoteResult.setT(list);
+        } catch (Exception e) {
+            logger.error(e.getMessage(), e);
+        }
+
+        return remoteResult;
+    }
+
+
+}

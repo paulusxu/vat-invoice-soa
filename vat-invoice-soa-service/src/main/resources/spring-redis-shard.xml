@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd"
+       default-lazy-init="false" default-autowire="byName"
+        >
+
+
+    <!-- POOL配置 -->
+    <bean id="jedisPoolConfig" class="redis.clients.jedis.JedisPoolConfig">
+        <!--<property name="maxActive" value="${redis.pool.maxActive}"/>-->
+        <!--<property name="maxIdle" value="${redis.pool.maxIdle}" />-->
+        <!--<property name="maxWait" value="${redis.pool.maxWait}" />-->
+        <!--<property name="testOnBorrow" value="${redis.pool.testOnBorrow}" />-->
+        <property name="maxIdle" value="2000" />
+        <property name="testOnBorrow" value="true" />
+    </bean>
+
+    <!-- jedis shard pool配置 -->
+    <bean id="shardedJedisPool" class="com.lenovo.invoice.service.redisObject.impl.ShardedJedisSentinelPool">
+
+        <constructor-arg ref="jedisPoolConfig" index="0"/>
+        <constructor-arg type="java.lang.String" index="1" value="${masters}">
+            <!--这里配置redis哨兵，监控redis主实例的运行情况-->
+        </constructor-arg>
+        <constructor-arg type="java.lang.String" index="2" value="${sentinels}">
+            <!--这里配置主服务器的名称，该名称在redis哨兵中配置，主服务名称排序会影响redis key的映射-->
+        </constructor-arg>
+    </bean>
+
+
+
+</beans>

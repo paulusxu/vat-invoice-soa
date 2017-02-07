@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:dubbo="http://code.alibabatech.com/schema/dubbo"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.5.xsd
+            http://code.alibabatech.com/schema/dubbo
+		     http://code.alibabatech.com/schema/dubbo/dubbo.xsd"
+       default-lazy-init="true">
+
+
+    <!--  dubb配置注册信息分割线  -->
+    <dubbo:application name="${dubbo.application.name}"/>
+    <dubbo:registry address="${dubbo.registry.address}" protocol="${dubbo.registry.protocol}"
+                    group="${dubbo.registry.group}"/>
+
+    <dubbo:registry address="${dubbo.registry.address}" protocol="${dubbo.registry.protocol}"
+                    group="${dubbo.registry.order.group}" id="order"/>
+
+    <dubbo:protocol port="-1"/>
+
+    <!-- soa服务 -->
+
+    <dubbo:consumer timeout="30000"></dubbo:consumer>
+    <!--设置超时时间-->
+
+
+   <!--17shop发票-->
+    <dubbo:service interface="com.lenovo.invoice.api.InvoiceShopApiService" ref="invoiceShopApiService"/>
+    <!--官网增票-->
+    <dubbo:service interface="com.lenovo.invoice.api.InvoiceApiService" ref="invoiceApiService"/>
+    <!--合同管理-->
+    <dubbo:service interface="com.lenovo.invoice.api.ContractApiService" ref="contractApiService"/>
+
+    <!-- 门店-->
+    <dubbo:reference interface="com.lenovo.m2.stock.soa.api.service.StoreInfoApiService" id="storeInfoApiService"/>
+
+    <dubbo:reference interface="com.lenovo.m2.ordercenter.soa.api.vat.VatApiOrderCenter" id="vatApiOrderCenter" registry="order"/>
+    <!--合同详细接口-->
+    <dubbo:reference id="orderApiService"
+                     interface="com.lenovo.my.api.OrderApiService"
+                     timeout="100000"    check="false"/>
+</beans>
