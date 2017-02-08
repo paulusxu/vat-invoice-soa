@@ -29,7 +29,7 @@
 
         <!--docker-->
         <project.docker.group>team2</project.docker.group>
-        <project.docker.application>vat-invoice-soa</project.docker.application>    <!-- 命名必须符合以下规则：[a-z0-9](?:-*[a-z0-9])*(?:[._][a-z0-9](?:-*[a-z0-9])*)*，特别注意不要包含大写字母 -->
+        <project.docker.application>invoice-soa</project.docker.application>    <!-- 命名必须符合以下规则：[a-z0-9](?:-*[a-z0-9])*(?:[._][a-z0-9](?:-*[a-z0-9])*)*，特别注意不要包含大写字母 -->
         <project.docker.author>xuwh3</project.docker.author>
         <project.docker.pom>pom.xml</project.docker.pom>                      <!-- 父pom 文件在 git 项目里的路径 -->
         <project.docker.git>git@git.lefile.cn:stock/vat-invoice-soa.git</project.docker.git>
