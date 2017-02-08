@@ -388,14 +388,14 @@
                 <groupId>com.lenovo</groupId>
                 <artifactId>maven-jenkins-plugin</artifactId>
                 <version>0.0.2-SNAPSHOT</version>
-                <!--<executions>-->
-                <!--<execution>-->
-                <!--<phase>jenkins</phase>-->
-                <!--<goals>-->
-                <!--<goal>job-create</goal>-->
-                <!--</goals>-->
-                <!--</execution>-->
-                <!--</executions>-->
+                <executions>
+                <execution>
+                <phase>jenkins</phase>
+                <goals>
+                <goal>job-create</goal>
+                </goals>
+                </execution>
+                </executions>
                 <configuration>
                     <devBranches>
                         <branch>master</branch>
