@@ -14,7 +14,7 @@
     <properties>
         <!-- Docker & Kubernetes & Jenkins 插件配置 -->
         <project.docker.canDeploy>true</project.docker.canDeploy>
-        <project.docker.role>svc</project.docker.role>                            <!-- 建议dubbo应用设为 svc, 减少最终 pod 名字的长度 -->
+        <project.docker.role>d</project.docker.role>                            <!-- 建议dubbo应用设为 svc, 减少最终 pod 名字的长度 -->
         <project.docker.author>xuwh3</project.docker.author>
         <project.docker.minReplicas>2</project.docker.minReplicas>
         <project.docker.maxReplicas>10</project.docker.maxReplicas>
