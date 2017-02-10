@@ -4,7 +4,6 @@ import com.lenovo.invoice.common.CacheConstant;
 import com.lenovo.invoice.common.utils.JacksonUtil;
 import com.lenovo.invoice.dao.MemberVatInvoiceMapper;
 import com.lenovo.invoice.domain.MemberVatInvoice;
-import com.lenovo.invoice.service.InvoiceService;
 import com.lenovo.invoice.service.MemberVatInvoiceService;
 import com.lenovo.invoice.service.redisObject.RedisObjectManager;
 import com.lenovo.m2.arch.framework.domain.RemoteResult;
@@ -28,8 +27,6 @@ public class MemberVatInvoiceServiceImpl implements MemberVatInvoiceService {
     private RedisObjectManager redisObjectManager;
     @Autowired
     private MemberVatInvoiceMapper memberVatInvoiceMapper;
-    @Autowired
-    private InvoiceService invoiceService;
 
     @Override
     public void insertMemberVatInvoice(Long id, String lenovoId, int shopId,String type,String faid,String storesid) {

@@ -20,7 +20,7 @@ public interface InvoiceService {
     public boolean checkVatInvoiceInfoNew(List<Invoice> vatInvoiceList);
 
     //增票订单查询
-    public InvoiceOpen getIncreaseOrderList(String id,String rows,String page);
+    public InvoiceOpen getIncreaseOrderList(String id, String rows, String page);
     //
     public int updateVatInvoiceBatch(UpdateVatInvoiceBatchParam param) throws Exception;
 
@@ -30,20 +30,20 @@ public interface InvoiceService {
      * @param map
      * @return
      */
-    public PageModel2<VatInvoice> getVatInvoicePage (PageQuery pageQuery, Map map);
+    public PageModel2<VatInvoice> getVatInvoicePage(PageQuery pageQuery, Map map);
 
-    public List<VatInvoice> getVatInvoiceList (String ids);
+    public List<VatInvoice> getVatInvoiceList(String ids);
 
-    public void updateIsCheck (String ids);
+    public void updateIsCheck(String ids);
 
-    public List<VatInvoice> getExportVatInvoiceList (Map map);
+    public List<VatInvoice> getExportVatInvoiceList(Map map);
 
     //更改发票与订单映射关系
-    public RemoteResult changeInvoiceOrderMapping(List<Long> list,Long zid);
+    public RemoteResult changeInvoiceOrderMapping(List<Long> list, Long zid);
 
-    public String getInvoiceOwer(String zid,String shopid);
+    public String getInvoiceOwer(String zid, String shopid);
 
-    public List<VatInvoice> getVatInvoiceValidationList (Long id,String TaxNo,String CustomerName,String type,String faid);
+    public List<VatInvoice> getVatInvoiceValidationList(Long id, String TaxNo, String CustomerName, String type, String faid);
 
     //支付后修改增票 为有效
     public void updateIsvalid(String zid);
