@@ -33,7 +33,7 @@
     -->
     ID, Title, TaxpayerIdentity, DepositBank, BankNo, RegisterAddress, RegisterPhone, 
     OutId, MemberCode, Name, ProvinceId, City, County, Address, Phone, Zip, IsNeedMerge, 
-    IsThrowing
+    IsThrowing,zid,OrderCode
   </sql>
 
   <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
