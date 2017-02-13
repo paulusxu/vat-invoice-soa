@@ -46,8 +46,10 @@ public interface VatInvoiceMapper {
 
     void updateIsvalid(@Param("zid") String zid);
 
+    void updateVatInvoiceIsvalid(@Param("zid") String zid,@Param("shopid") String shopid);
 
-    public List<VatInvoice> getVatInvoiceValidationList(@Param("vid")Long id, @Param("TaxNo")String TaxNo, @Param("CustomerName")String CustomerName,@Param("type")String type,@Param("faid")String faid);
+    List<VatInvoice> getVatInvoiceValidationList(@Param("vid")Long id, @Param("TaxNo")String TaxNo, @Param("CustomerName")String CustomerName,@Param("type")String type,@Param("faid")String faid);
 
+    VatInvoice getVatInvoiceByZid(@Param("zid") String zid,@Param("shopid") String shopid);
 
 }

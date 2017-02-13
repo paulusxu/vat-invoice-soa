@@ -37,7 +37,7 @@
             <property name="enableSubPckages" value="true" />
         </javaClientGenerator>
 
-        <table tableName="o2ovatinvoice" domainObjectName="O2oVatInvoice" enableSelectByExample="true" enableDeleteByExample="true"
+        <table tableName="vathrowbtcp" domainObjectName="VathrowBtcp" enableSelectByExample="true" enableDeleteByExample="true"
                enableCountByExample="true" enableUpdateByExample="true">
         </table>
 

@@ -49,5 +49,4 @@ public interface InvoiceService {
     public void updateIsvalid(String zid);
 
 
-
 }

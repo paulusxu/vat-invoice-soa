@@ -56,6 +56,6 @@
 
     <bean id="paidOrderVatInvoiceMessageCustomer" class="com.lenovo.invoice.service.message.ThrowOrderVatInvoiceMessageCustomer">
         <constructor-arg ref="kafkaConsumer_order"/>
-        <constructor-arg ref="invoiceService"/>
+        <constructor-arg ref="vatInvoiceService"/>
     </bean>
 </beans>
