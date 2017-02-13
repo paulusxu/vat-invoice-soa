@@ -11,13 +11,13 @@ import org.slf4j.LoggerFactory;
  * 支付后的订单进增票池子
  * Created by mayan3 on 2016/9/27.
  */
-public class PaidOrderVatInvoiceMessageCustomer {
+public class ThrowOrderVatInvoiceMessageCustomer {
     private static final Logger LOGGER = LoggerFactory.getLogger("com.lenovo.invoice.service.impl.vatinvoice");
 
     private KafkaConsumer kafkaConsumer;
     private InvoiceService invoiceService;
 
-    public PaidOrderVatInvoiceMessageCustomer(KafkaConsumer kafkaConsumer, InvoiceService invoiceService) {
+    public ThrowOrderVatInvoiceMessageCustomer(KafkaConsumer kafkaConsumer, InvoiceService invoiceService) {
         this.kafkaConsumer = kafkaConsumer;
         this.invoiceService=invoiceService;
         this.kafkaConsumer.start(new ConsumerHandler());
