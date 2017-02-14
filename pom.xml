@@ -34,6 +34,8 @@
         <project.docker.pom>pom.xml</project.docker.pom>                      <!-- 父pom 文件在 git 项目里的路径 -->
         <project.docker.git>git@git.lefile.cn:stock/vat-invoice-soa.git</project.docker.git>
         <project.jenkins.address>http://ci.lefile.cn</project.jenkins.address>
+        <project.docker.region>cn,us</project.docker.region>
+        <project.docker.uatMultiRegion>true</project.docker.uatMultiRegion>
 
     </properties>
 
@@ -387,7 +389,7 @@
             <plugin>
                 <groupId>com.lenovo</groupId>
                 <artifactId>maven-jenkins-plugin</artifactId>
-                <version>0.0.2-SNAPSHOT</version>
+                <version>0.0.2-i18n-SNAPSHOT</version>
                 <executions>
                 <execution>
                 <phase>jenkins</phase>
