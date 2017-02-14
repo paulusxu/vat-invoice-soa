@@ -7,6 +7,7 @@ import com.lenovo.invoice.domain.param.GetVatInvoiceInfoParam;
 import com.lenovo.invoice.domain.result.GetVatInvoiceInfoResult;
 import com.lenovo.m2.arch.framework.domain.RemoteResult;
 import com.lenovo.m2.arch.framework.domain.Tenant;
+import com.lenovo.m2.ordercenter.soa.domain.forward.Invoice;
 
 import java.io.InputStream;
 import java.util.List;
@@ -34,4 +35,6 @@ public interface InvoiceApiService {
     RemoteResult<List<VatInvoice>> queryVatInvoiceInfo(List<String> listZid);
 
     String getFaType(String faid);
+
+    RemoteResult throwVatInvoice2BTCP(String zids);
 }
