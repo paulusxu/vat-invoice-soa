@@ -18,6 +18,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 /**
  * Created by mayan3 on 2017/2/13.
  */
@@ -106,6 +108,16 @@ public class VatInvoiceServiceImpl implements VatInvoiceService {
     @Override
     public void updateVatInvoiceIsvalid(String zid, String shopid) {
         vatInvoiceMapper.updateVatInvoiceIsvalid(zid, shopid);
+    }
+
+    @Override
+    public boolean throwBTCP(List<VathrowBtcp> btcpList) {
+        try {
+
+        }catch (Exception e){
+            LOGGER.error(e.getMessage(),e);
+        }
+        return false;
     }
 
 }
