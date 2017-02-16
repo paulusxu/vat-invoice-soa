@@ -556,7 +556,8 @@ public class InvoiceApiServiceImpl extends BaseService implements InvoiceApiServ
             if (!Strings.isNullOrEmpty(zids)) {
                 String[] ids = zids.split(",");
                 for (int i = 0; i < ids.length; i++) {
-
+                    String zid=ids[i];
+                    
                 }
             }
         } catch (Exception e) {
