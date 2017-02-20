@@ -157,4 +157,9 @@
         <property name="velocityTools" ref="velocityTools"/>
         <!-- <property name="velocityUrl" ref="velocityUrl"/>-->
     </bean>
+
+    <bean id="propertiesUtil" class="com.lenovo.invoice.common.utils.PropertiesUtil">
+        <property name="key" value="${increase.key}"/>
+        <property name="url" value="${increase.url}"/>
+    </bean>
 </beans>

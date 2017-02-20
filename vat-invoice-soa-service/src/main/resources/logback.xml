@@ -90,6 +90,17 @@
         <appender-ref ref="throwOrderMessageAppender" />
     </logger>
 
+    <appender name="throwBtcpAppender" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>${log.path}/btcp/btcp.log.%d{yyyy-MM-dd}</fileNamePattern>
+        </rollingPolicy>
+        <encoder>
+            <pattern>[%d{yyyy-MM-dd HH:mm:ss} %-5p] projectName : vat-invoice-soa %X{elk_leId} %X{elk_lenovoId} %X{elk_requestId} %X{ip} [%thread] %-5level %logger{5} - %msg%n</pattern>
+        </encoder>
+    </appender>
+    <logger name="com.lenovo.invoice.service.impl.throwBtcp" level="info" additivity="false">
+        <appender-ref ref="throwBtcpAppender" />
+    </logger>
 
 
     <logger name="org.springframework" level="WARN" additivity="false"/>

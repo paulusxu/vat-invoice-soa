@@ -1,6 +1,6 @@
 package com.lenovo.invoice.service.impl;
 
-import com.lenovo.invoice.common.utils.JacksonUtil;
+import com.lenovo.invoice.common.utils.*;
 import com.lenovo.invoice.dao.VatInvoiceMapper;
 import com.lenovo.invoice.dao.VathrowBtcpMapper;
 import com.lenovo.invoice.domain.VatInvoice;
@@ -8,6 +8,7 @@ import com.lenovo.invoice.domain.VathrowBtcp;
 import com.lenovo.invoice.service.VatInvoiceService;
 import com.lenovo.m2.arch.framework.domain.RemoteResult;
 import com.lenovo.m2.ordercenter.soa.api.query.order.OrderDetailService;
+import com.lenovo.m2.ordercenter.soa.api.vat.VatApiOrderCenter;
 import com.lenovo.m2.ordercenter.soa.domain.forward.Invoice;
 import com.lenovo.m2.ordercenter.soa.domain.forward.Main;
 import com.lenovo.m2.ordercenter.soa.domain.forward.DeliveryAddress;
@@ -18,7 +19,9 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Created by mayan3 on 2017/2/13.
@@ -27,6 +30,7 @@ import java.util.List;
 public class VatInvoiceServiceImpl implements VatInvoiceService {
 
     private static final Logger LOGGER = LoggerFactory.getLogger("com.lenovo.invoice.service.impl.vatinvoice");
+    private static final Logger LOGGER_BTCP = LoggerFactory.getLogger("com.lenovo.invoice.service.impl.throwBtcp");
 
     @Autowired
     private OrderDetailService orderDetailService;
@@ -34,6 +38,10 @@ public class VatInvoiceServiceImpl implements VatInvoiceService {
     private VathrowBtcpMapper vathrowBtcpMapper;
     @Autowired
     private VatInvoiceMapper vatInvoiceMapper;
+    @Autowired
+    private PropertiesUtil propertiesUtil;
+    @Autowired
+    private VatApiOrderCenter vatApiOrderCenter;
 
     @Override
     public void parseInvoice(String orderCode) {
@@ -50,7 +58,7 @@ public class VatInvoiceServiceImpl implements VatInvoiceService {
                 Invoice invoice = remoteResultInvoice.getT();//发票类型1:电子票2:增票3:普票
                 if (invoice != null && invoice.getType() == 2) {
                     vathrowBtcp.setIsneedmerge(invoice.getIsNeedMerge());
-                    vathrowBtcp.setOrderCode(orderId+"");
+                    vathrowBtcp.setOrderCode(orderId + "");
                     //获取订单相关信息
                     remoteResultMain = orderDetailService.getMainById(orderId);
                     remoteResultDeliveryAddress = orderDetailService.getDeliveryAddressByOrderId(orderId, 1);//1代表是发票地址，0代表是货的地址
@@ -74,7 +82,7 @@ public class VatInvoiceServiceImpl implements VatInvoiceService {
                         }
                         //设置增票信息
                         String shopid = invoice.getTenant().getShopId() + "";
-                        String zid= invoice.getZid();
+                        String zid = invoice.getZid();
                         vathrowBtcp.setZid(zid);
 
                         VatInvoice vatInvoice = getVatInvoiceByZid(zid, shopid);
@@ -111,13 +119,77 @@ public class VatInvoiceServiceImpl implements VatInvoiceService {
     }
 
     @Override
-    public boolean throwBTCP(List<VathrowBtcp> btcpList) {
+    public void throwBTCP(List<VathrowBtcp> btcpList) {
         try {
+            for (VathrowBtcp vathrowBtcp : btcpList) {
+                LOGGER_BTCP.info("开始准备抛单orderId=[" + vathrowBtcp.getOrderCode() + "]");
+                Map<String, String> map = new HashMap<String, String>();
+                String xml = "";
+                String context = "<CUSTOMERNAME>" + vathrowBtcp.getTitle() + "</CUSTOMERNAME>";
+                context += "<TAXNO>" + vathrowBtcp.getTaxpayeridentity() + "</TAXNO>";
+                context += "<BANKNAME>" + vathrowBtcp.getDepositbank() + "</BANKNAME>";
+                context += "<ACCOUNTNO>" + vathrowBtcp.getBankno() + "</ACCOUNTNO>";
+                context += "<ADDRESS>" + vathrowBtcp.getRegisteraddress() + "</ADDRESS>";
+                context += "<PHONENO>" + vathrowBtcp.getRegisterphone() + "</PHONENO>";
+                context += "<BTCPSO>" + vathrowBtcp.getOutid() + "</BTCPSO>";
+                context += "<TAKERNAME>" + vathrowBtcp.getName() + "</TAKERNAME>";
 
-        }catch (Exception e){
-            LOGGER.error(e.getMessage(),e);
+                context += "<TAKERAREA>" + vathrowBtcp.getProvinceid() + "</TAKERAREA>";
+                context += "<TAKERCITY>" + vathrowBtcp.getCity() + "</TAKERCITY>";
+                context += "<TAKERCOUNTY>" + vathrowBtcp.getCounty() + "</TAKERCOUNTY>";
+
+                context += "<TAKERADDRESS>" + vathrowBtcp.getAddress() + "</TAKERADDRESS>";
+                context += "<TAKERPHONE>" + vathrowBtcp.getPhone() + "</TAKERPHONE>";
+                context += "<TAKERPOST>" + vathrowBtcp.getZip() + "</TAKERPOST>";
+                context += "<ISMERGEINVOICE>" + vathrowBtcp.getIsneedmerge() + "</ISMERGEINVOICE>";
+                context += "<PURCHASEID>" + vathrowBtcp.getMembercode() + "</PURCHASEID>";
+                xml = "<VATTAX>" + context + "</VATTAX>";
+                LOGGER_BTCP.info("POST to BTCP  XML = " + xml);
+                String data_digest = MD5.sign(xml, propertiesUtil.getKey(), "utf-8");
+                Map<String, String> paramMap = new HashMap<String, String>();
+                paramMap.put("xml", xml);
+                paramMap.put("cid", "officialportal");
+                paramMap.put("data_digest", data_digest);
+                NetWorkWrapperUtil net = new NetWorkWrapperUtil();
+                try {
+                    String resposeData = net.requestData(propertiesUtil.getUrl(), paramMap);
+                    map = XMLUtil.parseXml(resposeData);
+                    LOGGER_BTCP.info("BTCP to POST result = [" + resposeData + "], orderCode=[" + vathrowBtcp.getId() + "], map=[" + map + "]");
+
+                    String resCode = map.get("Code");
+                    String message = map.get("Message");
+                    String BTCPResultCode = map.get("ExcuteResult");
+
+                    if (!resCode.equals("") && resCode.equals("200")) {
+                        //抛送成功
+                        int rows = vathrowBtcpMapper.updateByOrderCode(vathrowBtcp.getOrderCode(), 3);
+                        if (rows > 0) {
+                            //增票抛单成功通知订单
+                            Invoice invoice=new Invoice();
+                            invoice.setZCode(BTCPResultCode);
+
+                            invoice.setTitle(vathrowBtcp.getTitle());
+                            invoice.setTaxpayerIdentity(vathrowBtcp.getTaxpayeridentity());
+                            invoice.setDepositBank(vathrowBtcp.getDepositbank());
+                            invoice.setBankNo(vathrowBtcp.getBankno());
+                            invoice.setRegisterAddress(vathrowBtcp.getRegisteraddress());
+                            invoice.setRegisterPhone(vathrowBtcp.getRegisterphone());
+                            invoice.setOrderId(Long.parseLong(vathrowBtcp.getOrderCode()));
+
+                            vatApiOrderCenter.updateInvoice(invoice);
+                        }
+                    } else {
+                        //btcp抛送失败
+                        vatApiOrderCenter.updateFailureReasonByOrderId(message,Long.parseLong(vathrowBtcp.getOrderCode()));
+                    }
+
+                } catch (Exception e) {
+                    LOGGER_BTCP.error("抛送增票失败，xml:" + xml + "   失败原因：" + e.getMessage(), e);
+                }
+            }
+        } catch (Exception e) {
+            LOGGER.error(e.getMessage(), e);
         }
-        return false;
     }
 
 }
