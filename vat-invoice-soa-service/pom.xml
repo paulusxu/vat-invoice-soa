@@ -5,7 +5,7 @@
     <parent>
         <artifactId>vat-invoice-soa</artifactId>
         <groupId>com.lenovo.dtc.buy.invoice</groupId>
-        <version>3.0.0</version>
+        <version>3.1.0-SNAPSHOT</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
@@ -46,19 +46,19 @@
         <dependency>
             <groupId>com.lenovo.dtc.buy.invoice</groupId>
             <artifactId>vat-invoice-soa-dao</artifactId>
-            <version>3.0.0</version>
+            <version>3.1.0-SNAPSHOT</version>
         </dependency>
 
         <dependency>
             <groupId>com.lenovo.dtc.buy.invoice</groupId>
             <artifactId>vat-invoice-soa-api</artifactId>
-            <version>3.0.0</version>
+            <version>3.1.0-SNAPSHOT</version>
         </dependency>
 
         <dependency>
             <groupId>com.lenovo.dtc.buy.invoice</groupId>
             <artifactId>vat-invoice-soa-common</artifactId>
-            <version>3.0.0</version>
+            <version>3.1.0-SNAPSHOT</version>
             <exclusions>
                 <exclusion>
                     <artifactId>slf4j-log4j12</artifactId>

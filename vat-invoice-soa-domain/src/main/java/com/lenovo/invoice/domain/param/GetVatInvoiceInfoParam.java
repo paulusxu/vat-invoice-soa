@@ -14,6 +14,7 @@ public class GetVatInvoiceInfoParam implements Serializable {
 //    private int type; //0：官网增票 1：o2o增票
 
     private String faid;
+    private String faType;
     private String region;
 
     public String getFaid() {
@@ -65,12 +66,11 @@ public class GetVatInvoiceInfoParam implements Serializable {
         this.taxNo = taxNo;
     }
 
+    public String getFaType() {
+        return faType;
+    }
 
-//    public int getType() {
-//        return type;
-//    }
-//
-//    public void setType(int type) {
-//        this.type = type;
-//    }
+    public void setFaType(String faType) {
+        this.faType = faType;
+    }
 }

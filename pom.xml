@@ -1,12 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0"
-         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.lenovo.dtc.buy.invoice</groupId>
     <artifactId>vat-invoice-soa</artifactId>
     <packaging>pom</packaging>
-    <version>3.0.0</version>
+    <version>3.1.0-SNAPSHOT</version>
     <modules>
         <module>vat-invoice-soa-domain</module>
         <module>vat-invoice-soa-common</module>
@@ -29,9 +27,9 @@
 
         <!--docker-->
         <project.docker.group>team2</project.docker.group>
-        <project.docker.application>invoice-soa</project.docker.application>    <!-- 命名必须符合以下规则：[a-z0-9](?:-*[a-z0-9])*(?:[._][a-z0-9](?:-*[a-z0-9])*)*，特别注意不要包含大写字母 -->
+        <project.docker.application>invoice-soa</project.docker.application>
         <project.docker.author>xuwh3</project.docker.author>
-        <project.docker.pom>pom.xml</project.docker.pom>                      <!-- 父pom 文件在 git 项目里的路径 -->
+        <project.docker.pom>pom.xml</project.docker.pom>
         <project.docker.git>git@git.lefile.cn:stock/vat-invoice-soa.git</project.docker.git>
         <project.jenkins.address>http://ci.lefile.cn</project.jenkins.address>
         <project.docker.region>cn,us</project.docker.region>
@@ -51,7 +49,6 @@
             <url>http://nexus.lenovo.com/content/repositories/snapshots/</url>
         </snapshotRepository>
     </distributionManagement>
-
     <dependencies>
         <!--spring -->
         <dependency>
@@ -114,8 +111,6 @@
             <version>2.2.2</version>
         </dependency>
 
-        <!-- Spring Bean Validation-->
-        <!--过滤脚步等非法字符-->
         <dependency>
             <groupId>org.jsoup</groupId>
             <artifactId>jsoup</artifactId>
@@ -132,7 +127,6 @@
             <version>1.0.0.GA</version>
         </dependency>
 
-        <!-- common -->
         <dependency>
             <groupId>joda-time</groupId>
             <artifactId>joda-time</artifactId>
@@ -165,7 +159,6 @@
             <version>2.0.1</version>
         </dependency>
 
-        <!-- json -->
         <dependency>
             <groupId>org.codehaus.jackson</groupId>
             <artifactId>jackson-core-lgpl</artifactId>
@@ -194,7 +187,6 @@
             <version>0.9.16</version>
         </dependency>
 
-        <!--logback-->
         <dependency>
             <groupId>ch.qos.logback</groupId>
             <artifactId>logback-core</artifactId>
@@ -279,7 +271,6 @@
         </dependency>
 
 
-        <!--权限管理-->
         <dependency>
             <groupId>com.lenovo.admin</groupId>
             <artifactId>admin-portal-extra-client</artifactId>
@@ -315,7 +306,6 @@
             <version>0.1</version>
         </dependency>
 
-        <!--leconf-->
         <dependency>
             <groupId>com.lenovo.leconf</groupId>
             <artifactId>leconf-client</artifactId>
@@ -358,9 +348,7 @@
                 </exclusion>
             </exclusions>
         </dependency>
-
     </dependencies>
-
     <build>
         <plugins>
             <plugin>
@@ -375,6 +363,7 @@
                     <tag>v${project.version}</tag>
                 </configuration>
             </plugin>
+
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
@@ -385,18 +374,17 @@
                     <encoding>utf8</encoding>
                 </configuration>
             </plugin>
-            <!--docker jenkins插件-->
             <plugin>
                 <groupId>com.lenovo</groupId>
                 <artifactId>maven-jenkins-plugin</artifactId>
                 <version>0.0.2-i18n-SNAPSHOT</version>
                 <executions>
-                <execution>
-                <phase>jenkins</phase>
-                <goals>
-                <goal>job-create</goal>
-                </goals>
-                </execution>
+                    <execution>
+                        <phase>jenkins</phase>
+                        <goals>
+                            <goal>job-create</goal>
+                        </goals>
+                    </execution>
                 </executions>
                 <configuration>
                     <devBranches>
@@ -409,14 +397,9 @@
     </build>
 
     <profiles>
-
-        <!-- uat测试环境 -->
         <profile>
             <id>uat</id>
             <properties>
-                <!--<home.url>http://admin.vat-invoice.lenovouat.cn/</home.url>-->
-
-
                 <leconf.enable.remote.conf>true</leconf.enable.remote.conf>
                 <leconf.conf_server_host>leconf.lefile.cn</leconf.conf_server_host>
                 <leconf.version>1_0_0</leconf.version>
@@ -431,21 +414,12 @@
                 <leconf.conf_server_url_retry_sleep_seconds>1</leconf.conf_server_url_retry_sleep_seconds>
                 <leconf.user_define_download_dir>./leconf/download2</leconf.user_define_download_dir>
                 <leconf.enable_local_download_dir_in_class_path>true</leconf.enable_local_download_dir_in_class_path>
-
-                <!--<o2ofaid>365421ca-317e-4547-95fd-9c5b75c6f2ca</o2ofaid>-->
-                <!--<raise.env>uat</raise.env>-->
-
-                <!--<smb.url>http://invoice.17.lenovouat.cn</smb.url>-->
-
             </properties>
         </profile>
 
-        <!-- 生产环境 -->
         <profile>
             <id>product</id>
             <properties>
-                <!--<home.url>http://admin.vat-invoice.lenovo.com.cn/</home.url>-->
-
                 <leconf.enable.remote.conf>true</leconf.enable.remote.conf>
                 <leconf.conf_server_host>leconf.lefile.cn</leconf.conf_server_host>
                 <leconf.version>1_0_0</leconf.version>
@@ -460,15 +434,6 @@
                 <leconf.conf_server_url_retry_sleep_seconds>1</leconf.conf_server_url_retry_sleep_seconds>
                 <leconf.user_define_download_dir>./leconf/download2</leconf.user_define_download_dir>
                 <leconf.enable_local_download_dir_in_class_path>true</leconf.enable_local_download_dir_in_class_path>
-
-
-                <!--<o2ofaid>365421ca-317e-4547-95fd-9c5b75c6f2ca</o2ofaid>-->
-                <!--<raise.env>product</raise.env>-->
-
-                <!--<smb.url>http://invoice.17.lenovo.com.cn</smb.url>-->
-
-
-
             </properties>
         </profile>
     </profiles>

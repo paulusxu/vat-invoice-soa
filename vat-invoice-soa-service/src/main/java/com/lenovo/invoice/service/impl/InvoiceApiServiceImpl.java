@@ -57,37 +57,35 @@ public class InvoiceApiServiceImpl extends BaseService implements InvoiceApiServ
     private StoreInfoApiService storeInfoApiService;
 
     @Override
-    public RemoteResult<GetVatInvoiceInfoResult> getVatInvoiceInfo(GetVatInvoiceInfoParam param,Tenant tenant) {
+    public RemoteResult<GetVatInvoiceInfoResult> getVatInvoiceInfo(GetVatInvoiceInfoParam param, Tenant tenant) {
         logger.info("GetVatInvoiceInfo Start:" + JacksonUtil.toJson(param));
         RemoteResult<GetVatInvoiceInfoResult> remoteResult = new RemoteResult<GetVatInvoiceInfoResult>(false);
         try {
             String customername = !Strings.isNullOrEmpty(param.getCustomerName()) ? param.getCustomerName().trim() : param.getCustomerName();
             String taxno = param.getTaxNo();
             String lenovoId = param.getLenovoId();
-            int shopId = param.getShopId();
-            String type =null;
 
             //判断入参是否为空
-            if (StringUtils.isEmpty(lenovoId)||param.getFaid()==null) {
+            if (StringUtils.isEmpty(lenovoId) || param.getFaid() == null) {
                 remoteResult.setResultCode(ErrorUtils.ERR_CODE_COM_REQURIE);
                 remoteResult.setResultMsg("必填的参数错误");
                 return remoteResult;
             }
 
             //判断lenovoid是否有对应的增票映射
-            MemberVatInvoice memberVatInvoice = null;
             VatInvoice vatInvoice = null;
 
 
-            String storeId=null;
-            String faid=null;
-            String cacheKey=CacheConstant.CACHE_PREFIX_INIT_FAID+param.getFaid();
-            if(redisObjectManager.existsKey(cacheKey)){//获取fatype,没有增加缓存
-                type=redisObjectManager.getString(cacheKey);
-            }else {
-                type=getFaType(param.getFaid());
-                redisObjectManager.setString(cacheKey, type);
-            }
+            String storeId = null;
+            String faid = param.getFaid();
+            String faType=param.getFaType();
+//            String cacheKey = CacheConstant.CACHE_PREFIX_INIT_FAID + param.getFaid();
+//            if (redisObjectManager.existsKey(cacheKey)) {//获取fatype,没有增加缓存
+//                type = redisObjectManager.getString(cacheKey);
+//            } else {
+//                type = getFaType(param.getFaid());
+//                redisObjectManager.setString(cacheKey, type);
+//            }
 //            if(param.getFaid().equals(O2oFaIdUtil.getProperty("o2ofaid"))){
 //                GetStoreInfoIdParam storeInfoIdParam = new GetStoreInfoIdParam();
 //                storeInfoIdParam.setFaid(param.getFaid());
@@ -101,13 +99,13 @@ public class InvoiceApiServiceImpl extends BaseService implements InvoiceApiServ
 //                    return remoteResult;
 //                }
 //            }
-            if(type.equals("0")){
-                faid=param.getFaid();
-            }
+//            if (type.equals("0")) {
+//                faid = param.getFaid();
+//            }
 
 
             if (Strings.isNullOrEmpty(customername) && Strings.isNullOrEmpty(taxno)) {
-                List<MemberVatInvoice> memberVatInvoiceList = memberVatInvoiceMapper.getMemberVatInvoiceByLenovoId(lenovoId, type,faid,storeId);
+                List<MemberVatInvoice> memberVatInvoiceList = memberVatInvoiceMapper.getMemberVatInvoiceByLenovoId(lenovoId, faType, faid, storeId);
 
                 //按lenovoId增票信息
                 if (CollectionUtils.isEmpty(memberVatInvoiceList)) {
@@ -125,21 +123,21 @@ public class InvoiceApiServiceImpl extends BaseService implements InvoiceApiServ
                 }
             } else {
                 //按customername,taxno取增票信息
-                List<VatInvoice> vatInvoiceList = vatInvoiceMapper.getVatInvoice(customername, taxno, type);
+                List<VatInvoice> vatInvoiceList = vatInvoiceMapper.getVatInvoice(customername, taxno, faType);
                 if (CollectionUtils.isEmpty(vatInvoiceList)) {
                     //判断是否是自己填写的资质
-                    List<MemberVatInvoice> memberVatInvoiceList = memberVatInvoiceMapper.getMemberVatInvoiceByLenovoId(lenovoId, type,faid,storeId);
+                    List<MemberVatInvoice> memberVatInvoiceList = memberVatInvoiceMapper.getMemberVatInvoiceByLenovoId(lenovoId, faType, faid, storeId);
                     if (CollectionUtils.isEmpty(memberVatInvoiceList)) {
                         remoteResult.setResultCode(ErrorUtils.ERR_CODE_NOTEXIST_VAT);
                         remoteResult.setResultMsg("未找到映射，用户:" + lenovoId + "未曾保存过" + customername + ":" + taxno + "增票");
                         return remoteResult;
                     }
-                    logger.error("####:"+JacksonUtil.toJson(memberVatInvoiceList));
+                    logger.error("####:" + JacksonUtil.toJson(memberVatInvoiceList));
                     for (MemberVatInvoice memberVatInvoice1 : memberVatInvoiceList) {
                         long zid = memberVatInvoice1.getInvoiceinfoid();
                         VatInvoice tVatInvoice = vatInvoiceMapper.getVatInvoiceInfoById(zid);
 
-                        if(tVatInvoice!=null){
+                        if (tVatInvoice != null) {
                             String tCustomerName = tVatInvoice.getCustomername();
                             String tTaxno = tVatInvoice.getTaxno();
 
@@ -171,6 +169,17 @@ public class InvoiceApiServiceImpl extends BaseService implements InvoiceApiServ
             logger.error(e.getMessage(), e);
         }
         logger.info("GetVatInvoiceInfo End:" + JacksonUtil.toJson(remoteResult));
+        return remoteResult;
+    }
+
+    @Override
+    public RemoteResult<List<GetVatInvoiceInfoResult>> getVatInvoiceInfo(String lenovoId, String faid, String faType, Tenant tenant) {
+        RemoteResult<List<GetVatInvoiceInfoResult>> remoteResult = new RemoteResult<List<GetVatInvoiceInfoResult>>(false);
+        try {
+            List<MemberVatInvoice> memberVatInvoiceList = memberVatInvoiceMapper.getMemberVatInvoiceByLenovoId(lenovoId, faType, faid, null);
+        } catch (Exception e) {
+            logger.error(e.getMessage(), e);
+        }
         return remoteResult;
     }
 
@@ -233,7 +242,7 @@ public class InvoiceApiServiceImpl extends BaseService implements InvoiceApiServ
 
 
     @Override
-    public RemoteResult addVatInvoiceInfo(AddVatInvoiceInfoParam param,Tenant tenant) {
+    public RemoteResult addVatInvoiceInfo(AddVatInvoiceInfoParam param, Tenant tenant) {
         logger.info("AddVatInvoiceInfo Start:" + JacksonUtil.toJson(param));
         RemoteResult remoteResult = new RemoteResult(false);
         try {
@@ -249,20 +258,20 @@ public class InvoiceApiServiceImpl extends BaseService implements InvoiceApiServ
             int shopId = param.getShopId();
 
             //判断入参是否为空
-            if (isNull(lenovoId, customerName, taxNo, bankName, accountNo, address, phoneNo, isShard,param.getFaid())) {
+            if (isNull(lenovoId, customerName, taxNo, bankName, accountNo, address, phoneNo, isShard, param.getFaid())) {
                 remoteResult.setResultCode(ErrorUtils.ERR_CODE_COM_REQURIE);
                 remoteResult.setResultMsg("必填的参数错误");
                 return remoteResult;
             }
             String faid;
-            String storeId=null;
-            String type =getFaType(param.getFaid());
+            String storeId = null;
+            String type = getFaType(param.getFaid());
 
-            if("1".equals(type)){
-               faid= null;
-            }else if ("0".equals(type)){
-                faid=param.getFaid();
-            }else{
+            if ("1".equals(type)) {
+                faid = null;
+            } else if ("0".equals(type)) {
+                faid = param.getFaid();
+            } else {
                 remoteResult.setResultMsg("获取直营失败！");
                 return remoteResult;
             }
@@ -298,7 +307,7 @@ public class InvoiceApiServiceImpl extends BaseService implements InvoiceApiServ
 //                return remoteResult;
 //            }
 
-            VatInvoice vatInvoice = vatInvoiceMapper.getVatInvoiceBySelected(new VatInvoice(customerName, taxNo, bankName, accountNo, address, phoneNo,type,faid,storeId));
+            VatInvoice vatInvoice = vatInvoiceMapper.getVatInvoiceBySelected(new VatInvoice(customerName, taxNo, bankName, accountNo, address, phoneNo, type, faid, storeId));
             Long id = null;
             if (vatInvoice == null) {
                 //新建增值税发票
@@ -326,7 +335,7 @@ public class InvoiceApiServiceImpl extends BaseService implements InvoiceApiServ
                     //写映射表
                     MemberVatInvoice memberVatInvoice = memberVatInvoiceService.getMemberVatInvoice(vatInvoice.getId(), lenovoId);
                     if (memberVatInvoice == null) {
-                        memberVatInvoiceService.insertMemberVatInvoice(vatInvoice.getId(), lenovoId, shopId,type,param.getFaid(),storeId);
+                        memberVatInvoiceService.insertMemberVatInvoice(vatInvoice.getId(), lenovoId, shopId, type, param.getFaid(), storeId);
                     }
 
                     remoteResult.setT(parseAddVatInvoiceInfoResult(vatInvoice, lenovoId));
@@ -366,7 +375,7 @@ public class InvoiceApiServiceImpl extends BaseService implements InvoiceApiServ
                 }
                 MemberVatInvoice memberVatInvoice = memberVatInvoiceService.getMemberVatInvoice(vatInvoice.getId(), lenovoId);
                 if (memberVatInvoice == null) {
-                    memberVatInvoiceService.insertMemberVatInvoice(vatInvoice.getId(), lenovoId, shopId,type,param.getFaid(),storeId);
+                    memberVatInvoiceService.insertMemberVatInvoice(vatInvoice.getId(), lenovoId, shopId, type, param.getFaid(), storeId);
                 }
             }
 
@@ -380,10 +389,10 @@ public class InvoiceApiServiceImpl extends BaseService implements InvoiceApiServ
     }
 
     @Override
-    public RemoteResult checkVatInvoiceInfo(String id, String lenovoId,String region,Tenant tenant) {
+    public RemoteResult checkVatInvoiceInfo(String id, String lenovoId, String region, Tenant tenant) {
         logger.info("CheckVatInvoiceInfo Start:{},{},{}" + id, lenovoId, region);
         RemoteResult remoteResult = new RemoteResult(false);
-        String storeId=null;
+        String storeId = null;
         try {
             //判断入参是否为空
             if (isNull(id, lenovoId)) {
@@ -408,25 +417,25 @@ public class InvoiceApiServiceImpl extends BaseService implements InvoiceApiServ
                 remoteResult.setT(parseGetVatInvoiceInfoResult(vatInvoice, lenovoId));
 
                 //补全门店
-                if(vatInvoice.getFaid().equals(O2oFaIdUtil.getProperty("o2ofaid"))){
-                    if(memberVatInvoice.getStoresid()==null||"".equals(memberVatInvoice.getStoresid())){
+                if (vatInvoice.getFaid().equals(O2oFaIdUtil.getProperty("o2ofaid"))) {
+                    if (memberVatInvoice.getStoresid() == null || "".equals(memberVatInvoice.getStoresid())) {
                         GetStoreInfoIdParam storeInfoIdParam = new GetStoreInfoIdParam();
                         storeInfoIdParam.setFaid(vatInvoice.getFaid());
                         storeInfoIdParam.setRegion(region);
                         RemoteResult remoteResultStoreInfo = storeInfoApiService.getStoreInfoId(storeInfoIdParam);
                         if (remoteResultStoreInfo.isSuccess()) {
                             storeId = (String) remoteResultStoreInfo.getT();
-                        }else {
+                        } else {
                             remoteResult.setResultCode(ErrorUtils.ERR_CODE_COM_REQURIE);
                             remoteResult.setResultMsg("获取storeID错误");
                             return remoteResult;
                         }
 
-                        VatInvoice vat = vatInvoiceMapper.getVatInvoiceBySelected(new VatInvoice(vatInvoice.getCustomername(), vatInvoice.getTaxno(), vatInvoice.getBankname(), vatInvoice.getAccountno(), vatInvoice.getAddress(), vatInvoice.getPhoneno(),vatInvoice.getType(),vatInvoice.getFaid(),storeId));
-                        if(vat!=null){
-                            memberVatInvoiceService.delVatInvoice(id,lenovoId);
+                        VatInvoice vat = vatInvoiceMapper.getVatInvoiceBySelected(new VatInvoice(vatInvoice.getCustomername(), vatInvoice.getTaxno(), vatInvoice.getBankname(), vatInvoice.getAccountno(), vatInvoice.getAddress(), vatInvoice.getPhoneno(), vatInvoice.getType(), vatInvoice.getFaid(), storeId));
+                        if (vat != null) {
+                            memberVatInvoiceService.delVatInvoice(id, lenovoId);
                             remoteResult.setT(parseGetVatInvoiceInfoResult(vat, lenovoId));
-                        }else {
+                        } else {
                             memberVatInvoiceService.updateVatInvoice(id, lenovoId, vatInvoice.getFaid(), storeId);
                         }
                     }
@@ -447,7 +456,7 @@ public class InvoiceApiServiceImpl extends BaseService implements InvoiceApiServ
     }
 
     @Override
-    public RemoteResult changeVatInvoiceState(String id, boolean isThrough,Tenant tenant) {
+    public RemoteResult changeVatInvoiceState(String id, boolean isThrough, Tenant tenant) {
         logger.info("ChangeVatInvoiceState Start:增值发票{}审核状态：{}", id, isThrough);
         RemoteResult remoteResult = new RemoteResult(false);
         try {
@@ -497,11 +506,11 @@ public class InvoiceApiServiceImpl extends BaseService implements InvoiceApiServ
     }
 
 
-    public String getFaType(String faid){
+    public String getFaType(String faid) {
 
-        if("7ef1d628-5bd3-4651-9530-793678cc02af".equals(faid) ||"e5c62c8b-cfae-4771-b585-bfe718a5d57a".equals(faid)||"00f4a0a1-6860-417f-a72b-0545d20d6521".equals(faid)){
+        if ("7ef1d628-5bd3-4651-9530-793678cc02af".equals(faid) || "e5c62c8b-cfae-4771-b585-bfe718a5d57a".equals(faid) || "00f4a0a1-6860-417f-a72b-0545d20d6521".equals(faid)) {
             return "1";
-        }else {
+        } else {
             return "0";
         }
 

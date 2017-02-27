@@ -18,6 +18,8 @@ import java.util.List;
 public interface InvoiceApiService {
     //获取增票信息
     RemoteResult<GetVatInvoiceInfoResult> getVatInvoiceInfo(GetVatInvoiceInfoParam param,Tenant tenant);
+    //获取增票信息
+    RemoteResult<List<GetVatInvoiceInfoResult>> getVatInvoiceInfo(String lenovoId, String faid, String type, Tenant tenant);
     //添加或修改增票信息
     RemoteResult addVatInvoiceInfo(AddVatInvoiceInfoParam param,Tenant tenant);
     //订单提交校验接口
