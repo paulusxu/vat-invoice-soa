@@ -9,15 +9,18 @@ import com.lenovo.invoice.common.utils.JacksonUtil;
 import com.lenovo.invoice.common.utils.O2oFaIdUtil;
 import com.lenovo.invoice.dao.MemberVatInvoiceMapper;
 import com.lenovo.invoice.dao.VatInvoiceMapper;
+import com.lenovo.invoice.dao.VathrowBtcpMapper;
 import com.lenovo.invoice.domain.MemberVatInvoice;
 import com.lenovo.invoice.domain.O2oVatInvoice;
 import com.lenovo.invoice.domain.VatInvoice;
+import com.lenovo.invoice.domain.VathrowBtcp;
 import com.lenovo.invoice.domain.param.AddVatInvoiceInfoParam;
 import com.lenovo.invoice.domain.param.GetVatInvoiceInfoParam;
 import com.lenovo.invoice.domain.result.AddVatInvoiceInfoResult;
 import com.lenovo.invoice.domain.result.GetVatInvoiceInfoResult;
 import com.lenovo.invoice.service.BaseService;
 import com.lenovo.invoice.service.MemberVatInvoiceService;
+import com.lenovo.invoice.service.VatInvoiceService;
 import com.lenovo.invoice.service.redisObject.RedisObjectManager;
 import com.lenovo.m2.arch.framework.domain.RemoteResult;
 import com.lenovo.m2.arch.framework.domain.Tenant;
@@ -56,6 +59,10 @@ public class InvoiceApiServiceImpl extends BaseService implements InvoiceApiServ
 
     @Autowired
     private StoreInfoApiService storeInfoApiService;
+    @Autowired
+    private VathrowBtcpMapper vathrowBtcpMapper;
+    @Autowired
+    private VatInvoiceService vatInvoiceService;
 
     @Override
     public RemoteResult<GetVatInvoiceInfoResult> getVatInvoiceInfo(GetVatInvoiceInfoParam param, Tenant tenant) {
@@ -556,8 +563,10 @@ public class InvoiceApiServiceImpl extends BaseService implements InvoiceApiServ
             if (!Strings.isNullOrEmpty(zids)) {
                 String[] ids = zids.split(",");
                 for (int i = 0; i < ids.length; i++) {
-                    String zid=ids[i];
-                    
+                    String zid = ids[i];
+                    //获取可抛送订单列表
+                    List<VathrowBtcp> btcpList=vathrowBtcpMapper.getVatInvoice2BtcpList(zid);
+                    vatInvoiceService.throwBTCP(btcpList);
                 }
             }
         } catch (Exception e) {
