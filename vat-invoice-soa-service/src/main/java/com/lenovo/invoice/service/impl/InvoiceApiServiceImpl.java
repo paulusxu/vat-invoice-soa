@@ -174,12 +174,6 @@ public class InvoiceApiServiceImpl extends BaseService implements InvoiceApiServ
         return remoteResult;
     }
 
-    @Override
-    public RemoteResult<GetVatInvoiceInfoResult> getVatInvoiceInfo(GetVatInvoiceInfoParam param) {
-        Tenant tenant=new Tenant();
-        return getVatInvoiceInfo(param,tenant);
-    }
-
     private GetVatInvoiceInfoResult parseGetVatInvoiceInfoResult(VatInvoice vatInvoice, String lenovoId) {
         GetVatInvoiceInfoResult result = new GetVatInvoiceInfoResult();
         result.setId(vatInvoice.getId());
@@ -386,12 +380,6 @@ public class InvoiceApiServiceImpl extends BaseService implements InvoiceApiServ
     }
 
     @Override
-    public RemoteResult addVatInvoiceInfo(AddVatInvoiceInfoParam param) {
-        Tenant tenant=new Tenant();
-        return addVatInvoiceInfo(param,tenant);
-    }
-
-    @Override
     public RemoteResult checkVatInvoiceInfo(String id, String lenovoId,String region,Tenant tenant) {
         logger.info("CheckVatInvoiceInfo Start:{},{},{}" + id, lenovoId, region);
         RemoteResult remoteResult = new RemoteResult(false);
@@ -459,11 +447,6 @@ public class InvoiceApiServiceImpl extends BaseService implements InvoiceApiServ
     }
 
     @Override
-    public RemoteResult checkVatInvoiceInfo(String id, String lenovoId, String region) {
-        return checkVatInvoiceInfo(id,lenovoId,region,new Tenant());
-    }
-
-    @Override
     public RemoteResult changeVatInvoiceState(String id, boolean isThrough,Tenant tenant) {
         logger.info("ChangeVatInvoiceState Start:增值发票{}审核状态：{}", id, isThrough);
         RemoteResult remoteResult = new RemoteResult(false);
@@ -488,11 +471,6 @@ public class InvoiceApiServiceImpl extends BaseService implements InvoiceApiServ
         logger.info("ChangeVatInvoiceState End:" + JacksonUtil.toJson(remoteResult));
         remoteResult.setResultMsg("update Failure!~");
         return remoteResult;
-    }
-
-    @Override
-    public RemoteResult changeVatInvoiceState(String id, boolean isThrough) {
-        return changeVatInvoiceState(id,isThrough,new Tenant());
     }
 
     @Override
