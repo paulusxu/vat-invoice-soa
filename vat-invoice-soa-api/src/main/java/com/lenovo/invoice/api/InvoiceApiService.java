@@ -3,6 +3,7 @@ package com.lenovo.invoice.api;
 import com.lenovo.invoice.domain.O2oVatInvoice;
 import com.lenovo.invoice.domain.VatInvoice;
 import com.lenovo.invoice.domain.param.AddVatInvoiceInfoParam;
+import com.lenovo.invoice.domain.param.GetVatInvoiceInfoListParam;
 import com.lenovo.invoice.domain.param.GetVatInvoiceInfoParam;
 import com.lenovo.invoice.domain.result.GetVatInvoiceInfoResult;
 import com.lenovo.m2.arch.framework.domain.RemoteResult;
@@ -19,7 +20,7 @@ public interface InvoiceApiService {
     //获取增票信息
     RemoteResult<GetVatInvoiceInfoResult> getVatInvoiceInfo(GetVatInvoiceInfoParam param,Tenant tenant);
     //获取增票信息
-    RemoteResult<List<GetVatInvoiceInfoResult>> getVatInvoiceInfo(String lenovoId, String faid, String type, Tenant tenant);
+    RemoteResult<List<GetVatInvoiceInfoResult>> getVatInvoiceInfo(GetVatInvoiceInfoListParam param, Tenant tenant);
     //添加或修改增票信息
     RemoteResult addVatInvoiceInfo(AddVatInvoiceInfoParam param,Tenant tenant);
     //订单提交校验接口

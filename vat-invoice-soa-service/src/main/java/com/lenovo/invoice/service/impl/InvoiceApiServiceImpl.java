@@ -13,6 +13,7 @@ import com.lenovo.invoice.domain.MemberVatInvoice;
 import com.lenovo.invoice.domain.O2oVatInvoice;
 import com.lenovo.invoice.domain.VatInvoice;
 import com.lenovo.invoice.domain.param.AddVatInvoiceInfoParam;
+import com.lenovo.invoice.domain.param.GetVatInvoiceInfoListParam;
 import com.lenovo.invoice.domain.param.GetVatInvoiceInfoParam;
 import com.lenovo.invoice.domain.result.AddVatInvoiceInfoResult;
 import com.lenovo.invoice.domain.result.GetVatInvoiceInfoResult;
@@ -29,6 +30,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.regex.Matcher;
@@ -78,7 +80,7 @@ public class InvoiceApiServiceImpl extends BaseService implements InvoiceApiServ
 
             String storeId = null;
             String faid = param.getFaid();
-            String faType=param.getFaType();
+            String faType = param.getFaType();
 //            String cacheKey = CacheConstant.CACHE_PREFIX_INIT_FAID + param.getFaid();
 //            if (redisObjectManager.existsKey(cacheKey)) {//获取fatype,没有增加缓存
 //                type = redisObjectManager.getString(cacheKey);
@@ -173,10 +175,22 @@ public class InvoiceApiServiceImpl extends BaseService implements InvoiceApiServ
     }
 
     @Override
-    public RemoteResult<List<GetVatInvoiceInfoResult>> getVatInvoiceInfo(String lenovoId, String faid, String faType, Tenant tenant) {
+    public RemoteResult<List<GetVatInvoiceInfoResult>> getVatInvoiceInfo(GetVatInvoiceInfoListParam param, Tenant tenant) {
         RemoteResult<List<GetVatInvoiceInfoResult>> remoteResult = new RemoteResult<List<GetVatInvoiceInfoResult>>(false);
+        String lenovoId = param.getLenovoId();
+        String faid = param.getFaid();
+        String faType = param.getFaType();
         try {
             List<MemberVatInvoice> memberVatInvoiceList = memberVatInvoiceMapper.getMemberVatInvoiceByLenovoId(lenovoId, faType, faid, null);
+            if (CollectionUtils.isNotEmpty(memberVatInvoiceList)) {
+                List<GetVatInvoiceInfoResult> infoResults = new ArrayList<GetVatInvoiceInfoResult>();
+                for (MemberVatInvoice memberVatInvoice : memberVatInvoiceList) {
+                    VatInvoice vatInvoice = vatInvoiceMapper.getVatInvoiceInfoById(memberVatInvoice.getInvoiceinfoid());
+                    infoResults.add(parseGetVatInvoiceInfoResult(vatInvoice, lenovoId));
+                }
+                remoteResult.setT(infoResults);
+                remoteResult.setSuccess(true);
+            }
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
         }
