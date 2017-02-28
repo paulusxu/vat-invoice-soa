@@ -15,6 +15,7 @@ import com.lenovo.invoice.domain.O2oVatInvoice;
 import com.lenovo.invoice.domain.VatInvoice;
 import com.lenovo.invoice.domain.VathrowBtcp;
 import com.lenovo.invoice.domain.param.AddVatInvoiceInfoParam;
+import com.lenovo.invoice.domain.param.GetVatInvoiceInfoListParam;
 import com.lenovo.invoice.domain.param.GetVatInvoiceInfoParam;
 import com.lenovo.invoice.domain.result.AddVatInvoiceInfoResult;
 import com.lenovo.invoice.domain.result.GetVatInvoiceInfoResult;
@@ -33,6 +34,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.regex.Matcher;
@@ -83,19 +85,19 @@ public class InvoiceApiServiceImpl extends BaseService implements InvoiceApiServ
             }
 
             //判断lenovoid是否有对应的增票映射
-            MemberVatInvoice memberVatInvoice = null;
             VatInvoice vatInvoice = null;
 
 
             String storeId = null;
-            String faid = null;
-            String cacheKey = CacheConstant.CACHE_PREFIX_INIT_FAID + param.getFaid();
-            if (redisObjectManager.existsKey(cacheKey)) {//获取fatype,没有增加缓存
-                type = redisObjectManager.getString(cacheKey);
-            } else {
-                type = getFaType(param.getFaid());
-                redisObjectManager.setString(cacheKey, type);
-            }
+            String faid = param.getFaid();
+            String faType = param.getFaType();
+//            String cacheKey = CacheConstant.CACHE_PREFIX_INIT_FAID + param.getFaid();
+//            if (redisObjectManager.existsKey(cacheKey)) {//获取fatype,没有增加缓存
+//                type = redisObjectManager.getString(cacheKey);
+//            } else {
+//                type = getFaType(param.getFaid());
+//                redisObjectManager.setString(cacheKey, type);
+//            }
 //            if(param.getFaid().equals(O2oFaIdUtil.getProperty("o2ofaid"))){
 //                GetStoreInfoIdParam storeInfoIdParam = new GetStoreInfoIdParam();
 //                storeInfoIdParam.setFaid(param.getFaid());
@@ -109,13 +111,13 @@ public class InvoiceApiServiceImpl extends BaseService implements InvoiceApiServ
 //                    return remoteResult;
 //                }
 //            }
-            if (type.equals("0")) {
-                faid = param.getFaid();
-            }
+//            if (type.equals("0")) {
+//                faid = param.getFaid();
+//            }
 
 
             if (Strings.isNullOrEmpty(customername) && Strings.isNullOrEmpty(taxno)) {
-                List<MemberVatInvoice> memberVatInvoiceList = memberVatInvoiceMapper.getMemberVatInvoiceByLenovoId(lenovoId, type, faid, storeId);
+                List<MemberVatInvoice> memberVatInvoiceList = memberVatInvoiceMapper.getMemberVatInvoiceByLenovoId(lenovoId, faType, faid, storeId);
 
                 //按lenovoId增票信息
                 if (CollectionUtils.isEmpty(memberVatInvoiceList)) {
@@ -133,10 +135,10 @@ public class InvoiceApiServiceImpl extends BaseService implements InvoiceApiServ
                 }
             } else {
                 //按customername,taxno取增票信息
-                List<VatInvoice> vatInvoiceList = vatInvoiceMapper.getVatInvoice(customername, taxno, type);
+                List<VatInvoice> vatInvoiceList = vatInvoiceMapper.getVatInvoice(customername, taxno, faType);
                 if (CollectionUtils.isEmpty(vatInvoiceList)) {
                     //判断是否是自己填写的资质
-                    List<MemberVatInvoice> memberVatInvoiceList = memberVatInvoiceMapper.getMemberVatInvoiceByLenovoId(lenovoId, type, faid, storeId);
+                    List<MemberVatInvoice> memberVatInvoiceList = memberVatInvoiceMapper.getMemberVatInvoiceByLenovoId(lenovoId, faType, faid, storeId);
                     if (CollectionUtils.isEmpty(memberVatInvoiceList)) {
                         remoteResult.setResultCode(ErrorUtils.ERR_CODE_NOTEXIST_VAT);
                         remoteResult.setResultMsg("未找到映射，用户:" + lenovoId + "未曾保存过" + customername + ":" + taxno + "增票");
@@ -183,9 +185,26 @@ public class InvoiceApiServiceImpl extends BaseService implements InvoiceApiServ
     }
 
     @Override
-    public RemoteResult<GetVatInvoiceInfoResult> getVatInvoiceInfo(GetVatInvoiceInfoParam param) {
-        Tenant tenant = new Tenant();
-        return getVatInvoiceInfo(param, tenant);
+    public RemoteResult<List<GetVatInvoiceInfoResult>> getVatInvoiceInfo(GetVatInvoiceInfoListParam param, Tenant tenant) {
+        RemoteResult<List<GetVatInvoiceInfoResult>> remoteResult = new RemoteResult<List<GetVatInvoiceInfoResult>>(false);
+        String lenovoId = param.getLenovoId();
+        String faid = param.getFaid();
+        String faType = param.getFaType();
+        try {
+            List<MemberVatInvoice> memberVatInvoiceList = memberVatInvoiceMapper.getMemberVatInvoiceByLenovoId(lenovoId, faType, faid, null);
+            if (CollectionUtils.isNotEmpty(memberVatInvoiceList)) {
+                List<GetVatInvoiceInfoResult> infoResults = new ArrayList<GetVatInvoiceInfoResult>();
+                for (MemberVatInvoice memberVatInvoice : memberVatInvoiceList) {
+                    VatInvoice vatInvoice = vatInvoiceMapper.getVatInvoiceInfoById(memberVatInvoice.getInvoiceinfoid());
+                    infoResults.add(parseGetVatInvoiceInfoResult(vatInvoice, lenovoId));
+                }
+                remoteResult.setT(infoResults);
+                remoteResult.setSuccess(true);
+            }
+        } catch (Exception e) {
+            logger.error(e.getMessage(), e);
+        }
+        return remoteResult;
     }
 
     private GetVatInvoiceInfoResult parseGetVatInvoiceInfoResult(VatInvoice vatInvoice, String lenovoId) {
@@ -394,12 +413,6 @@ public class InvoiceApiServiceImpl extends BaseService implements InvoiceApiServ
     }
 
     @Override
-    public RemoteResult addVatInvoiceInfo(AddVatInvoiceInfoParam param) {
-        Tenant tenant = new Tenant();
-        return addVatInvoiceInfo(param, tenant);
-    }
-
-    @Override
     public RemoteResult checkVatInvoiceInfo(String id, String lenovoId, String region, Tenant tenant) {
         logger.info("CheckVatInvoiceInfo Start:{},{},{}" + id, lenovoId, region);
         RemoteResult remoteResult = new RemoteResult(false);
@@ -467,11 +480,6 @@ public class InvoiceApiServiceImpl extends BaseService implements InvoiceApiServ
     }
 
     @Override
-    public RemoteResult checkVatInvoiceInfo(String id, String lenovoId, String region) {
-        return checkVatInvoiceInfo(id, lenovoId, region, new Tenant());
-    }
-
-    @Override
     public RemoteResult changeVatInvoiceState(String id, boolean isThrough, Tenant tenant) {
         logger.info("ChangeVatInvoiceState Start:增值发票{}审核状态：{}", id, isThrough);
         RemoteResult remoteResult = new RemoteResult(false);
@@ -498,11 +506,7 @@ public class InvoiceApiServiceImpl extends BaseService implements InvoiceApiServ
         return remoteResult;
     }
 
-    @Override
-    public RemoteResult changeVatInvoiceState(String id, boolean isThrough) {
-        return changeVatInvoiceState(id, isThrough, new Tenant());
-    }
-
+   
     @Override
     public RemoteResult queryVatInvoiceInfo(String id) {
         logger.info("QueryVatInvoiceInfo Start:获取增值税发票", id);

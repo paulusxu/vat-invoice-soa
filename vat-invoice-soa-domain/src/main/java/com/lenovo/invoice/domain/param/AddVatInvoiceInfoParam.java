@@ -18,6 +18,8 @@ public class AddVatInvoiceInfoParam implements Serializable {
     private int shopId;//
 //    private int type; //0：官网增票 1：o2o增票
     private String faid;//faid
+    private String faType;
+
     private String region;// think o2o专用
 
     public int getShopId() {
@@ -108,13 +110,13 @@ public class AddVatInvoiceInfoParam implements Serializable {
         return isNeedMerge;
     }
 
-//    public int getType() {
-//        return type;
-//    }
-//
-//    public void setType(int type) {
-//        this.type = type;
-//    }
+    public String getFaType() {
+        return faType;
+    }
+
+    public void setFaType(String faType) {
+        this.faType = faType;
+    }
 
     public String getFaid() {
         return faid;
