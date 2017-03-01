@@ -162,10 +162,10 @@ public class VatInvoiceServiceImpl implements VatInvoiceService {
 
                     if (!resCode.equals("") && resCode.equals("200")) {
                         //抛送成功
-                        int rows = vathrowBtcpMapper.updateByOrderCode(vathrowBtcp.getOrderCode(), 3);
+                        int rows = vathrowBtcpMapper.updateByOrderCode(vathrowBtcp.getOrderCode(), 3, resCode);
                         if (rows > 0) {
                             //增票抛单成功通知订单
-                            Invoice invoice=new Invoice();
+                            Invoice invoice = new Invoice();
                             invoice.setZCode(BTCPResultCode);
 
                             invoice.setTitle(vathrowBtcp.getTitle());
@@ -179,8 +179,12 @@ public class VatInvoiceServiceImpl implements VatInvoiceService {
                             vatApiOrderCenter.updateInvoice(invoice);
                         }
                     } else {
-                        //btcp抛送失败
-                        vatApiOrderCenter.updateFailureReasonByOrderId(message,Long.parseLong(vathrowBtcp.getOrderCode()));
+                        int rows = vathrowBtcpMapper.updateByOrderCode(vathrowBtcp.getOrderCode(), 4, message);
+                        if (rows > 0) {
+                            //btcp抛送失败
+                            vatApiOrderCenter.updateFailureReasonByOrderId(message, Long.parseLong(vathrowBtcp.getOrderCode()));
+                        }
+
                     }
 
                 } catch (Exception e) {

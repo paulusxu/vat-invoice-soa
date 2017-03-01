@@ -24,6 +24,8 @@ public class VathrowBtcp {
     private Date createtime;
     private String orderCode;
     private String zid;
+    private int orderStatus;
+    private String throwResult;
 
     public Integer getId() {
         return id;
@@ -191,5 +193,21 @@ public class VathrowBtcp {
 
     public void setZid(String zid) {
         this.zid = zid;
+    }
+
+    public int getOrderStatus() {
+        return orderStatus;
+    }
+
+    public void setOrderStatus(int orderStatus) {
+        this.orderStatus = orderStatus;
+    }
+
+    public String getThrowResult() {
+        return throwResult;
+    }
+
+    public void setThrowResult(String throwResult) {
+        this.throwResult = throwResult;
     }
 }

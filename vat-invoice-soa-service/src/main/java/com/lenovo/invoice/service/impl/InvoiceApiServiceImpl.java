@@ -506,7 +506,7 @@ public class InvoiceApiServiceImpl extends BaseService implements InvoiceApiServ
         return remoteResult;
     }
 
-   
+
     @Override
     public RemoteResult queryVatInvoiceInfo(String id) {
         logger.info("QueryVatInvoiceInfo Start:获取增值税发票", id);
@@ -569,7 +569,7 @@ public class InvoiceApiServiceImpl extends BaseService implements InvoiceApiServ
                 for (int i = 0; i < ids.length; i++) {
                     String zid = ids[i];
                     //获取可抛送订单列表
-                    List<VathrowBtcp> btcpList=vathrowBtcpMapper.getVatInvoice2BtcpList(zid);
+                    List<VathrowBtcp> btcpList = vathrowBtcpMapper.getVatInvoice2BtcpList(zid);
                     vatInvoiceService.throwBTCP(btcpList);
                 }
             }
