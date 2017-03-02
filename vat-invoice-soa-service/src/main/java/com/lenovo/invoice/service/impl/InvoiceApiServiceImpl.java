@@ -66,6 +66,18 @@ public class InvoiceApiServiceImpl extends BaseService implements InvoiceApiServ
     @Autowired
     private VatInvoiceService vatInvoiceService;
 
+    private String getType(String faid) {
+        String type = null;
+        String cacheKey = CacheConstant.CACHE_PREFIX_INIT_FAID + faid;
+        if (redisObjectManager.existsKey(cacheKey)) {//获取fatype,没有增加缓存
+            type = redisObjectManager.getString(cacheKey);
+        } else {
+            type = getFaType(faid);
+            redisObjectManager.setString(cacheKey, type);
+        }
+        return type;
+    }
+
     @Override
     public RemoteResult<GetVatInvoiceInfoResult> getVatInvoiceInfo(GetVatInvoiceInfoParam param, Tenant tenant) {
         logger.info("GetVatInvoiceInfo Start:" + JacksonUtil.toJson(param));
@@ -74,7 +86,7 @@ public class InvoiceApiServiceImpl extends BaseService implements InvoiceApiServ
             String customername = !Strings.isNullOrEmpty(param.getCustomerName()) ? param.getCustomerName().trim() : param.getCustomerName();
             String taxno = param.getTaxNo();
             String lenovoId = param.getLenovoId();
-            String type = null;
+
 
             //判断入参是否为空
             if (StringUtils.isEmpty(lenovoId) || param.getFaid() == null) {
@@ -88,13 +100,7 @@ public class InvoiceApiServiceImpl extends BaseService implements InvoiceApiServ
 
             String storeId = null;
             String faid = param.getFaid();
-            String cacheKey = CacheConstant.CACHE_PREFIX_INIT_FAID + param.getFaid();
-            if (redisObjectManager.existsKey(cacheKey)) {//获取fatype,没有增加缓存
-                type = redisObjectManager.getString(cacheKey);
-            } else {
-                type = getFaType(param.getFaid());
-                redisObjectManager.setString(cacheKey, type);
-            }
+            String type = getType(faid);
 //            if(param.getFaid().equals(O2oFaIdUtil.getProperty("o2ofaid"))){
 //                GetStoreInfoIdParam storeInfoIdParam = new GetStoreInfoIdParam();
 //                storeInfoIdParam.setFaid(param.getFaid());
@@ -111,6 +117,7 @@ public class InvoiceApiServiceImpl extends BaseService implements InvoiceApiServ
             if (type.equals("0")) {
                 faid = param.getFaid();
             }
+
 
             if (Strings.isNullOrEmpty(customername) && Strings.isNullOrEmpty(taxno)) {
                 List<MemberVatInvoice> memberVatInvoiceList = memberVatInvoiceMapper.getMemberVatInvoiceByLenovoId(lenovoId, type, faid, storeId);
@@ -185,9 +192,13 @@ public class InvoiceApiServiceImpl extends BaseService implements InvoiceApiServ
         RemoteResult<List<GetVatInvoiceInfoResult>> remoteResult = new RemoteResult<List<GetVatInvoiceInfoResult>>(false);
         String lenovoId = param.getLenovoId();
         String faid = param.getFaid();
-        String faType = param.getFaType();
+        String type = getType(faid);
+
+        if (type.equals("0")) {
+            faid = param.getFaid();
+        }
         try {
-            List<MemberVatInvoice> memberVatInvoiceList = memberVatInvoiceMapper.getMemberVatInvoiceByLenovoId(lenovoId, faType, faid, null);
+            List<MemberVatInvoice> memberVatInvoiceList = memberVatInvoiceMapper.getMemberVatInvoiceByLenovoId(lenovoId, type, faid, null);
             if (CollectionUtils.isNotEmpty(memberVatInvoiceList)) {
                 List<GetVatInvoiceInfoResult> infoResults = new ArrayList<GetVatInvoiceInfoResult>();
                 for (MemberVatInvoice memberVatInvoice : memberVatInvoiceList) {
