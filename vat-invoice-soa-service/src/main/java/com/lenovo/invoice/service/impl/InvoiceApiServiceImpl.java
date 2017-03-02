@@ -74,7 +74,6 @@ public class InvoiceApiServiceImpl extends BaseService implements InvoiceApiServ
             String customername = !Strings.isNullOrEmpty(param.getCustomerName()) ? param.getCustomerName().trim() : param.getCustomerName();
             String taxno = param.getTaxNo();
             String lenovoId = param.getLenovoId();
-            int shopId = param.getShopId();
             String type = null;
 
             //判断入参是否为空
@@ -87,17 +86,15 @@ public class InvoiceApiServiceImpl extends BaseService implements InvoiceApiServ
             //判断lenovoid是否有对应的增票映射
             VatInvoice vatInvoice = null;
 
-
             String storeId = null;
             String faid = param.getFaid();
-            String faType = param.getFaType();
-//            String cacheKey = CacheConstant.CACHE_PREFIX_INIT_FAID + param.getFaid();
-//            if (redisObjectManager.existsKey(cacheKey)) {//获取fatype,没有增加缓存
-//                type = redisObjectManager.getString(cacheKey);
-//            } else {
-//                type = getFaType(param.getFaid());
-//                redisObjectManager.setString(cacheKey, type);
-//            }
+            String cacheKey = CacheConstant.CACHE_PREFIX_INIT_FAID + param.getFaid();
+            if (redisObjectManager.existsKey(cacheKey)) {//获取fatype,没有增加缓存
+                type = redisObjectManager.getString(cacheKey);
+            } else {
+                type = getFaType(param.getFaid());
+                redisObjectManager.setString(cacheKey, type);
+            }
 //            if(param.getFaid().equals(O2oFaIdUtil.getProperty("o2ofaid"))){
 //                GetStoreInfoIdParam storeInfoIdParam = new GetStoreInfoIdParam();
 //                storeInfoIdParam.setFaid(param.getFaid());
@@ -111,13 +108,12 @@ public class InvoiceApiServiceImpl extends BaseService implements InvoiceApiServ
 //                    return remoteResult;
 //                }
 //            }
-//            if (type.equals("0")) {
-//                faid = param.getFaid();
-//            }
-
+            if (type.equals("0")) {
+                faid = param.getFaid();
+            }
 
             if (Strings.isNullOrEmpty(customername) && Strings.isNullOrEmpty(taxno)) {
-                List<MemberVatInvoice> memberVatInvoiceList = memberVatInvoiceMapper.getMemberVatInvoiceByLenovoId(lenovoId, faType, faid, storeId);
+                List<MemberVatInvoice> memberVatInvoiceList = memberVatInvoiceMapper.getMemberVatInvoiceByLenovoId(lenovoId, type, faid, storeId);
 
                 //按lenovoId增票信息
                 if (CollectionUtils.isEmpty(memberVatInvoiceList)) {
@@ -135,10 +131,10 @@ public class InvoiceApiServiceImpl extends BaseService implements InvoiceApiServ
                 }
             } else {
                 //按customername,taxno取增票信息
-                List<VatInvoice> vatInvoiceList = vatInvoiceMapper.getVatInvoice(customername, taxno, faType);
+                List<VatInvoice> vatInvoiceList = vatInvoiceMapper.getVatInvoice(customername, taxno, type);
                 if (CollectionUtils.isEmpty(vatInvoiceList)) {
                     //判断是否是自己填写的资质
-                    List<MemberVatInvoice> memberVatInvoiceList = memberVatInvoiceMapper.getMemberVatInvoiceByLenovoId(lenovoId, faType, faid, storeId);
+                    List<MemberVatInvoice> memberVatInvoiceList = memberVatInvoiceMapper.getMemberVatInvoiceByLenovoId(lenovoId, type, faid, storeId);
                     if (CollectionUtils.isEmpty(memberVatInvoiceList)) {
                         remoteResult.setResultCode(ErrorUtils.ERR_CODE_NOTEXIST_VAT);
                         remoteResult.setResultMsg("未找到映射，用户:" + lenovoId + "未曾保存过" + customername + ":" + taxno + "增票");
@@ -531,33 +527,12 @@ public class InvoiceApiServiceImpl extends BaseService implements InvoiceApiServ
     }
 
 
-    public String getFaType(String faid) {
-
-        if ("7ef1d628-5bd3-4651-9530-793678cc02af".equals(faid) || "e5c62c8b-cfae-4771-b585-bfe718a5d57a".equals(faid) || "00f4a0a1-6860-417f-a72b-0545d20d6521".equals(faid)) {
-            return "1";
+    public String getFaType(String faType) {
+        if ("0".equals(faType) || "3".equals(faType)) {
+            return "1"; //直营
         } else {
-            return "0";
+            return "0";//非直营
         }
-
-//        PageMap pageMap = new PageMap();
-//        List<String> falist = new ArrayList<>();
-//        falist.add(faid);
-//        pageMap.putSelectParams("faIds", falist);
-//        PageMap resultMap = ServicesClient.getInstance().getService(FaBaseInfoesService.class).PageQuery(pageMap);
-//        List<FaBaseInfoes> pageList = (List<FaBaseInfoes>) resultMap.getPageList();
-//        FaBaseInfoes faBaseInfo=null;
-//        if (pageList!=null&&pageList.size()>0) {
-//            faBaseInfo = pageList.get(0);
-//        }
-//        if (faBaseInfo == null) {
-//            return "9";
-//        }
-//        int faType = faBaseInfo.getFaType();//faType 0、3直营 1、2、4非直营
-//        if(faType==0||faType==3){
-//            return "1";
-//        }else {
-//            return "0";
-//        }
     }
 
     @Override
