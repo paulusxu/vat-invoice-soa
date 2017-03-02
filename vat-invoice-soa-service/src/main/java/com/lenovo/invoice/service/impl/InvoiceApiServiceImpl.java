@@ -118,7 +118,6 @@ public class InvoiceApiServiceImpl extends BaseService implements InvoiceApiServ
                 faid = param.getFaid();
             }
 
-
             if (Strings.isNullOrEmpty(customername) && Strings.isNullOrEmpty(taxno)) {
                 List<MemberVatInvoice> memberVatInvoiceList = memberVatInvoiceMapper.getMemberVatInvoiceByLenovoId(lenovoId, type, faid, storeId);
 
