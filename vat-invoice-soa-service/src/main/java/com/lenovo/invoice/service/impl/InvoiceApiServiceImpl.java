@@ -414,7 +414,7 @@ public class InvoiceApiServiceImpl extends BaseService implements InvoiceApiServ
             remoteResult.setResultMsg("系统异常错误");
             logger.error(e.getMessage(), e);
         }
-        logger.info("addVatInvoiceInfo End:{}", JacksonUtil.toJson(remoteResult));
+        logger.info("AddVatInvoiceInfo End:{}", JacksonUtil.toJson(remoteResult));
         return remoteResult;
     }
 

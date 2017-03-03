@@ -80,15 +80,44 @@
 
     <appender name="throwOrderMessageAppender" class="ch.qos.logback.core.rolling.RollingFileAppender">
         <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
-            <fileNamePattern>${log.path}/message/order/throw.log.%d{yyyy-MM-dd}</fileNamePattern>
+            <fileNamePattern>${log.path}/message/order/throw/throw.log.%d{yyyy-MM-dd}</fileNamePattern>
         </rollingPolicy>
         <encoder>
             <pattern>[%d{yyyy-MM-dd HH:mm:ss} %-5p] projectName : vat-invoice-soa %X{elk_leId} %X{elk_lenovoId} %X{elk_requestId} %X{ip} [%thread] %-5level %logger{5} - %msg%n</pattern>
         </encoder>
     </appender>
-    <logger name="com.lenovo.invoice.service.impl.vatinvoice" level="info" additivity="false">
+    <logger name="com.lenovo.invoice.customer.order.throw" level="info" additivity="false">
         <appender-ref ref="throwOrderMessageAppender" />
     </logger>
+
+    <appender name="deliverOrderMessageAppender" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>${log.path}/message/order/deliver/deliver.log.%d{yyyy-MM-dd}</fileNamePattern>
+        </rollingPolicy>
+        <encoder>
+            <pattern>[%d{yyyy-MM-dd HH:mm:ss} %-5p] projectName : vat-invoice-soa %X{elk_leId} %X{elk_lenovoId} %X{elk_requestId} %X{ip} [%thread] %-5level %logger{5} - %msg%n</pattern>
+        </encoder>
+    </appender>
+    <logger name="com.lenovo.invoice.customer.order.deliver" level="info" additivity="false">
+        <appender-ref ref="deliverOrderMessageAppender" />
+    </logger>
+
+
+    <appender name="paidOrderMessageAppender" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>${log.path}/message/order/paid/paid.log.%d{yyyy-MM-dd}</fileNamePattern>
+        </rollingPolicy>
+        <encoder>
+            <pattern>[%d{yyyy-MM-dd HH:mm:ss} %-5p] projectName : vat-invoice-soa %X{elk_leId} %X{elk_lenovoId} %X{elk_requestId} %X{ip} [%thread] %-5level %logger{5} - %msg%n</pattern>
+        </encoder>
+    </appender>
+    <logger name="com.lenovo.invoice.customer.order.paid" level="info" additivity="false">
+        <appender-ref ref="paidOrderMessageAppender" />
+    </logger>
+
+
+
+
 
     <appender name="throwBtcpAppender" class="ch.qos.logback.core.rolling.RollingFileAppender">
         <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">

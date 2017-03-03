@@ -12,7 +12,7 @@ import org.slf4j.LoggerFactory;
  * Created by mayan3 on 2016/9/27.
  */
 public class PaidOrderVatInvoiceMessageCustomer {
-    private static final Logger LOGGER = LoggerFactory.getLogger("com.lenovo.invoice.service.impl.vatinvoice");
+    private static final Logger LOGGER = LoggerFactory.getLogger("com.lenovo.invoice.customer.order.paid");
 
     private KafkaConsumer kafkaConsumer;
     private InvoiceService invoiceService;

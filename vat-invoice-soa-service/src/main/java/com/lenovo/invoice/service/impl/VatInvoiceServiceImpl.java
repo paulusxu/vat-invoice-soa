@@ -84,6 +84,7 @@ public class VatInvoiceServiceImpl implements VatInvoiceService {
                         String shopid = invoice.getTenant().getShopId() + "";
                         String zid = invoice.getZid();
                         vathrowBtcp.setZid(zid);
+                        vathrowBtcp.setOrderStatus(2);
 
                         VatInvoice vatInvoice = getVatInvoiceByZid(zid, shopid);
                         if (vatInvoice != null) {
@@ -194,6 +195,17 @@ public class VatInvoiceServiceImpl implements VatInvoiceService {
         } catch (Exception e) {
             LOGGER.error(e.getMessage(), e);
         }
+    }
+
+    @Override
+    public int updateOrderStatus(String orderCode, int status) {
+        int rows = 0;
+        try {
+            rows = vathrowBtcpMapper.updateOrderStatus(orderCode, status);
+        } catch (Exception e) {
+            LOGGER.error(e.getMessage(), e);
+        }
+        return rows;
     }
 
 }

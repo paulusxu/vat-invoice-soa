@@ -18,4 +18,6 @@ public interface VatInvoiceService {
     void updateVatInvoiceIsvalid(String zid, String shopid);
     //抛增票到btcp
     void throwBTCP(List<VathrowBtcp> btcpList);
+    //更新订单状态
+    int updateOrderStatus(String orderCode,int status);
 }

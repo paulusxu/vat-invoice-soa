@@ -54,8 +54,18 @@
         <constructor-arg ref="kafkaConsumerFactory_order" />
     </bean>
 
-    <bean id="paidOrderVatInvoiceMessageCustomer" class="com.lenovo.invoice.service.message.ThrowOrderVatInvoiceMessageCustomer">
+    <bean id="throwOrderVatInvoiceMessageCustomer" class="com.lenovo.invoice.service.message.ThrowOrderVatInvoiceMessageCustomer">
         <constructor-arg ref="kafkaConsumer_order"/>
         <constructor-arg ref="vatInvoiceService"/>
+    </bean>
+
+    <bean id="deliverOrderVatInvoiceMessageCustomer" class="com.lenovo.invoice.service.message.DeliverOrderVatInvoiceMessageCustomer">
+        <constructor-arg ref="kafkaConsumer_order"/>
+        <constructor-arg ref="vatInvoiceService"/>
+    </bean>
+
+    <bean id="paidOrderVatInvoiceMessageCustomer" class="com.lenovo.invoice.service.message.PaidOrderVatInvoiceMessageCustomer">
+        <constructor-arg ref="kafkaConsumer_order"/>
+        <constructor-arg ref="invoiceService"/>
     </bean>
 </beans>
