@@ -1,4 +1,4 @@
-package com.lenovo.invoice.service.message;
+package com.lenovo.invoice.service.message.param;
 
 /**
  * Created by mayan3 on 2017/1/10.

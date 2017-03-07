@@ -20,7 +20,7 @@ public class VathrowBtcp {
     private String phone;
     private String zip;
     private int isneedmerge;
-    private int isthrowing;
+    private int throwingStatus;
     private Date createtime;
     private String orderCode;
     private String zid;
@@ -163,12 +163,12 @@ public class VathrowBtcp {
         this.isneedmerge = isneedmerge;
     }
 
-    public int getIsthrowing() {
-        return isthrowing;
+    public int getThrowingStatus() {
+        return throwingStatus;
     }
 
-    public void setIsthrowing(int isthrowing) {
-        this.isthrowing = isthrowing;
+    public void setThrowingStatus(int throwingStatus) {
+        this.throwingStatus = throwingStatus;
     }
 
     public Date getCreatetime() {

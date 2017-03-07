@@ -20,4 +20,6 @@ public interface VatInvoiceService {
     void throwBTCP(List<VathrowBtcp> btcpList);
     //更新订单状态
     int updateOrderStatus(String orderCode,int status);
+    //是否可抛送增票 订单推送
+    int updateThrowingStatus(String orderCode,int status);
 }

@@ -19,4 +19,5 @@ public interface VathrowBtcpMapper {
     List<VathrowBtcp> getVatInvoice2BtcpList(String zid);
 
     int updateOrderStatus(@Param("orderCode") String orderCode,@Param("status") int status);
+    int updateThrowingStatus(@Param("orderCode") String orderCode,@Param("status") int status);
 }

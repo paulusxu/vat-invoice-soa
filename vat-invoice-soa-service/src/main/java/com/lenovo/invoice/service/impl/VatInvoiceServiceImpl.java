@@ -208,4 +208,15 @@ public class VatInvoiceServiceImpl implements VatInvoiceService {
         return rows;
     }
 
+    @Override
+    public int updateThrowingStatus(String orderCode, int status) {
+        int rows = 0;
+        try {
+            rows = vathrowBtcpMapper.updateThrowingStatus(orderCode, status);
+        } catch (Exception e) {
+            LOGGER.error(e.getMessage(), e);
+        }
+        return rows;
+    }
+
 }
