@@ -74,6 +74,26 @@
         <constructor-arg ref="kafkaConsumerFactory_order_throwStatus" />
     </bean>
 
+    <!--订单发货后 订单推送-->
+    <bean id="kafkaConsumerOptions_order_deliver" class="com.lenovo.kafka.api.core.factory.KafkaConsumerOptions">
+        <property name="connectionZk" value="${connectionZk}" />
+        <property name="groupName" value="${groupName}" />
+        <property name="zkSessionTimeout" value="${zkSessionTimeout}" />
+        <property name="zkSyncTime" value="${zkSyncTime}" />
+        <property name="autoCommitInterval" value="${autoCommitInterval}" />
+        <property name="rebalanceBackOff" value="${rebalanceBackOff}" />
+        <property name="rebalanceMaxRetries" value="${rebalanceMaxRetries}" />
+        <property name="autoOffsetReset" value="${autoOffsetReset}" />
+        <property name="topicName" value="${order.deliver.topicName}" />
+    </bean>
+    <bean id="kafkaConsumerFactory_order_deliver" class="com.lenovo.kafka.api.core.factory.KafkaConsumerFactory"
+          init-method="initialize">
+        <constructor-arg ref="kafkaConsumerOptions_order_deliver" />
+    </bean>
+    <bean id="kafkaConsumer_order_deliver" class="com.lenovo.kafka.api.core.consumer.KafkaConsumer">
+        <constructor-arg ref="kafkaConsumerFactory_order_deliver" />
+    </bean>
+
     <bean id="throwStatusMessageCustomer" class="com.lenovo.invoice.service.message.ThrowStatusMessageCustomer">
         <constructor-arg ref="kafkaConsumer_order_throwStatus"/>
         <constructor-arg ref="vatInvoiceService"/>
@@ -86,7 +106,7 @@
     </bean>
 
     <bean id="deliverOrderVatInvoiceMessageCustomer" class="com.lenovo.invoice.service.message.DeliverOrderVatInvoiceMessageCustomer">
-        <constructor-arg ref="kafkaConsumer_order"/>
+        <constructor-arg ref="kafkaConsumer_order_deliver"/>
         <constructor-arg ref="vatInvoiceService"/>
     </bean>
 
