@@ -1,10 +1,13 @@
 package com.lenovo.invoice.service.message;
 
+import com.lenovo.invoice.common.utils.JacksonUtil;
 import com.lenovo.invoice.service.VatInvoiceService;
 import com.lenovo.kafka.api.core.consumer.KafkaConsumer;
 import com.lenovo.kafka.api.core.handler.BaseConsumerHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.util.Map;
 
 /**
  * 发货后可抛单
@@ -25,15 +28,16 @@ public class DeliverOrderVatInvoiceMessageCustomer {
 
     private class ConsumerHandler implements BaseConsumerHandler {
         @Override
-        public void execute(String orderCode) {
-            LOGGER.info("DeliverOrderVatInvoiceMessageCustomer Start:" + orderCode);
+        public void execute(String msg) {
+            LOGGER.info("DeliverOrderVatInvoiceMessageCustomer Start:" + msg);
             int rows = 0;
             try {
-                rows = vatInvoiceService.updateOrderStatus(orderCode, 3);
+                Map map= JacksonUtil.fromJson(msg, Map.class);
+                rows = vatInvoiceService.updateOrderStatus((String)map.get("orderCode"), 3);
             } catch (Exception e) {
                 LOGGER.error(e.getMessage(), e);
             }
-            LOGGER.info("DeliverOrderVatInvoiceMessageCustomer End:{},{}", orderCode, rows);
+            LOGGER.info("DeliverOrderVatInvoiceMessageCustomer End:{},{}", msg, rows);
         }
     }
 }
