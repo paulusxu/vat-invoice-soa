@@ -40,7 +40,7 @@ public class VatInvoiceServiceImpl implements VatInvoiceService {
     private VatInvoiceMapper vatInvoiceMapper;
     @Autowired
     private PropertiesUtil propertiesUtil;
-//    @Autowired
+    @Autowired
     private VatApiOrderCenter vatApiOrderCenter;
 
     @Override

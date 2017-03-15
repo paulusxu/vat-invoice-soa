@@ -33,8 +33,8 @@ import java.util.Map;
 public class InvoiceServiceImpl implements InvoiceService {
     private static final Logger logger = LoggerFactory.getLogger(InvoiceServiceImpl.class);
 
-//    @Autowired
-//    @Qualifier("vatApiOrderCenter")
+    @Autowired
+    @Qualifier("vatApiOrderCenter")
     private VatApiOrderCenter vatApiOrderCenter;
 
 
