@@ -34,7 +34,7 @@
         <constructor-arg ref="contractService"/>
     </bean>
 
-    <!--消费-->
+    <!--支付消费-->
     <bean id="kafkaConsumerOptions_order" class="com.lenovo.kafka.api.core.factory.KafkaConsumerOptions">
         <property name="connectionZk" value="${connectionZk}" />
         <property name="groupName" value="${groupName}" />

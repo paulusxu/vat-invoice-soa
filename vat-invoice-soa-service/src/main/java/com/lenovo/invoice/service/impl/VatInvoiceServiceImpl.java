@@ -95,7 +95,7 @@ public class VatInvoiceServiceImpl implements VatInvoiceService {
                             vathrowBtcp.setRegisteraddress(vatInvoice.getAddress());//注册地址
                             vathrowBtcp.setRegisterphone(vatInvoice.getPhoneno());//电话
                         }
-                        int rows = vathrowBtcpMapper.insert(vathrowBtcp);
+                        int rows = vathrowBtcpMapper.updateVathrowbtcp(vathrowBtcp);
                         if (rows > 0) {
                             //更新增票状态
                             updateVatInvoiceIsvalid(zid, shopid + "");
@@ -107,6 +107,21 @@ public class VatInvoiceServiceImpl implements VatInvoiceService {
         } catch (Exception e) {
             LOGGER.error(e.getMessage(), e);
         }
+    }
+
+    @Override
+    public long initVathrowBtcp(String orderCode) {
+        long rows = 0;
+        try {
+            VathrowBtcp vathrowBtcp = new VathrowBtcp();
+            vathrowBtcp.setOrderStatus(1);
+            vathrowBtcp.setOrderCode(orderCode);
+            //初始化
+            rows = vathrowBtcpMapper.insertVathrowBtcpSelective(vathrowBtcp);
+        } catch (Exception e) {
+            LOGGER.error(e.getMessage());
+        }
+        return rows;
     }
 
     @Override
