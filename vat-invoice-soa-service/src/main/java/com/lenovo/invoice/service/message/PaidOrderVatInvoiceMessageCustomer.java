@@ -23,9 +23,10 @@ public class PaidOrderVatInvoiceMessageCustomer {
     private VatInvoiceService vatInvoiceService;
 
 
-    public PaidOrderVatInvoiceMessageCustomer(KafkaConsumer kafkaConsumer, InvoiceService invoiceService) {
+    public PaidOrderVatInvoiceMessageCustomer(KafkaConsumer kafkaConsumer, InvoiceService invoiceService,VatInvoiceService vatInvoiceService) {
         this.kafkaConsumer = kafkaConsumer;
         this.invoiceService = invoiceService;
+        this.vatInvoiceService=vatInvoiceService;
         this.kafkaConsumer.start(new ConsumerHandler());
     }
 
