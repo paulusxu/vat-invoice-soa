@@ -31,6 +31,12 @@
             <groupId>com.lenovo</groupId>
             <artifactId>order-center-api</artifactId>
             <version>3.0.0</version>
+            <exclusions>
+                <exclusion>
+                    <artifactId>vat-invoice-api</artifactId>
+                    <groupId>com.lenovo.dtc.buy.invoice</groupId>
+                </exclusion>
+            </exclusions>
         </dependency>
         <dependency>
             <groupId>com.lenovo</groupId>
