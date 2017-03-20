@@ -34,10 +34,10 @@ public class PaidOrderVatInvoiceMessageCustomer {
         public void execute(String msg) {
             LOGGER.info("PaidOrderVatInvoiceMessageCustomer Start:" + msg);
             try {
-                Map<String, String> map = JacksonUtil.fromJson(msg, Map.class);
-                String zid = map.get("invoiceId");
-                String orderCode = map.get("orderCode");
-                long rows = vatInvoiceService.initVathrowBtcp(orderCode);
+                Map map = JacksonUtil.fromJson(msg, Map.class);
+                String zid = (String) map.get("invoiceId");
+                Integer orderCode = (Integer) map.get("orderCode");
+                long rows = vatInvoiceService.initVathrowBtcp(orderCode+"");
                 LOGGER.info("PaidOrderVatInvoiceMessageCustomer End:{},{}", msg, rows);
                 invoiceService.updateIsvalid(zid);
             } catch (Exception e) {
