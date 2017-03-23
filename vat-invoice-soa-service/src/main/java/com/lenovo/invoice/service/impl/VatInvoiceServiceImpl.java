@@ -31,6 +31,8 @@ public class VatInvoiceServiceImpl implements VatInvoiceService {
 
     private static final Logger LOGGER = LoggerFactory.getLogger("com.lenovo.invoice.service.impl.vatinvoice");
     private static final Logger LOGGER_BTCP = LoggerFactory.getLogger("com.lenovo.invoice.service.impl.throwBtcp");
+    private static final Logger LOGGER_THROW = LoggerFactory.getLogger("com.lenovo.invoice.customer.order.throw");
+
 
     @Autowired
     private OrderDetailService orderDetailService;
@@ -100,12 +102,12 @@ public class VatInvoiceServiceImpl implements VatInvoiceService {
                             //更新增票状态
                             updateVatInvoiceIsvalid(zid, shopid + "");
                         }
-                        LOGGER.info("VathrowBtcp:{},{}", JacksonUtil.toJson(vathrowBtcp), rows);
+                        LOGGER_THROW.info("VathrowBtcp:{},{}", JacksonUtil.toJson(vathrowBtcp), rows);
                     }
                 }
             }
         } catch (Exception e) {
-            LOGGER.error(e.getMessage(), e);
+            LOGGER_THROW.error(e.getMessage(), e);
         }
     }
 
