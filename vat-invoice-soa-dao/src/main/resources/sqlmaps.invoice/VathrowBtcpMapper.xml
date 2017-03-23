@@ -206,20 +206,8 @@
 
 
   <insert id="insertVathrowBtcp" parameterType="com.lenovo.invoice.domain.VathrowBtcp" >
-    insert into vathrowbtcp (Title, TaxpayerIdentity,
-    DepositBank, BankNo, RegisterAddress,
-    RegisterPhone, OutId, MemberCode,
-    Name, ProvinceId, City,
-    County, Address, Phone,
-    Zip, IsNeedMerge, ThrowingStatus,CreateTime,Zid,OrderCode,OrderStatus,ThrowResult
-    )
-    values (#{title,jdbcType=VARCHAR}, #{taxpayeridentity,jdbcType=VARCHAR},
-    #{depositbank,jdbcType=VARCHAR}, #{bankno,jdbcType=VARCHAR}, #{registeraddress,jdbcType=VARCHAR},
-    #{registerphone,jdbcType=VARCHAR}, #{outid,jdbcType=VARCHAR}, #{membercode,jdbcType=VARCHAR},
-    #{name,jdbcType=VARCHAR}, #{provinceid,jdbcType=VARCHAR}, #{city,jdbcType=VARCHAR},
-    #{county,jdbcType=VARCHAR}, #{address,jdbcType=VARCHAR}, #{phone,jdbcType=VARCHAR},
-    #{zip,jdbcType=VARCHAR}, #{isneedmerge,jdbcType=BIT}, #{throwingStatus,jdbcType=BIT},now(),#{zid},#{orderCode},#{orderStatus},#{throwResult}
-    )
+    insert into vathrowbtcp (CreateTime,OrderCode,OrderStatus)
+    values (now(),#{orderCode},#{orderStatus})
   </insert>
 
   <update id="updateVathrowbtcp" parameterType="map" >

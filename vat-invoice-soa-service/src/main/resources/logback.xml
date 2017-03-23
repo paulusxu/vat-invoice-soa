@@ -131,6 +131,18 @@
         <appender-ref ref="throwBtcpAppender" />
     </logger>
 
+    <appender name="vatinvoiceAppender" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>${log.path}/invoice/vatInvoiceService.log.%d{yyyy-MM-dd}</fileNamePattern>
+        </rollingPolicy>
+        <encoder>
+            <pattern>[%d{yyyy-MM-dd HH:mm:ss} %-5p] projectName : vat-invoice-soa %X{elk_leId} %X{elk_lenovoId} %X{elk_requestId} %X{ip} [%thread] %-5level %logger{5} - %msg%n</pattern>
+        </encoder>
+    </appender>
+    <logger name="com.lenovo.invoice.service.impl.vatinvoice" level="info" additivity="false">
+        <appender-ref ref="vatinvoiceAppender" />
+    </logger>
+
 
     <appender name="throwStatusAppender" class="ch.qos.logback.core.rolling.RollingFileAppender">
         <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">

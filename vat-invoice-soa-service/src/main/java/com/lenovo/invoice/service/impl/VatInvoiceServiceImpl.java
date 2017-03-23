@@ -117,7 +117,7 @@ public class VatInvoiceServiceImpl implements VatInvoiceService {
             vathrowBtcp.setOrderStatus(1);
             vathrowBtcp.setOrderCode(orderCode);
             //初始化
-            rows = vathrowBtcpMapper.insertVathrowBtcpSelective(vathrowBtcp);
+            rows = vathrowBtcpMapper.insertVathrowBtcp(vathrowBtcp);
         } catch (Exception e) {
             LOGGER.error(e.getMessage());
         }
@@ -191,15 +191,16 @@ public class VatInvoiceServiceImpl implements VatInvoiceService {
                             invoice.setRegisterAddress(vathrowBtcp.getRegisteraddress());
                             invoice.setRegisterPhone(vathrowBtcp.getRegisterphone());
                             invoice.setOrderId(Long.parseLong(vathrowBtcp.getOrderCode()));
+                            invoice.setThrowStatus(2);
 
                             vatApiOrderCenter.updateInvoice(invoice);
                         }
                     } else {
                         int rows = vathrowBtcpMapper.updateByOrderCode(vathrowBtcp.getOrderCode(), 4, message);
-                        if (rows > 0) {
-                            //btcp抛送失败
-                            vatApiOrderCenter.updateFailureReasonByOrderId(message, Long.parseLong(vathrowBtcp.getOrderCode()));
-                        }
+//                        if (rows > 0) {
+//                            //btcp抛送失败
+//                            vatApiOrderCenter.updateFailureReasonByOrderId(message, Long.parseLong(vathrowBtcp.getOrderCode()));
+//                        }
 
                     }
 
