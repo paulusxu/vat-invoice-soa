@@ -262,16 +262,16 @@
         IsNeedMerge = #{record.isneedmerge,jdbcType=BIT},
       </if>
       <if test="record.throwingstatus != null" >
-        ThrowingStatus = #{record.throwingstatus,jdbcType=BIT},
+        ThrowingStatus = #{record.throwingStatus,jdbcType=BIT},
       </if>
       <if test="record.throwresult != null" >
-        ThrowResult = #{record.throwresult,jdbcType=VARCHAR},
+        ThrowResult = #{record.throwResult,jdbcType=VARCHAR},
       </if>
       <if test="record.zid != null" >
         Zid = #{record.zid,jdbcType=VARCHAR},
       </if>
       <if test="record.orderstatus != null" >
-        OrderStatus = #{record.orderstatus,jdbcType=BIT},
+        OrderStatus = #{record.orderStatus,jdbcType=BIT},
       </if>
     </set>
      WHERE OrderCode = #{record.orderCode}
