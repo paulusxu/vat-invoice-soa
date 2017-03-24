@@ -133,7 +133,7 @@
       <if test="record.zid != null" >
         Zid = #{record.zid,jdbcType=VARCHAR},
       </if>
-      <if test="record.orderstatus != null" >
+      <if test="record.orderStatus != null" >
         OrderStatus = #{record.orderStatus,jdbcType=BIT},
       </if>
     </set>
