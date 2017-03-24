@@ -565,6 +565,7 @@ public class InvoiceApiServiceImpl extends BaseService implements InvoiceApiServ
         } catch (Exception e) {
             LOGGER_BTCP.error(e.getMessage(), e);
         }
+        remoteResult.setSuccess(true);
         return remoteResult;
     }
 
