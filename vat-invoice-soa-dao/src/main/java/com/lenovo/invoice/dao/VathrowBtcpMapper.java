@@ -13,8 +13,6 @@ public interface VathrowBtcpMapper {
 
     int insertVathrowBtcp(VathrowBtcp record);
 
-    int insertVathrowBtcpSelective(VathrowBtcp record);
-
     VathrowBtcp selectByPrimaryKey(Integer id);
 
     List<VathrowBtcp> getVatInvoice2BtcpList(String zid);
