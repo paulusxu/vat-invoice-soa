@@ -47,6 +47,7 @@ import java.util.regex.Pattern;
 public class InvoiceApiServiceImpl extends BaseService implements InvoiceApiService {
 
     private static final Logger logger = LoggerFactory.getLogger(InvoiceApiServiceImpl.class);
+    private static final Logger LOGGER_BTCP = LoggerFactory.getLogger("com.lenovo.invoice.service.impl.throwBtcp");
 
     @Autowired
     private VatInvoiceMapper vatInvoiceMapper;
@@ -65,6 +66,7 @@ public class InvoiceApiServiceImpl extends BaseService implements InvoiceApiServ
     private VathrowBtcpMapper vathrowBtcpMapper;
     @Autowired
     private VatInvoiceService vatInvoiceService;
+
 
     @Override
     public String getType(String faid) {
@@ -549,6 +551,7 @@ public class InvoiceApiServiceImpl extends BaseService implements InvoiceApiServ
     @Override
     public RemoteResult<Boolean> throwVatInvoice2BTCP(String zids) {
         RemoteResult<Boolean> remoteResult = new RemoteResult<Boolean>(false);
+        LOGGER_BTCP.info("ThrowVatInvoice2BTCP zids:{}",zids);
         try {
             if (!Strings.isNullOrEmpty(zids)) {
                 String[] ids = zids.split(",");
@@ -560,7 +563,7 @@ public class InvoiceApiServiceImpl extends BaseService implements InvoiceApiServ
                 }
             }
         } catch (Exception e) {
-            logger.error(e.getMessage(), e);
+            LOGGER_BTCP.error(e.getMessage(), e);
         }
         return remoteResult;
     }
