@@ -127,7 +127,7 @@
       <if test="record.throwingStatus != null" >
         ThrowingStatus = #{record.throwingStatus,jdbcType=BIT},
       </if>
-      <if test="record.throwresult != null" >
+      <if test="record.throwResult != null" >
         ThrowResult = #{record.throwResult,jdbcType=VARCHAR},
       </if>
       <if test="record.zid != null" >
