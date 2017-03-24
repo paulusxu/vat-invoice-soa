@@ -33,7 +33,7 @@ public interface InvoiceApiService {
 
     RemoteResult<List<VatInvoice>> queryVatInvoiceInfo(List<String> listZid);
 
-//    String getFaType(String faid);
+    RemoteResult<Boolean> throwVatInvoice2BTCP(String zids);
 
-    RemoteResult throwVatInvoice2BTCP(String zids);
+    String getType(String faid);
 }

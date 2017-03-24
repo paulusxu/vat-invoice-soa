@@ -14,7 +14,7 @@ import java.util.Map;
  * Created by mayan3 on 2017/3/3.
  */
 public class DeliverOrderVatInvoiceMessageCustomer {
-    private static final Logger LOGGER = LoggerFactory.getLogger("com.lenovo.invoice.customer.order.throw.deliver");
+    private static final Logger LOGGER = LoggerFactory.getLogger("com.lenovo.invoice.customer.order.deliver");
 
 
     private KafkaConsumer kafkaConsumer;

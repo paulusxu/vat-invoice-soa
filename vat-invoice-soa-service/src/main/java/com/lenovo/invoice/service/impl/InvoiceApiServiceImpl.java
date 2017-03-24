@@ -66,7 +66,8 @@ public class InvoiceApiServiceImpl extends BaseService implements InvoiceApiServ
     @Autowired
     private VatInvoiceService vatInvoiceService;
 
-    private String getType(String faid) {
+    @Override
+    public String getType(String faid) {
         String type = null;
         String cacheKey = CacheConstant.CACHE_PREFIX_INIT_FAID + faid;
         if (redisObjectManager.existsKey(cacheKey)) {//获取fatype,没有增加缓存
@@ -546,8 +547,8 @@ public class InvoiceApiServiceImpl extends BaseService implements InvoiceApiServ
     }
 
     @Override
-    public RemoteResult throwVatInvoice2BTCP(String zids) {
-        RemoteResult remoteResult = new RemoteResult(false);
+    public RemoteResult<Boolean> throwVatInvoice2BTCP(String zids) {
+        RemoteResult<Boolean> remoteResult = new RemoteResult<Boolean>(false);
         try {
             if (!Strings.isNullOrEmpty(zids)) {
                 String[] ids = zids.split(",");
