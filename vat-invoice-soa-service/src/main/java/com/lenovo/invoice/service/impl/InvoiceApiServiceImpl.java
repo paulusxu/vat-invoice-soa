@@ -591,7 +591,7 @@ public class InvoiceApiServiceImpl extends BaseService implements InvoiceApiServ
 
     @Override
     public RemoteResult<Boolean> throwVatInvoice2BTCP(String zids) {
-        RemoteResult<Boolean> remoteResult = new RemoteResult<Boolean>(false);
+        RemoteResult<Boolean> remoteResult = new RemoteResult<Boolean>(true);
         LOGGER_BTCP.info("ThrowVatInvoice2BTCP zids:{}", zids);
         try {
             if (!Strings.isNullOrEmpty(zids)) {
@@ -600,13 +600,14 @@ public class InvoiceApiServiceImpl extends BaseService implements InvoiceApiServ
                     String zid = ids[i];
                     //获取可抛送订单列表
                     List<VathrowBtcp> btcpList = vathrowBtcpMapper.getVatInvoice2BtcpList(zid);
-                    vatInvoiceService.throwBTCP(btcpList);
+                    if(CollectionUtils.isNotEmpty(btcpList)){
+                        vatInvoiceService.throwBTCP(btcpList);
+                    }
                 }
             }
         } catch (Exception e) {
             LOGGER_BTCP.error(e.getMessage(), e);
         }
-        remoteResult.setSuccess(true);
         return remoteResult;
     }
 
