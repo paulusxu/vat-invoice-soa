@@ -237,4 +237,15 @@ public class VatInvoiceServiceImpl implements VatInvoiceService {
         return rows;
     }
 
+    @Override
+    public List<VathrowBtcp> getThrowBtcpList() {
+        List<VathrowBtcp> btcpList = null;
+        try {
+            btcpList = vathrowBtcpMapper.getThrowBtcpList();
+        } catch (Exception e) {
+            LOGGER_BTCP.error(e.getMessage(), e);
+        }
+        return btcpList;
+    }
+
 }

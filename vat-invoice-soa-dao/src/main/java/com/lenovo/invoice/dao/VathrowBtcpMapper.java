@@ -23,4 +23,6 @@ public interface VathrowBtcpMapper {
 
     int updateVathrowbtcp(@Param("record") VathrowBtcp record);
 
+    List<VathrowBtcp> getThrowBtcpList();
+
 }

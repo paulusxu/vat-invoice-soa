@@ -27,4 +27,6 @@ public interface VatInvoiceService {
 
     //是否可抛送增票 订单推送
     int updateThrowingStatus(String orderCode, int status);
+    //获取可抛送btcp的增票列表
+    List<VathrowBtcp> getThrowBtcpList();
 }

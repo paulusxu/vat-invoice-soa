@@ -2,6 +2,7 @@ package com.lenovo.invoice.api;
 
 import com.lenovo.invoice.domain.O2oVatInvoice;
 import com.lenovo.invoice.domain.VatInvoice;
+import com.lenovo.invoice.domain.VathrowBtcp;
 import com.lenovo.invoice.domain.param.AddVatInvoiceInfoParam;
 import com.lenovo.invoice.domain.param.GetVatInvoiceInfoListParam;
 import com.lenovo.invoice.domain.param.GetVatInvoiceInfoParam;
@@ -36,4 +37,7 @@ public interface InvoiceApiService {
     RemoteResult<Boolean> throwVatInvoice2BTCP(String zids);
 
     String getType(String faid);
+
+    List<VathrowBtcp> getThrowBtcpList();
+
 }

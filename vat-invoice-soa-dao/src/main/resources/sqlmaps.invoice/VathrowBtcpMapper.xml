@@ -45,12 +45,17 @@
     where zid=#{zid} and OrderStatus=3 and ThrowingStatus in(0,4)
   </select>
 
+
+  <select id="getThrowBtcpList" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List" />
+    FROM vathrowbtcp btcp, vatinvoice vat WHERE btcp.Zid=vat.Id AND btcp.OrderStatus=3 AND btcp.ThrowingStatus IN(0,4)
+  </select>
+
   <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
     delete from vathrowbtcp
     where ID = #{id,jdbcType=INTEGER}
   </delete>
-
-
 
 
   <update id="updateByOrderCode">
