@@ -47,6 +47,7 @@ public class InvoiceApiServiceImpl extends BaseService implements InvoiceApiServ
 
     private static final Logger LOGGER = LoggerFactory.getLogger(InvoiceApiServiceImpl.class);
     private static final Logger LOGGER_BTCP = LoggerFactory.getLogger("com.lenovo.invoice.service.impl.throwBtcp");
+    private static final Logger LOGGER_UPDATEZID = LoggerFactory.getLogger("com.lenovo.invoice.service.impl.updateZid");
 
     @Autowired
     private VatInvoiceMapper vatInvoiceMapper;
@@ -102,6 +103,7 @@ public class InvoiceApiServiceImpl extends BaseService implements InvoiceApiServ
 
     @Override
     public long updateZid(List<Long> listZids, String zid) {
+        LOGGER_UPDATEZID.info("updateZid Start:{},{}",JacksonUtil.toJson(listZids),zid);
         long rows = 0;
         try {
             StringBuilder sb = new StringBuilder();
@@ -111,9 +113,11 @@ public class InvoiceApiServiceImpl extends BaseService implements InvoiceApiServ
             sb.append(listZids.get(listZids.size() - 1));
 
             rows = vathrowBtcpMapper.updateZid(zid, sb.toString());
+            LOGGER_UPDATEZID.info("updateZid End:{}",rows);
         } catch (Exception e) {
-            LOGGER.error(e.getMessage(), e);
+            LOGGER_UPDATEZID.error(e.getMessage(), e);
         }
+
         return rows;
     }
 
