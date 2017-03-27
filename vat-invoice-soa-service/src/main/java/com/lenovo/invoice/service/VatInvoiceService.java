@@ -29,4 +29,6 @@ public interface VatInvoiceService {
     int updateThrowingStatus(String orderCode, int status);
     //获取可抛送btcp的增票列表
     List<VathrowBtcp> getThrowBtcpList();
+    //增票合并
+    long updateZid(String zid,String zids);
 }

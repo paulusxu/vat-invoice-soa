@@ -248,4 +248,15 @@ public class VatInvoiceServiceImpl implements VatInvoiceService {
         return btcpList;
     }
 
+    @Override
+    public long updateZid(String zid, String zids) {
+        long rows = 0;
+        try {
+            rows = vathrowBtcpMapper.updateZid(zid, zids);
+        } catch (Exception e) {
+            LOGGER.error(e.getMessage(), e);
+        }
+        return rows;
+    }
+
 }

@@ -25,4 +25,6 @@ public interface VathrowBtcpMapper {
 
     List<VathrowBtcp> getThrowBtcpList();
 
+    long updateZid(@Param("zid")String zid, @Param("zids") String zids);
+
 }

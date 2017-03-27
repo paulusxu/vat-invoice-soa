@@ -63,6 +63,10 @@
     set ThrowingStatus = #{status},ThrowResult=#{msg} WHERE OrderCode=#{orderCode}
   </update>
 
+  <update id="updateZid">
+    UPDATE vathrowbtcp SET zid=${zid},ThrowingStatus=0 WHERE zid IN (${zids})
+  </update>
+
   <update id="updateOrderStatus">
     update vathrowbtcp
     set OrderStatus = #{status} WHERE OrderCode=#{orderCode}

@@ -26,7 +26,6 @@ import com.lenovo.invoice.service.redisObject.RedisObjectManager;
 import com.lenovo.m2.arch.framework.domain.RemoteResult;
 import com.lenovo.m2.arch.framework.domain.Tenant;
 import com.lenovo.m2.arch.tool.util.StringUtils;
-import com.lenovo.m2.ordercenter.soa.domain.forward.Invoice;
 import com.lenovo.m2.stock.soa.api.service.StoreInfoApiService;
 import com.lenovo.m2.stock.soa.domain.param.GetStoreInfoIdParam;
 import org.slf4j.Logger;
@@ -46,7 +45,7 @@ import java.util.regex.Pattern;
 @Service("invoiceApiService")
 public class InvoiceApiServiceImpl extends BaseService implements InvoiceApiService {
 
-    private static final Logger logger = LoggerFactory.getLogger(InvoiceApiServiceImpl.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(InvoiceApiServiceImpl.class);
     private static final Logger LOGGER_BTCP = LoggerFactory.getLogger("com.lenovo.invoice.service.impl.throwBtcp");
 
     @Autowired
@@ -96,14 +95,32 @@ public class InvoiceApiServiceImpl extends BaseService implements InvoiceApiServ
     public void throwBTCP(List<VathrowBtcp> btcpList) {
         try {
             vatInvoiceService.throwBTCP(btcpList);
-        }catch (Exception e){
+        } catch (Exception e) {
             LOGGER_BTCP.error(e.getMessage(), e);
         }
     }
 
     @Override
+    public long updateZid(List<Long> listZids, String zid) {
+        long rows = 0;
+        try {
+            StringBuilder sb = new StringBuilder();
+            for (int i = 0; i < listZids.size() - 1; i++) {
+                sb.append(listZids.get(i)).append(",");
+            }
+            sb.append(listZids.get(listZids.size() - 1));
+
+            rows = vathrowBtcpMapper.updateZid(zid, sb.toString());
+        } catch (Exception e) {
+            LOGGER.error(e.getMessage(), e);
+        }
+        return rows;
+    }
+
+
+    @Override
     public RemoteResult<GetVatInvoiceInfoResult> getVatInvoiceInfo(GetVatInvoiceInfoParam param, Tenant tenant) {
-        logger.info("GetVatInvoiceInfo Start:" + JacksonUtil.toJson(param));
+        LOGGER.info("GetVatInvoiceInfo Start:" + JacksonUtil.toJson(param));
         RemoteResult<GetVatInvoiceInfoResult> remoteResult = new RemoteResult<GetVatInvoiceInfoResult>(false);
         try {
             String customername = !Strings.isNullOrEmpty(param.getCustomerName()) ? param.getCustomerName().trim() : param.getCustomerName();
@@ -169,7 +186,7 @@ public class InvoiceApiServiceImpl extends BaseService implements InvoiceApiServ
                         remoteResult.setResultMsg("未找到映射，用户:" + lenovoId + "未曾保存过" + customername + ":" + taxno + "增票");
                         return remoteResult;
                     }
-                    logger.error("####:" + JacksonUtil.toJson(memberVatInvoiceList));
+                    LOGGER.error("####:" + JacksonUtil.toJson(memberVatInvoiceList));
                     for (MemberVatInvoice memberVatInvoice1 : memberVatInvoiceList) {
                         long zid = memberVatInvoice1.getInvoiceinfoid();
                         VatInvoice tVatInvoice = vatInvoiceMapper.getVatInvoiceInfoById(zid);
@@ -203,9 +220,9 @@ public class InvoiceApiServiceImpl extends BaseService implements InvoiceApiServ
         } catch (Exception e) {
             remoteResult.setResultCode(ErrorUtils.SYSTEM_UNKNOWN_EXCEPTION);
             remoteResult.setResultMsg("系统异常错误");
-            logger.error(e.getMessage(), e);
+            LOGGER.error(e.getMessage(), e);
         }
-        logger.info("GetVatInvoiceInfo End:" + JacksonUtil.toJson(remoteResult));
+        LOGGER.info("GetVatInvoiceInfo End:" + JacksonUtil.toJson(remoteResult));
         return remoteResult;
     }
 
@@ -231,7 +248,7 @@ public class InvoiceApiServiceImpl extends BaseService implements InvoiceApiServ
                 remoteResult.setSuccess(true);
             }
         } catch (Exception e) {
-            logger.error(e.getMessage(), e);
+            LOGGER.error(e.getMessage(), e);
         }
         return remoteResult;
     }
@@ -296,7 +313,7 @@ public class InvoiceApiServiceImpl extends BaseService implements InvoiceApiServ
 
     @Override
     public RemoteResult addVatInvoiceInfo(AddVatInvoiceInfoParam param, Tenant tenant) {
-        logger.info("AddVatInvoiceInfo Start:" + JacksonUtil.toJson(param));
+        LOGGER.info("AddVatInvoiceInfo Start:" + JacksonUtil.toJson(param));
         RemoteResult remoteResult = new RemoteResult(false);
         try {
             String lenovoId = param.getLenovoId();
@@ -435,15 +452,15 @@ public class InvoiceApiServiceImpl extends BaseService implements InvoiceApiServ
         } catch (Exception e) {
             remoteResult.setResultCode(ErrorUtils.SYSTEM_UNKNOWN_EXCEPTION);
             remoteResult.setResultMsg("系统异常错误");
-            logger.error(e.getMessage(), e);
+            LOGGER.error(e.getMessage(), e);
         }
-        logger.info("AddVatInvoiceInfo End:{}", JacksonUtil.toJson(remoteResult));
+        LOGGER.info("AddVatInvoiceInfo End:{}", JacksonUtil.toJson(remoteResult));
         return remoteResult;
     }
 
     @Override
     public RemoteResult checkVatInvoiceInfo(String id, String lenovoId, String region, Tenant tenant) {
-        logger.info("CheckVatInvoiceInfo Start:{},{},{}" + id, lenovoId, region);
+        LOGGER.info("CheckVatInvoiceInfo Start:{},{},{}" + id, lenovoId, region);
         RemoteResult remoteResult = new RemoteResult(false);
         String storeId = null;
         try {
@@ -501,16 +518,16 @@ public class InvoiceApiServiceImpl extends BaseService implements InvoiceApiServ
         } catch (Exception e) {
             remoteResult.setResultCode(ErrorUtils.SYSTEM_UNKNOWN_EXCEPTION);
             remoteResult.setResultMsg("系统异常错误");
-            logger.error(e.getMessage(), e);
+            LOGGER.error(e.getMessage(), e);
         }
-        logger.info("CheckVatInvoiceInfo End:" + JacksonUtil.toJson(remoteResult));
+        LOGGER.info("CheckVatInvoiceInfo End:" + JacksonUtil.toJson(remoteResult));
 
         return remoteResult;
     }
 
     @Override
     public RemoteResult changeVatInvoiceState(String id, boolean isThrough, Tenant tenant) {
-        logger.info("ChangeVatInvoiceState Start:增值发票{}审核状态：{}", id, isThrough);
+        LOGGER.info("ChangeVatInvoiceState Start:增值发票{}审核状态：{}", id, isThrough);
         RemoteResult remoteResult = new RemoteResult(false);
         try {
             //判断入参是否为空
@@ -528,9 +545,9 @@ public class InvoiceApiServiceImpl extends BaseService implements InvoiceApiServ
         } catch (Exception e) {
             remoteResult.setResultCode(ErrorUtils.SYSTEM_UNKNOWN_EXCEPTION);
             remoteResult.setResultMsg("系统异常错误");
-            logger.error(e.getMessage(), e);
+            LOGGER.error(e.getMessage(), e);
         }
-        logger.info("ChangeVatInvoiceState End:" + JacksonUtil.toJson(remoteResult));
+        LOGGER.info("ChangeVatInvoiceState End:" + JacksonUtil.toJson(remoteResult));
         remoteResult.setResultMsg("update Failure!~");
         return remoteResult;
     }
@@ -538,7 +555,7 @@ public class InvoiceApiServiceImpl extends BaseService implements InvoiceApiServ
 
     @Override
     public RemoteResult queryVatInvoiceInfo(String id) {
-        logger.info("QueryVatInvoiceInfo Start:获取增值税发票", id);
+        LOGGER.info("QueryVatInvoiceInfo Start:获取增值税发票", id);
         RemoteResult remoteResult = new RemoteResult(false);
         try {
             //判断入参是否为空
@@ -553,9 +570,9 @@ public class InvoiceApiServiceImpl extends BaseService implements InvoiceApiServ
                 remoteResult.setT(vatInvoice);
             }
         } catch (Exception e) {
-            logger.error(e.getMessage(), e);
+            LOGGER.error(e.getMessage(), e);
         }
-        logger.info("QueryVatInvoiceInfo end:返回", JacksonUtil.toJson(remoteResult));
+        LOGGER.info("QueryVatInvoiceInfo end:返回", JacksonUtil.toJson(remoteResult));
         return remoteResult;
     }
 
@@ -571,7 +588,7 @@ public class InvoiceApiServiceImpl extends BaseService implements InvoiceApiServ
     @Override
     public RemoteResult<Boolean> throwVatInvoice2BTCP(String zids) {
         RemoteResult<Boolean> remoteResult = new RemoteResult<Boolean>(false);
-        LOGGER_BTCP.info("ThrowVatInvoice2BTCP zids:{}",zids);
+        LOGGER_BTCP.info("ThrowVatInvoice2BTCP zids:{}", zids);
         try {
             if (!Strings.isNullOrEmpty(zids)) {
                 String[] ids = zids.split(",");
@@ -610,7 +627,7 @@ public class InvoiceApiServiceImpl extends BaseService implements InvoiceApiServ
             remoteResult.setSuccess(true);
             remoteResult.setT(list);
         } catch (Exception e) {
-            logger.error(e.getMessage(), e);
+            LOGGER.error(e.getMessage(), e);
         }
 
         return remoteResult;

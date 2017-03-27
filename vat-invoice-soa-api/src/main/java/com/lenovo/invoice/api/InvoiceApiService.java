@@ -42,4 +42,5 @@ public interface InvoiceApiService {
 
     void throwBTCP(List<VathrowBtcp> btcpList);
 
+    long updateZid(List<Long> listZids, String zid);
 }
