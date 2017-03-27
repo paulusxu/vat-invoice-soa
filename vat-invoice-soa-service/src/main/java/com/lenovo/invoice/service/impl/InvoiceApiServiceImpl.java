@@ -591,7 +591,7 @@ public class InvoiceApiServiceImpl extends BaseService implements InvoiceApiServ
 
     @Override
     public RemoteResult<Boolean> throwVatInvoice2BTCP(String zids) {
-        RemoteResult<Boolean> remoteResult = new RemoteResult<Boolean>(true);
+        RemoteResult<Boolean> remoteResult = new RemoteResult<Boolean>(false);
         LOGGER_BTCP.info("ThrowVatInvoice2BTCP zids:{}", zids);
         try {
             if (!Strings.isNullOrEmpty(zids)) {
@@ -605,6 +605,7 @@ public class InvoiceApiServiceImpl extends BaseService implements InvoiceApiServ
                     }
                 }
             }
+            remoteResult.setT(true);
         } catch (Exception e) {
             LOGGER_BTCP.error(e.getMessage(), e);
         }
