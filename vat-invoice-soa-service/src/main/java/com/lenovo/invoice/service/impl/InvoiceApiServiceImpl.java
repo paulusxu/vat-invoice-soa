@@ -93,6 +93,15 @@ public class InvoiceApiServiceImpl extends BaseService implements InvoiceApiServ
     }
 
     @Override
+    public void throwBTCP(List<VathrowBtcp> btcpList) {
+        try {
+            vatInvoiceService.throwBTCP(btcpList);
+        }catch (Exception e){
+            LOGGER_BTCP.error(e.getMessage(), e);
+        }
+    }
+
+    @Override
     public RemoteResult<GetVatInvoiceInfoResult> getVatInvoiceInfo(GetVatInvoiceInfoParam param, Tenant tenant) {
         logger.info("GetVatInvoiceInfo Start:" + JacksonUtil.toJson(param));
         RemoteResult<GetVatInvoiceInfoResult> remoteResult = new RemoteResult<GetVatInvoiceInfoResult>(false);

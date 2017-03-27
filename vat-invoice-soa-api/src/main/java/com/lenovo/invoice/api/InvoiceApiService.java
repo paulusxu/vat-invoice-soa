@@ -40,4 +40,6 @@ public interface InvoiceApiService {
 
     List<VathrowBtcp> getThrowBtcpList();
 
+    void throwBTCP(List<VathrowBtcp> btcpList);
+
 }
