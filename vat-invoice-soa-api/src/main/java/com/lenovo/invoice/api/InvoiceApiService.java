@@ -7,12 +7,15 @@ import com.lenovo.invoice.domain.param.AddVatInvoiceInfoParam;
 import com.lenovo.invoice.domain.param.GetVatInvoiceInfoListParam;
 import com.lenovo.invoice.domain.param.GetVatInvoiceInfoParam;
 import com.lenovo.invoice.domain.result.GetVatInvoiceInfoResult;
+import com.lenovo.m2.arch.framework.domain.PageModel2;
+import com.lenovo.m2.arch.framework.domain.PageQuery;
 import com.lenovo.m2.arch.framework.domain.RemoteResult;
 import com.lenovo.m2.arch.framework.domain.Tenant;
 import com.lenovo.m2.ordercenter.soa.domain.forward.Invoice;
 
 import java.io.InputStream;
 import java.util.List;
+import java.util.Map;
 
 /**
  * 官网增票管理
@@ -20,15 +23,19 @@ import java.util.List;
  */
 public interface InvoiceApiService {
     //获取增票信息
-    RemoteResult<GetVatInvoiceInfoResult> getVatInvoiceInfo(GetVatInvoiceInfoParam param,Tenant tenant);
+    RemoteResult<GetVatInvoiceInfoResult> getVatInvoiceInfo(GetVatInvoiceInfoParam param, Tenant tenant);
+
     //获取增票信息
     RemoteResult<List<GetVatInvoiceInfoResult>> getVatInvoiceInfo(GetVatInvoiceInfoListParam param, Tenant tenant);
+
     //添加或修改增票信息
-    RemoteResult addVatInvoiceInfo(AddVatInvoiceInfoParam param,Tenant tenant);
+    RemoteResult addVatInvoiceInfo(AddVatInvoiceInfoParam param, Tenant tenant);
+
     //订单提交校验接口
-    RemoteResult checkVatInvoiceInfo(String id, String lenovoId,String region,Tenant tenant);
+    RemoteResult checkVatInvoiceInfo(String id, String lenovoId, String region, Tenant tenant);
+
     //btcp审核是否通过-
-    RemoteResult changeVatInvoiceState(String id, boolean isThrough,Tenant tenant);
+    RemoteResult changeVatInvoiceState(String id, boolean isThrough, Tenant tenant);
 
     RemoteResult queryVatInvoiceInfo(String id);
 
@@ -39,6 +46,8 @@ public interface InvoiceApiService {
     String getType(String faid);
 
     List<VathrowBtcp> getThrowBtcpList();
+
+    PageModel2<VatInvoice> getNotThrowBtcpVatInvoicePage(PageQuery pageQuery, Map map);
 
     void throwBTCP(List<VathrowBtcp> btcpList);
 

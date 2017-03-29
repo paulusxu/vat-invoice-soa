@@ -1,9 +1,11 @@
 package com.lenovo.invoice.dao;
 
+import com.lenovo.invoice.domain.VatInvoice;
 import com.lenovo.invoice.domain.VathrowBtcp;
 import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
+import java.util.Map;
 
 public interface VathrowBtcpMapper {
 
@@ -25,6 +27,10 @@ public interface VathrowBtcpMapper {
 
     List<VathrowBtcp> getThrowBtcpList();
 
-    long updateZid(@Param("zid")String zid, @Param("zids") String zids);
+    List<VatInvoice> getNotThrowBtcpVatInvoicePage(Map map);
+
+    int getNotThrowBtcpVatInvoiceCount(Map map);
+
+    long updateZid(@Param("zid") String zid, @Param("zids") String zids);
 
 }

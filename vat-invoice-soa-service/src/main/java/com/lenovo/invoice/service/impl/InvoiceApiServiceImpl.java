@@ -23,6 +23,8 @@ import com.lenovo.invoice.service.BaseService;
 import com.lenovo.invoice.service.MemberVatInvoiceService;
 import com.lenovo.invoice.service.VatInvoiceService;
 import com.lenovo.invoice.service.redisObject.RedisObjectManager;
+import com.lenovo.m2.arch.framework.domain.PageModel2;
+import com.lenovo.m2.arch.framework.domain.PageQuery;
 import com.lenovo.m2.arch.framework.domain.RemoteResult;
 import com.lenovo.m2.arch.framework.domain.Tenant;
 import com.lenovo.m2.arch.tool.util.StringUtils;
@@ -36,6 +38,7 @@ import org.springframework.stereotype.Service;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -93,6 +96,28 @@ public class InvoiceApiServiceImpl extends BaseService implements InvoiceApiServ
     }
 
     @Override
+    public PageModel2<VatInvoice> getNotThrowBtcpVatInvoicePage(PageQuery pageQuery, Map map) {
+        List<VatInvoice> invoiceList = null;
+        try {
+            int count = vathrowBtcpMapper.getNotThrowBtcpVatInvoiceCount(map);
+            pageQuery.setTotalCount(count);
+            if (pageQuery.getTotalCount() == 0) {
+                PageModel2<VatInvoice> pageModel2 = new PageModel2<VatInvoice>(pageQuery, new ArrayList<VatInvoice>());
+                return pageModel2;
+            }
+
+            int pageIndex = (pageQuery.getPageNum() - 1) * pageQuery.getPageSize();
+            int pageSize = pageQuery.getPageSize();
+            map.put("pageIndex", pageIndex);//0
+            map.put("pageSize", pageSize);//10
+            invoiceList = vathrowBtcpMapper.getNotThrowBtcpVatInvoicePage(map);
+        } catch (Exception e) {
+            LOGGER_BTCP.error(e.getMessage(), e);
+        }
+        return new PageModel2<VatInvoice>(pageQuery, invoiceList);
+    }
+
+    @Override
     public void throwBTCP(List<VathrowBtcp> btcpList) {
         try {
             vatInvoiceService.throwBTCP(btcpList);
@@ -103,7 +128,7 @@ public class InvoiceApiServiceImpl extends BaseService implements InvoiceApiServ
 
     @Override
     public long updateZid(List<Long> listZids, String zid) {
-        LOGGER_UPDATEZID.info("updateZid Start:{},{}",JacksonUtil.toJson(listZids),zid);
+        LOGGER_UPDATEZID.info("updateZid Start:{},{}", JacksonUtil.toJson(listZids), zid);
         long rows = 0;
         try {
             StringBuilder sb = new StringBuilder();
@@ -113,7 +138,7 @@ public class InvoiceApiServiceImpl extends BaseService implements InvoiceApiServ
             sb.append(listZids.get(listZids.size() - 1));
 
             rows = vathrowBtcpMapper.updateZid(zid, sb.toString());
-            LOGGER_UPDATEZID.info("updateZid End:{}",rows);
+            LOGGER_UPDATEZID.info("updateZid End:{}", rows);
         } catch (Exception e) {
             LOGGER_UPDATEZID.error(e.getMessage(), e);
         }
@@ -600,7 +625,7 @@ public class InvoiceApiServiceImpl extends BaseService implements InvoiceApiServ
                     String zid = ids[i];
                     //获取可抛送订单列表
                     List<VathrowBtcp> btcpList = vathrowBtcpMapper.getVatInvoice2BtcpList(zid);
-                    if(CollectionUtils.isNotEmpty(btcpList)){
+                    if (CollectionUtils.isNotEmpty(btcpList)) {
                         vatInvoiceService.throwBTCP(btcpList);
                     }
                 }
