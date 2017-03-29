@@ -73,7 +73,7 @@
     where zid=#{zid} and OrderStatus=3 and ThrowingStatus in(0,4)
   </select>
 
-  <select id="getNotThrowBtcpVatInvoicePage" resultMap="BaseResultMap" parameterType="java.util.Map">
+  <select id="getNotThrowBtcpVatInvoicePage" resultMap="BaseVatInvoiceResultMap" parameterType="java.util.Map">
     select
     vat.*
     FROM vathrowbtcp btcp, vatinvoice vat WHERE btcp.Zid=vat.Id AND btcp.OrderStatus=3 AND btcp.ThrowingStatus IN(0,4) ORDER BY vat.CreateTime DESC limit ${pageIndex},${pageSize}
