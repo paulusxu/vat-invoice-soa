@@ -45,7 +45,7 @@ public interface InvoiceApiService {
 
     RemoteResult<Boolean> throwVatInvoice2BTCP(String zids);
 
-    String getType(String faid);
+    String getType(String faid,String faType);
 
     List<VathrowBtcp> getThrowBtcpList();
 

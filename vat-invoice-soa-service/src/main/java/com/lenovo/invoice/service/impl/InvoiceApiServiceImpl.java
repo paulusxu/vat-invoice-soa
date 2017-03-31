@@ -78,13 +78,13 @@ public class InvoiceApiServiceImpl extends BaseService implements InvoiceApiServ
 
 
     @Override
-    public String getType(String faid) {
+    public String getType(String faid,String faType) {
         String type = null;
         String cacheKey = CacheConstant.CACHE_PREFIX_INIT_FAID + faid;
         if (redisObjectManager.existsKey(cacheKey)) {//获取fatype,没有增加缓存
             type = redisObjectManager.getString(cacheKey);
         } else {
-            type = getFaType(faid);
+            type = getFaType(faType);
             redisObjectManager.setString(cacheKey, type);
         }
         return type;
@@ -233,7 +233,7 @@ public class InvoiceApiServiceImpl extends BaseService implements InvoiceApiServ
 
             String storeId = null;
             String faid = param.getFaid();
-            String type = getType(faid);
+            String type = getType(faid,param.getFaType());
 //            if(param.getFaid().equals(O2oFaIdUtil.getProperty("o2ofaid"))){
 //                GetStoreInfoIdParam storeInfoIdParam = new GetStoreInfoIdParam();
 //                storeInfoIdParam.setFaid(param.getFaid());
@@ -324,7 +324,7 @@ public class InvoiceApiServiceImpl extends BaseService implements InvoiceApiServ
         RemoteResult<List<GetVatInvoiceInfoResult>> remoteResult = new RemoteResult<List<GetVatInvoiceInfoResult>>(false);
         String lenovoId = param.getLenovoId();
         String faid = param.getFaid();
-        String type = getType(faid);
+        String type = getType(faid,param.getFaType());
 
         if (type.equals("0")) {
             faid = param.getFaid();
