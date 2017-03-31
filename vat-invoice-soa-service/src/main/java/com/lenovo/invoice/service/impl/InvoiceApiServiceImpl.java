@@ -28,6 +28,8 @@ import com.lenovo.m2.arch.framework.domain.PageQuery;
 import com.lenovo.m2.arch.framework.domain.RemoteResult;
 import com.lenovo.m2.arch.framework.domain.Tenant;
 import com.lenovo.m2.arch.tool.util.StringUtils;
+import com.lenovo.m2.ordercenter.soa.api.vat.VatApiOrderCenter;
+import com.lenovo.m2.ordercenter.soa.domain.forward.Invoice;
 import com.lenovo.m2.stock.soa.api.service.StoreInfoApiService;
 import com.lenovo.m2.stock.soa.domain.param.GetStoreInfoIdParam;
 import org.slf4j.Logger;
@@ -69,6 +71,8 @@ public class InvoiceApiServiceImpl extends BaseService implements InvoiceApiServ
     private VathrowBtcpMapper vathrowBtcpMapper;
     @Autowired
     private VatInvoiceService vatInvoiceService;
+    @Autowired
+    private VatApiOrderCenter vatApiOrderCenter;
 
 
     @Override
@@ -137,13 +141,48 @@ public class InvoiceApiServiceImpl extends BaseService implements InvoiceApiServ
             }
             sb.append(listZids.get(listZids.size() - 1));
 
-            rows = vatInvoiceService.updateZid(zid,sb.toString());
+            rows = vatInvoiceService.updateZid(zid, sb.toString());
             LOGGER_UPDATEZID.info("updateZid End:{}", rows);
         } catch (Exception e) {
             LOGGER_UPDATEZID.error(e.getMessage(), e);
         }
 
         return rows;
+    }
+
+    @Override
+    public long makeUpVatInvocie(String zids) {
+        try {
+            LOGGER.info("MakeUpVatInvocie Start:{}", zids);
+
+            List<VatInvoice> vatInvoiceList = new ArrayList<VatInvoice>();
+            String[] zidArr = zids.split(",");
+            for (String zid : zidArr) {
+                VatInvoice vatInvoice = vatInvoiceMapper.getVatInvoiceInfoById(Long.parseLong(zid));
+                vatInvoiceList.add(vatInvoice);
+            }
+
+            List<Invoice> orderList = new ArrayList<Invoice>();
+            if (CollectionUtils.isNotEmpty(vatInvoiceList)) {
+                for (VatInvoice vatInvoice : vatInvoiceList) {
+                    Invoice order = new Invoice();
+                    order.setBankNo(vatInvoice.getAccountno());//账号
+                    order.setRegisterAddress(vatInvoice.getAddress());//地址
+                    order.setDepositBank(vatInvoice.getBankname());//开户行
+                    order.setTitle(vatInvoice.getCustomername());//客户名称
+                    order.setTaxpayerIdentity(vatInvoice.getTaxno());//税号
+                    order.setRegisterPhone(vatInvoice.getPhoneno());
+                    order.setZid(String.valueOf(vatInvoice.getId()));
+                    orderList.add(order);
+                }
+            }
+            RemoteResult remoteResult = vatApiOrderCenter.invoiceCallBackService(orderList, 0);
+            LOGGER.info("MakeUpVatInvocie End:" + JacksonUtil.toJson(remoteResult));
+
+        } catch (Exception e) {
+            LOGGER.error(e.getMessage(), e);
+        }
+        return 0;
     }
 
 
