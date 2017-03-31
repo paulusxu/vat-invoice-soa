@@ -252,7 +252,9 @@ public class VatInvoiceServiceImpl implements VatInvoiceService {
     public long updateZid(String zid, String zids) {
         long rows = 0;
         try {
-            rows = vathrowBtcpMapper.updateZid(zid, zids);
+            VatInvoice vatInvoice = vatInvoiceMapper.getVatInvoiceInfoById(Long.parseLong(zid));
+            vatInvoice.setFaid(zids);
+            rows = vathrowBtcpMapper.updateZid(vatInvoice);
         } catch (Exception e) {
             LOGGER.error(e.getMessage(), e);
         }

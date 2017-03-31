@@ -31,6 +31,6 @@ public interface VathrowBtcpMapper {
 
     int getNotThrowBtcpVatInvoiceCount(Map map);
 
-    long updateZid(@Param("zid") String zid, @Param("zids") String zids);
+    long updateZid(@Param("record") VatInvoice record);
 
 }

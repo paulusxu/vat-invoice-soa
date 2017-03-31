@@ -103,8 +103,30 @@
     set ThrowingStatus = #{status},ThrowResult=#{msg} WHERE OrderCode=#{orderCode}
   </update>
 
-  <update id="updateZid">
-    UPDATE vathrowbtcp SET zid=${zid},ThrowingStatus=0 WHERE zid IN (${zids})
+  <update id="updateZid" parameterType="map">
+    UPDATE vathrowbtcp
+    <set >
+    <if test="record.customername != null" >
+      Title = #{record.customername,jdbcType=VARCHAR},
+    </if>
+    <if test="record.taxno != null" >
+      TaxpayerIdentity = #{record.taxno,jdbcType=VARCHAR},
+    </if>
+    <if test="record.bankname != null" >
+      DepositBank = #{record.bankname,jdbcType=VARCHAR},
+    </if>
+    <if test="record.accountno != null" >
+      BankNo = #{record.accountno,jdbcType=VARCHAR},
+    </if>
+    <if test="record.address != null" >
+      RegisterAddress = #{record.address,jdbcType=VARCHAR},
+    </if>
+    <if test="record.phoneno != null" >
+      RegisterPhone = #{record.phoneno,jdbcType=VARCHAR},
+    </if>
+      zid= #{record.id}
+    </set>
+    WHERE zid IN (${record.faid}) where ThrowingStatus=0
   </update>
 
   <update id="updateOrderStatus">
