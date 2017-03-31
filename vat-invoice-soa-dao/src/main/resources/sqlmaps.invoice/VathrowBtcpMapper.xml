@@ -76,14 +76,41 @@
     <select id="getNotThrowBtcpVatInvoicePage" resultMap="BaseVatInvoiceResultMap" parameterType="java.util.Map">
     select
     vat.*
-    FROM vathrowbtcp btcp, vatinvoice vat WHERE btcp.Zid=vat.Id AND btcp.OrderStatus=3 AND btcp.ThrowingStatus IN(0,4) GROUP BY vat.id ORDER BY vat.CreateTime DESC limit ${pageIndex},${pageSize}
+    FROM vathrowbtcp btcp, vatinvoice vat WHERE btcp.Zid=vat.Id AND btcp.OrderStatus=3 AND btcp.ThrowingStatus IN(0,4)
+         <include refid="queryVatInvoice" />
+    GROUP BY vat.id ORDER BY vat.CreateTime DESC limit ${pageIndex},${pageSize}
   </select>
 
     <select id="getNotThrowBtcpVatInvoiceCount" resultType="java.lang.Integer" parameterType="java.util.Map">
     select
     count(1)
     FROM vathrowbtcp btcp, vatinvoice vat WHERE btcp.Zid=vat.Id AND btcp.OrderStatus=3 AND btcp.ThrowingStatus IN(0,4)
+      <include refid="queryVatInvoice" />
   </select>
+
+    <sql id="queryVatInvoice" >
+        <if test="ischeck != null and ischeck!=''" >
+            AND  isCheck=${ischeck}
+        </if>
+        <if test="taxno != null and taxno!=''" >
+            AND  TaxNo=#{taxno}
+        </if>
+        <if test="accountno != null and accountno!=''" >
+            AND  AccountNo=#{accountno}
+        </if>
+        <if test="customername != null and customername!=''" >
+            AND  CustomerName LIKE '%${customername}%'
+        </if>
+
+        <if test="isshared != null and isshared!=''" >
+            AND  IsShared = ${isshared}
+        </if>
+
+        <if test="shopid != null and shopid!=''" >
+            AND  ShopId = ${shopid}
+        </if>
+
+    </sql>
 
 
     <select id="getThrowBtcpList" resultMap="BaseResultMap">
