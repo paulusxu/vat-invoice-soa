@@ -128,7 +128,7 @@
                 zid= #{record.id},
             </if>
         </set>
-        WHERE zid IN (${record.faid}) where ThrowingStatus=0
+        WHERE zid IN (${record.faid}) AND ThrowingStatus=0
     </update>
 
     <update id="updateOrderStatus">
