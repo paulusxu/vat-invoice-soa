@@ -194,6 +194,7 @@ public class VatInvoiceServiceImpl implements VatInvoiceService {
                             invoice.setRegisterPhone(vathrowBtcp.getRegisterphone());
                             invoice.setOrderId(Long.parseLong(vathrowBtcp.getOrderCode()));
                             invoice.setThrowStatus(2);
+                            invoice.setType(2);
 
                             vatApiOrderCenter.updateInvoice(invoice);
                         }
