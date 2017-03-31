@@ -428,7 +428,7 @@ public class InvoiceApiServiceImpl extends BaseService implements InvoiceApiServ
             }
             String faid;
             String storeId = null;
-            String type = getFaType(param.getFaid());
+            String type = getFaType(param.getFaType());
 
             if ("1".equals(type)) {
                 faid = null;
