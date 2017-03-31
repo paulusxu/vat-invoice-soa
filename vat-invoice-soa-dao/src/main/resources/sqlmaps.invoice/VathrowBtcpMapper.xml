@@ -167,12 +167,12 @@
 
     <update id="updateVatInvoice" parameterType="com.lenovo.invoice.domain.param.UpdateVatInvoiceBatchParam">
     UPDATE vathrowbtcp
-    set CustomerName=#{customerName},
-    TaxNo=#{taxNo},
-    BankName=#{bankName},
-    AccountNo=#{accountNo},
-    Address=#{address},
-    PhoneNo=#{phoneNo},
+    set Title=#{customerName},
+    TaxpayerIdentity=#{taxNo},
+    DepositBank=#{bankName},
+    BankNo=#{accountNo},
+    RegisterAddress=#{address},
+    RegisterPhone=#{phoneNo},
     ThrowingStatus =0
     WHERE zid = ${ids}
   </update>
