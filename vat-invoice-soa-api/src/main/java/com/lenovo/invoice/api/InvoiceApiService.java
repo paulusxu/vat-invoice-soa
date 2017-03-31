@@ -6,6 +6,7 @@ import com.lenovo.invoice.domain.VathrowBtcp;
 import com.lenovo.invoice.domain.param.AddVatInvoiceInfoParam;
 import com.lenovo.invoice.domain.param.GetVatInvoiceInfoListParam;
 import com.lenovo.invoice.domain.param.GetVatInvoiceInfoParam;
+import com.lenovo.invoice.domain.param.UpdateVatInvoiceBatchParam;
 import com.lenovo.invoice.domain.result.GetVatInvoiceInfoResult;
 import com.lenovo.m2.arch.framework.domain.PageModel2;
 import com.lenovo.m2.arch.framework.domain.PageQuery;
@@ -59,6 +60,6 @@ public interface InvoiceApiService {
 
     int updateThrowingStatus(String orderCode,  int status);
     //修改单条增票
-    long updateVatInvoice(String zid);
+    long updateVatInvoice(UpdateVatInvoiceBatchParam param);
 
 }

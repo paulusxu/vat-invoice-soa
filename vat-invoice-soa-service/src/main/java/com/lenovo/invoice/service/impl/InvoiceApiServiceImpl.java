@@ -17,6 +17,7 @@ import com.lenovo.invoice.domain.VathrowBtcp;
 import com.lenovo.invoice.domain.param.AddVatInvoiceInfoParam;
 import com.lenovo.invoice.domain.param.GetVatInvoiceInfoListParam;
 import com.lenovo.invoice.domain.param.GetVatInvoiceInfoParam;
+import com.lenovo.invoice.domain.param.UpdateVatInvoiceBatchParam;
 import com.lenovo.invoice.domain.result.AddVatInvoiceInfoResult;
 import com.lenovo.invoice.domain.result.GetVatInvoiceInfoResult;
 import com.lenovo.invoice.service.BaseService;
@@ -198,11 +199,11 @@ public class InvoiceApiServiceImpl extends BaseService implements InvoiceApiServ
     }
 
     @Override
-    public long updateVatInvoice(String zid) {
+    public long updateVatInvoice(UpdateVatInvoiceBatchParam param) {
         long rows=0;
         try {
-            rows=vathrowBtcpMapper.updateVatInvoice(zid);
-            vatInvoiceService.updateZid(zid, zid);
+            rows=vathrowBtcpMapper.updateVatInvoice(param);
+
         } catch (Exception e){
             LOGGER.error(e.getMessage());
         }

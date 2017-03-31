@@ -165,8 +165,16 @@
     set ThrowingStatus = #{status} WHERE OrderCode=#{orderCode}
   </update>
 
-    <update id="updateVatInvoice" parameterType="java.lang.String">
-    UPDATE vathrowbtcp SET ThrowingStatus=0 WHERE zid=#{zid}
+    <update id="updateVatInvoice" parameterType="com.lenovo.invoice.domain.param.UpdateVatInvoiceBatchParam">
+    UPDATE vathrowbtcp
+    set CustomerName=#{customerName},
+    TaxNo=#{taxNo},
+    BankName=#{bankName},
+    AccountNo=#{accountNo},
+    Address=#{address},
+    PhoneNo=#{phoneNo},
+    ThrowingStatus =0
+    WHERE zid = ${ids}
   </update>
 
     <insert id="insertVathrowBtcp" parameterType="com.lenovo.invoice.domain.VathrowBtcp">

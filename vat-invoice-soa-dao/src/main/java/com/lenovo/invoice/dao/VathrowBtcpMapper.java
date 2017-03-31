@@ -2,6 +2,7 @@ package com.lenovo.invoice.dao;
 
 import com.lenovo.invoice.domain.VatInvoice;
 import com.lenovo.invoice.domain.VathrowBtcp;
+import com.lenovo.invoice.domain.param.UpdateVatInvoiceBatchParam;
 import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
@@ -33,6 +34,6 @@ public interface VathrowBtcpMapper {
 
     long updateZid(@Param("record") VatInvoice record);
 
-    long updateVatInvoice(@Param("zid") String zid);
+    long updateVatInvoice(UpdateVatInvoiceBatchParam param);
 
 }
