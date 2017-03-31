@@ -137,7 +137,7 @@ public class InvoiceApiServiceImpl extends BaseService implements InvoiceApiServ
             }
             sb.append(listZids.get(listZids.size() - 1));
 
-            rows = vathrowBtcpMapper.updateZid(zid, sb.toString());
+            rows = vatInvoiceService.updateZid(zid,sb.toString());
             LOGGER_UPDATEZID.info("updateZid End:{}", rows);
         } catch (Exception e) {
             LOGGER_UPDATEZID.error(e.getMessage(), e);
