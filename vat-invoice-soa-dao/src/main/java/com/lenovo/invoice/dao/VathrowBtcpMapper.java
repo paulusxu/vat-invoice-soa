@@ -33,4 +33,6 @@ public interface VathrowBtcpMapper {
 
     long updateZid(@Param("record") VatInvoice record);
 
+    long updateVatInvoice(@Param("zid") String zid);
+
 }

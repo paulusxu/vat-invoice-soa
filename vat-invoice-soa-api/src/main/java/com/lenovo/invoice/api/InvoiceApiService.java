@@ -58,5 +58,7 @@ public interface InvoiceApiService {
     long makeUpVatInvocie(String zids);
 
     int updateThrowingStatus(String orderCode,  int status);
+    //修改单条增票
+    long updateVatInvoice(String zid);
 
 }

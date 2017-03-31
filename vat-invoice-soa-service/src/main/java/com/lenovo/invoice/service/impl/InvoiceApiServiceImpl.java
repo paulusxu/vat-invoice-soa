@@ -32,6 +32,7 @@ import com.lenovo.m2.ordercenter.soa.api.vat.VatApiOrderCenter;
 import com.lenovo.m2.ordercenter.soa.domain.forward.Invoice;
 import com.lenovo.m2.stock.soa.api.service.StoreInfoApiService;
 import com.lenovo.m2.stock.soa.domain.param.GetStoreInfoIdParam;
+import org.apache.ibatis.annotations.Param;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -191,6 +192,17 @@ public class InvoiceApiServiceImpl extends BaseService implements InvoiceApiServ
         try {
             rows=vathrowBtcpMapper.updateThrowingStatus(orderCode,status);
         }catch (Exception e){
+            LOGGER.error(e.getMessage());
+        }
+        return rows;
+    }
+
+    @Override
+    public long updateVatInvoice(String zid) {
+        long rows=0;
+        try {
+            rows=vathrowBtcpMapper.updateVatInvoice(zid);
+        } catch (Exception e){
             LOGGER.error(e.getMessage());
         }
         return rows;

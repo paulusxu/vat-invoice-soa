@@ -74,37 +74,37 @@
     </select>
 
     <select id="getNotThrowBtcpVatInvoicePage" resultMap="BaseVatInvoiceResultMap" parameterType="java.util.Map">
-    select
-    vat.*
-    FROM vathrowbtcp btcp, vatinvoice vat WHERE btcp.Zid=vat.Id AND btcp.OrderStatus=3 AND btcp.ThrowingStatus IN(0,4)
-         <include refid="queryVatInvoice" />
-    GROUP BY vat.id ORDER BY vat.CreateTime DESC limit ${pageIndex},${pageSize}
-  </select>
+        select
+        vat.*
+        FROM vathrowbtcp btcp, vatinvoice vat WHERE btcp.Zid=vat.Id AND btcp.OrderStatus=3 AND btcp.ThrowingStatus
+        IN(0,4)
+        GROUP BY vat.id ORDER BY vat.CreateTime DESC limit ${pageIndex},${pageSize}
+    </select>
 
     <select id="getNotThrowBtcpVatInvoiceCount" resultType="java.lang.Integer" parameterType="java.util.Map">
-    select
-    count(1)
-    FROM vathrowbtcp btcp, vatinvoice vat WHERE btcp.Zid=vat.Id AND btcp.OrderStatus=3 AND btcp.ThrowingStatus IN(0,4)
-      <include refid="queryVatInvoice" />
-  </select>
+        select
+        count(1)
+        FROM vathrowbtcp btcp, vatinvoice vat WHERE btcp.Zid=vat.Id AND btcp.OrderStatus=3 AND btcp.ThrowingStatus
+        IN(0,4)
+    </select>
 
-    <sql id="queryVatInvoice" >
-        <if test="vat.taxno != null and vat.taxno!=''" >
-            AND  vat.TaxNo=#{taxno}
+    <sql id="queryVatInvoice">
+        <if test="vat.taxno != null and vat.taxno!=''">
+            AND vat.TaxNo=#{taxno}
         </if>
-        <if test="vat.accountno != null and vat.accountno!=''" >
-            AND  vat.AccountNo=#{accountno}
+        <if test="vat.accountno != null and vat.accountno!=''">
+            AND vat.AccountNo=#{accountno}
         </if>
-        <if test="vat.customername != null and vat.customername!=''" >
-            AND  vat.CustomerName LIKE '%${customername}%'
-        </if>
-
-        <if test="vat.isshared != null and vat.isshared!=''" >
-            AND  vat.IsShared = ${isshared}
+        <if test="vat.customername != null and vat.customername!=''">
+            AND vat.CustomerName LIKE '%${customername}%'
         </if>
 
-        <if test="vat.shopid != null and vat.shopid!=''" >
-            AND  vat.ShopId = ${shopid}
+        <if test="vat.isshared != null and vat.isshared!=''">
+            AND vat.IsShared = ${isshared}
+        </if>
+
+        <if test="vat.shopid != null and vat.shopid!=''">
+            AND vat.ShopId = ${shopid}
         </if>
 
     </sql>
@@ -163,6 +163,10 @@
     <update id="updateThrowingStatus">
     update vathrowbtcp
     set ThrowingStatus = #{status} WHERE OrderCode=#{orderCode}
+  </update>
+
+    <update id="updateVatInvoice" parameterType="java.lang.String">
+    UPDATE vathrowbtcp SET ThrowingStatus=0 WHERE zid=#{zid}
   </update>
 
     <insert id="insertVathrowBtcp" parameterType="com.lenovo.invoice.domain.VathrowBtcp">
