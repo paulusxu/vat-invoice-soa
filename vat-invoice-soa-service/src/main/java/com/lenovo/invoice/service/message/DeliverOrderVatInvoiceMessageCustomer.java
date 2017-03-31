@@ -33,7 +33,7 @@ public class DeliverOrderVatInvoiceMessageCustomer {
             int rows = 0;
             try {
                 Map map= JacksonUtil.fromJson(msg, Map.class);
-                rows = vatInvoiceService.updateOrderStatus((String)map.get("orderCode"), 3);
+                rows = vatInvoiceService.updateOrderStatus((Long)map.get("orderCode")+"" , 3);
             } catch (Exception e) {
                 LOGGER.error(e.getMessage(), e);
             }
