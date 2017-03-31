@@ -185,6 +185,17 @@ public class InvoiceApiServiceImpl extends BaseService implements InvoiceApiServ
         return 0;
     }
 
+    @Override
+    public int updateThrowingStatus(String orderCode, int status) {
+        int rows=0;
+        try {
+            rows=vathrowBtcpMapper.updateThrowingStatus(orderCode,status);
+        }catch (Exception e){
+            LOGGER.error(e.getMessage());
+        }
+        return rows;
+    }
+
 
     @Override
     public RemoteResult<GetVatInvoiceInfoResult> getVatInvoiceInfo(GetVatInvoiceInfoParam param, Tenant tenant) {

@@ -12,6 +12,7 @@ import com.lenovo.m2.arch.framework.domain.PageQuery;
 import com.lenovo.m2.arch.framework.domain.RemoteResult;
 import com.lenovo.m2.arch.framework.domain.Tenant;
 import com.lenovo.m2.ordercenter.soa.domain.forward.Invoice;
+import org.apache.ibatis.annotations.Param;
 
 import java.io.InputStream;
 import java.util.List;
@@ -55,4 +56,7 @@ public interface InvoiceApiService {
 
     //补单
     long makeUpVatInvocie(String zids);
+
+    int updateThrowingStatus(String orderCode,  int status);
+
 }

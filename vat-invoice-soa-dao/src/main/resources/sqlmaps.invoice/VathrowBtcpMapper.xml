@@ -89,9 +89,6 @@
   </select>
 
     <sql id="queryVatInvoice" >
-        <if test="vat.ischeck != null and vat.ischeck!=''" >
-            AND  vat.isCheck=${ischeck}
-        </if>
         <if test="vat.taxno != null and vat.taxno!=''" >
             AND  vat.TaxNo=#{taxno}
         </if>
