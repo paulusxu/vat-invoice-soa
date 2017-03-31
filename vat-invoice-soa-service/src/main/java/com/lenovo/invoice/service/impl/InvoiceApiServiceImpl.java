@@ -202,6 +202,7 @@ public class InvoiceApiServiceImpl extends BaseService implements InvoiceApiServ
         long rows=0;
         try {
             rows=vathrowBtcpMapper.updateVatInvoice(zid);
+            vatInvoiceService.updateZid(zid, zid);
         } catch (Exception e){
             LOGGER.error(e.getMessage());
         }
