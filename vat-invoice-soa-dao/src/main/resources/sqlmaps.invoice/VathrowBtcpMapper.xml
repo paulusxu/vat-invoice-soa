@@ -89,25 +89,25 @@
   </select>
 
     <sql id="queryVatInvoice" >
-        <if test="ischeck != null and ischeck!=''" >
-            AND  isCheck=${ischeck}
+        <if test="vat.ischeck != null and vat.ischeck!=''" >
+            AND  vat.isCheck=${ischeck}
         </if>
-        <if test="taxno != null and taxno!=''" >
-            AND  TaxNo=#{taxno}
+        <if test="vat.taxno != null and vat.taxno!=''" >
+            AND  vat.TaxNo=#{taxno}
         </if>
-        <if test="accountno != null and accountno!=''" >
-            AND  AccountNo=#{accountno}
+        <if test="vat.accountno != null and vat.accountno!=''" >
+            AND  vat.AccountNo=#{accountno}
         </if>
-        <if test="customername != null and customername!=''" >
-            AND  CustomerName LIKE '%${customername}%'
-        </if>
-
-        <if test="isshared != null and isshared!=''" >
-            AND  IsShared = ${isshared}
+        <if test="vat.customername != null and vat.customername!=''" >
+            AND  vat.CustomerName LIKE '%${customername}%'
         </if>
 
-        <if test="shopid != null and shopid!=''" >
-            AND  ShopId = ${shopid}
+        <if test="vat.isshared != null and vat.isshared!=''" >
+            AND  vat.IsShared = ${isshared}
+        </if>
+
+        <if test="vat.shopid != null and vat.shopid!=''" >
+            AND  vat.ShopId = ${shopid}
         </if>
 
     </sql>
