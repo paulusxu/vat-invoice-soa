@@ -77,7 +77,7 @@
         select
         vat.*
         FROM vathrowbtcp btcp, vatinvoice vat WHERE btcp.Zid=vat.Id AND btcp.OrderStatus=3 AND btcp.ThrowingStatus
-        IN(0,4)
+        IN(0,4) <include refid="queryVatInvoice" />
         GROUP BY vat.id ORDER BY vat.CreateTime DESC limit ${pageIndex},${pageSize}
     </select>
 
@@ -85,25 +85,25 @@
         select
         count(1)
         FROM vathrowbtcp btcp, vatinvoice vat WHERE btcp.Zid=vat.Id AND btcp.OrderStatus=3 AND btcp.ThrowingStatus
-        IN(0,4)
+        IN(0,4) <include refid="queryVatInvoice" />
     </select>
 
     <sql id="queryVatInvoice">
-        <if test="vat.taxno != null and vat.taxno!=''">
+        <if test="taxno != null and taxno!=''">
             AND vat.TaxNo=#{taxno}
         </if>
-        <if test="vat.accountno != null and vat.accountno!=''">
+        <if test="accountno != null and accountno!=''">
             AND vat.AccountNo=#{accountno}
         </if>
-        <if test="vat.customername != null and vat.customername!=''">
+        <if test="customername != null and customername!=''">
             AND vat.CustomerName LIKE '%${customername}%'
         </if>
 
-        <if test="vat.isshared != null and vat.isshared!=''">
+        <if test="isshared != null and isshared!=''">
             AND vat.IsShared = ${isshared}
         </if>
 
-        <if test="vat.shopid != null and vat.shopid!=''">
+        <if test="shopid != null and shopid!=''">
             AND vat.ShopId = ${shopid}
         </if>
 

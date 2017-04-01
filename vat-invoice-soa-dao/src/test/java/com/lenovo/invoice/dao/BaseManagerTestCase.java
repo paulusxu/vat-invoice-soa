@@ -1,4 +1,4 @@
-package com.lenovo.invoice.service;
+package com.lenovo.invoice.dao;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
