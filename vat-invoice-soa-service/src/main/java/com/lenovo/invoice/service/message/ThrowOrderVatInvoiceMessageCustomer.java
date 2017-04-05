@@ -33,6 +33,7 @@ public class ThrowOrderVatInvoiceMessageCustomer {
             } catch (Exception e) {
                 LOGGER.error(e.getMessage(), e);
             }
+
         }
     }
 }

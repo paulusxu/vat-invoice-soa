@@ -15,9 +15,6 @@ import java.util.Map;
  * Created by mayan3 on 2016/6/28.
  */
 public interface InvoiceService {
-    //修改增票信息 抛btcp审核
-    public boolean checkVatInvoiceInfo(List<VatInvoice> vatInvoiceList);
-    public boolean checkVatInvoiceInfoNew(List<Invoice> vatInvoiceList);
 
     //增票订单查询
     public InvoiceOpen getIncreaseOrderList(String id, String rows, String page);

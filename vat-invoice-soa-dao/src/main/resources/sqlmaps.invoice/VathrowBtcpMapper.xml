@@ -1,92 +1,252 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
-<mapper namespace="com.lenovo.invoice.dao.VathrowBtcpMapper" >
-  <resultMap id="BaseResultMap" type="com.lenovo.invoice.domain.VathrowBtcp" >
-    <id column="ID" property="id" jdbcType="INTEGER" />
-    <result column="Title" property="title" jdbcType="VARCHAR" />
-    <result column="TaxpayerIdentity" property="taxpayeridentity" jdbcType="VARCHAR" />
-    <result column="DepositBank" property="depositbank" jdbcType="VARCHAR" />
-    <result column="BankNo" property="bankno" jdbcType="VARCHAR" />
-    <result column="RegisterAddress" property="registeraddress" jdbcType="VARCHAR" />
-    <result column="RegisterPhone" property="registerphone" jdbcType="VARCHAR" />
-    <result column="OutId" property="outid" jdbcType="VARCHAR" />
-    <result column="MemberCode" property="membercode" jdbcType="VARCHAR" />
-    <result column="Name" property="name" jdbcType="VARCHAR" />
-    <result column="ProvinceId" property="provinceid" jdbcType="VARCHAR" />
-    <result column="City" property="city" jdbcType="VARCHAR" />
-    <result column="County" property="county" jdbcType="VARCHAR" />
-    <result column="Address" property="address" jdbcType="VARCHAR" />
-    <result column="Phone" property="phone" jdbcType="VARCHAR" />
-    <result column="Zip" property="zip" jdbcType="VARCHAR" />
-    <result column="OrderCode" property="orderCode" jdbcType="VARCHAR" />
-    <result column="zid" property="zid" jdbcType="VARCHAR" />
-    <result column="ThrowResult" property="throwResult" jdbcType="VARCHAR" />
-    <result column="IsNeedMerge" property="isneedmerge" jdbcType="BIT" />
-    <result column="ThrowingStatus" property="throwingStatus" jdbcType="BIT" />
-    <result column="OrderStatus" property="orderStatus" jdbcType="BIT" />
-    <result column="CreateTime" property="createtime" jdbcType="TIMESTAMP" />
-  </resultMap>
+<mapper namespace="com.lenovo.invoice.dao.VathrowBtcpMapper">
+    <resultMap id="BaseResultMap" type="com.lenovo.invoice.domain.VathrowBtcp">
+        <id column="ID" property="id" jdbcType="INTEGER"/>
+        <result column="Title" property="title" jdbcType="VARCHAR"/>
+        <result column="TaxpayerIdentity" property="taxpayeridentity" jdbcType="VARCHAR"/>
+        <result column="DepositBank" property="depositbank" jdbcType="VARCHAR"/>
+        <result column="BankNo" property="bankno" jdbcType="VARCHAR"/>
+        <result column="RegisterAddress" property="registeraddress" jdbcType="VARCHAR"/>
+        <result column="RegisterPhone" property="registerphone" jdbcType="VARCHAR"/>
+        <result column="OutId" property="outid" jdbcType="VARCHAR"/>
+        <result column="MemberCode" property="membercode" jdbcType="VARCHAR"/>
+        <result column="Name" property="name" jdbcType="VARCHAR"/>
+        <result column="ProvinceId" property="provinceid" jdbcType="VARCHAR"/>
+        <result column="City" property="city" jdbcType="VARCHAR"/>
+        <result column="County" property="county" jdbcType="VARCHAR"/>
+        <result column="Address" property="address" jdbcType="VARCHAR"/>
+        <result column="Phone" property="phone" jdbcType="VARCHAR"/>
+        <result column="Zip" property="zip" jdbcType="VARCHAR"/>
+        <result column="OrderCode" property="orderCode" jdbcType="VARCHAR"/>
+        <result column="zid" property="zid" jdbcType="VARCHAR"/>
+        <result column="ThrowResult" property="throwResult" jdbcType="VARCHAR"/>
+        <result column="IsNeedMerge" property="isneedmerge" jdbcType="BIT"/>
+        <result column="ThrowingStatus" property="throwingStatus" jdbcType="BIT"/>
+        <result column="OrderStatus" property="orderStatus" jdbcType="BIT"/>
+        <result column="CreateTime" property="createtime" jdbcType="TIMESTAMP"/>
+    </resultMap>
+
+    <resultMap id="BaseVatInvoiceResultMap" type="com.lenovo.invoice.domain.VatInvoice">
+        <id column="Id" property="id" jdbcType="BIGINT"/>
+        <result column="CustomerName" property="customername" jdbcType="VARCHAR"/>
+        <result column="TaxNo" property="taxno" jdbcType="VARCHAR"/>
+        <result column="BankName" property="bankname" jdbcType="VARCHAR"/>
+        <result column="AccountNo" property="accountno" jdbcType="VARCHAR"/>
+        <result column="Address" property="address" jdbcType="VARCHAR"/>
+        <result column="PhoneNo" property="phoneno" jdbcType="VARCHAR"/>
+        <result column="BTCPSO" property="btcpso" jdbcType="VARCHAR"/>
+        <result column="isCheck" property="ischeck" jdbcType="BIT"/>
+        <result column="IsThrowing" property="isthrowing" jdbcType="BIT"/>
+        <result column="CreateTime" property="createtime" jdbcType="TIMESTAMP"/>
+        <result column="CreateBy" property="createby" jdbcType="VARCHAR"/>
+        <result column="UpdateTime" property="updatetime" jdbcType="TIMESTAMP"/>
+        <result column="UpdateBy" property="updateby" jdbcType="VARCHAR"/>
+        <result column="IsShared" property="isshared" jdbcType="BIT"/>
+        <result column="IsNeedMerge" property="isNeedMerge" jdbcType="BIT"/>
+        <result column="ShopId" property="shopid" jdbcType="INTEGER"/>
+        <result column="ShardedBy" property="shardedby" jdbcType="VARCHAR"/>
+        <result column="ShardedTime" property="shardedtime" jdbcType="TIMESTAMP"/>
+        <result column="faid" property="faid"/>
+        <result column="storesid" property="storesid"/>
+        <result column="type" property="type"/>
+        <result column="isvalid" property="isvalid" jdbcType="BIT"/>
+    </resultMap>
 
 
-  <sql id="Base_Column_List" >
-    <!--
-      WARNING - @mbggenerated
-      This element is automatically generated by MyBatis Generator, do not modify.
-    -->
-    ID, Title, TaxpayerIdentity, DepositBank, BankNo, RegisterAddress, RegisterPhone, 
+    <sql id="Base_Column_List">
+    ID, Title, TaxpayerIdentity, DepositBank, BankNo, RegisterAddress, RegisterPhone,
     OutId, MemberCode, Name, ProvinceId, City, County, Address, Phone, Zip, IsNeedMerge,
     ThrowingStatus,zid,OrderCode,OrderStatus,ThrowResult
   </sql>
 
-  <select id="getVatInvoice2BtcpList" resultMap="BaseResultMap" parameterType="java.lang.String" >
-    select 
-    <include refid="Base_Column_List" />
-    from vathrowbtcp
-    where zid=#{zid} and OrderStatus=3 and ThrowingStatus in(0,4)
+    <sql id="Base_VatInvoice_Column_List">
+    Id, CustomerName, TaxNo, BankName, AccountNo, Address, PhoneNo, BTCPSO, isCheck,
+    IsThrowing, CreateTime, CreateBy, UpdateTime, UpdateBy, IsShared, isNeedMerge, ShopId,
+    ShardedBy, ShardedTime,faid,storesid,type,isvalid
+  </sql>
+
+    <select id="getVatInvoice2BtcpList" resultMap="BaseResultMap" parameterType="java.lang.String">
+        select
+        <include refid="Base_Column_List"/>
+        from vathrowbtcp
+        where zid=#{zid} and OrderStatus=3 and ThrowingStatus in(0,4)
+    </select>
+
+    <select id="getNotThrowBtcpVatInvoicePage" resultMap="BaseVatInvoiceResultMap" parameterType="java.util.Map">
+        select
+        vat.*
+        FROM vathrowbtcp btcp, vatinvoice vat WHERE btcp.Zid=vat.Id AND btcp.OrderStatus=3 AND btcp.ThrowingStatus
+        IN(0,4) <include refid="queryVatInvoice" />
+        GROUP BY vat.id ORDER BY vat.CreateTime DESC limit ${pageIndex},${pageSize}
+    </select>
+
+    <select id="getNotThrowBtcpVatInvoiceCount" resultType="java.lang.Integer" parameterType="java.util.Map">
+        select
+        count(1)
+        FROM vathrowbtcp btcp, vatinvoice vat WHERE btcp.Zid=vat.Id AND btcp.OrderStatus=3 AND btcp.ThrowingStatus
+        IN(0,4) <include refid="queryVatInvoice" />
+    </select>
+
+    <sql id="queryVatInvoice">
+        <if test="taxno != null and taxno!=''">
+            AND vat.TaxNo=#{taxno}
+        </if>
+        <if test="accountno != null and accountno!=''">
+            AND vat.AccountNo=#{accountno}
+        </if>
+        <if test="customername != null and customername!=''">
+            AND vat.CustomerName LIKE '%${customername}%'
+        </if>
+
+        <if test="isshared != null and isshared!=''">
+            AND vat.IsShared = ${isshared}
+        </if>
+
+        <if test="shopid != null and shopid!=''">
+            AND vat.ShopId = ${shopid}
+        </if>
+
+    </sql>
+
+
+    <select id="getThrowBtcpList" resultMap="BaseResultMap">
+    select
+    btcp.*
+    FROM vathrowbtcp btcp, vatinvoice vat WHERE btcp.Zid=vat.Id AND btcp.OrderStatus=3 AND btcp.ThrowingStatus IN(0,4)
   </select>
 
-  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
+    <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
     delete from vathrowbtcp
     where ID = #{id,jdbcType=INTEGER}
   </delete>
 
-  <insert id="insert" parameterType="com.lenovo.invoice.domain.VathrowBtcp" >
-    <!--
-      WARNING - @mbggenerated
-      This element is automatically generated by MyBatis Generator, do not modify.
-    -->
-    insert into vathrowbtcp (Title, TaxpayerIdentity,
-      DepositBank, BankNo, RegisterAddress, 
-      RegisterPhone, OutId, MemberCode, 
-      Name, ProvinceId, City, 
-      County, Address, Phone, 
-      Zip, IsNeedMerge, ThrowingStatus,CreateTime,Zid,OrderCode,OrderStatus,ThrowResult
-      )
-    values (#{title,jdbcType=VARCHAR}, #{taxpayeridentity,jdbcType=VARCHAR},
-      #{depositbank,jdbcType=VARCHAR}, #{bankno,jdbcType=VARCHAR}, #{registeraddress,jdbcType=VARCHAR}, 
-      #{registerphone,jdbcType=VARCHAR}, #{outid,jdbcType=VARCHAR}, #{membercode,jdbcType=VARCHAR}, 
-      #{name,jdbcType=VARCHAR}, #{provinceid,jdbcType=VARCHAR}, #{city,jdbcType=VARCHAR}, 
-      #{county,jdbcType=VARCHAR}, #{address,jdbcType=VARCHAR}, #{phone,jdbcType=VARCHAR}, 
-      #{zip,jdbcType=VARCHAR}, #{isneedmerge,jdbcType=BIT}, #{throwingStatus,jdbcType=BIT},now(),#{zid},#{orderCode},#{orderStatus},#{throwResult}
-      )
-  </insert>
 
-
-  <update id="updateByOrderCode">
+    <update id="updateByOrderCode">
     update vathrowbtcp
     set ThrowingStatus = #{status},ThrowResult=#{msg} WHERE OrderCode=#{orderCode}
   </update>
 
-  <update id="updateOrderStatus">
+    <update id="updateZid" parameterType="map">
+        UPDATE vathrowbtcp
+        <set>
+            <if test="record.customername != null">
+                Title = #{record.customername,jdbcType=VARCHAR},
+            </if>
+            <if test="record.taxno != null">
+                TaxpayerIdentity = #{record.taxno,jdbcType=VARCHAR},
+            </if>
+            <if test="record.bankname != null">
+                DepositBank = #{record.bankname,jdbcType=VARCHAR},
+            </if>
+            <if test="record.accountno != null">
+                BankNo = #{record.accountno,jdbcType=VARCHAR},
+            </if>
+            <if test="record.address != null">
+                RegisterAddress = #{record.address,jdbcType=VARCHAR},
+            </if>
+            <if test="record.phoneno != null">
+                RegisterPhone = #{record.phoneno,jdbcType=VARCHAR},
+            </if>
+            <if test="record.id != null">
+                zid= #{record.id},
+            </if>
+        </set>
+        WHERE zid IN (${record.faid}) AND ThrowingStatus=0
+    </update>
+
+    <update id="updateOrderStatus">
     update vathrowbtcp
     set OrderStatus = #{status} WHERE OrderCode=#{orderCode}
   </update>
 
-  <update id="updateThrowingStatus">
+    <update id="updateThrowingStatus">
     update vathrowbtcp
     set ThrowingStatus = #{status} WHERE OrderCode=#{orderCode}
   </update>
 
+    <update id="updateVatInvoice" parameterType="com.lenovo.invoice.domain.param.UpdateVatInvoiceBatchParam">
+    UPDATE vathrowbtcp
+    set Title=#{customerName},
+    TaxpayerIdentity=#{taxNo},
+    DepositBank=#{bankName},
+    BankNo=#{accountNo},
+    RegisterAddress=#{address},
+    RegisterPhone=#{phoneNo},
+    ThrowingStatus =0
+    WHERE zid = ${ids}
+  </update>
 
+    <insert id="insertVathrowBtcp" parameterType="com.lenovo.invoice.domain.VathrowBtcp">
+    insert into vathrowbtcp (CreateTime,OrderCode,OrderStatus)
+    values (now(),#{orderCode},#{orderStatus})
+  </insert>
+
+    <update id="updateVathrowbtcp" parameterType="map">
+        update vathrowbtcp
+        <set>
+            <if test="record.title != null">
+                Title = #{record.title,jdbcType=VARCHAR},
+            </if>
+            <if test="record.taxpayeridentity != null">
+                TaxpayerIdentity = #{record.taxpayeridentity,jdbcType=VARCHAR},
+            </if>
+            <if test="record.depositbank != null">
+                DepositBank = #{record.depositbank,jdbcType=VARCHAR},
+            </if>
+            <if test="record.bankno != null">
+                BankNo = #{record.bankno,jdbcType=VARCHAR},
+            </if>
+            <if test="record.registeraddress != null">
+                RegisterAddress = #{record.registeraddress,jdbcType=VARCHAR},
+            </if>
+            <if test="record.registerphone != null">
+                RegisterPhone = #{record.registerphone,jdbcType=VARCHAR},
+            </if>
+            <if test="record.outid != null">
+                OutId = #{record.outid,jdbcType=VARCHAR},
+            </if>
+            <if test="record.membercode != null">
+                MemberCode = #{record.membercode,jdbcType=VARCHAR},
+            </if>
+            <if test="record.name != null">
+                Name = #{record.name,jdbcType=VARCHAR},
+            </if>
+            <if test="record.provinceid != null">
+                ProvinceId = #{record.provinceid,jdbcType=VARCHAR},
+            </if>
+            <if test="record.city != null">
+                City = #{record.city,jdbcType=VARCHAR},
+            </if>
+            <if test="record.county != null">
+                County = #{record.county,jdbcType=VARCHAR},
+            </if>
+            <if test="record.address != null">
+                Address = #{record.address,jdbcType=VARCHAR},
+            </if>
+            <if test="record.phone != null">
+                Phone = #{record.phone,jdbcType=VARCHAR},
+            </if>
+            <if test="record.zip != null">
+                Zip = #{record.zip,jdbcType=VARCHAR},
+            </if>
+            <if test="record.isneedmerge != null">
+                IsNeedMerge = #{record.isneedmerge,jdbcType=BIT},
+            </if>
+            <if test="record.throwingStatus != null">
+                ThrowingStatus = #{record.throwingStatus,jdbcType=BIT},
+            </if>
+            <if test="record.throwResult != null">
+                ThrowResult = #{record.throwResult,jdbcType=VARCHAR},
+            </if>
+            <if test="record.zid != null">
+                Zid = #{record.zid,jdbcType=VARCHAR},
+            </if>
+            <if test="record.orderStatus != null">
+                OrderStatus = #{record.orderStatus,jdbcType=BIT},
+            </if>
+        </set>
+        WHERE OrderCode = #{record.orderCode}
+    </update>
 
 </mapper>

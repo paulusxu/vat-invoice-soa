@@ -1,5 +1,6 @@
 package com.lenovo.invoice.service.message;
 
+import com.alibaba.fastjson.JSONObject;
 import com.lenovo.invoice.common.utils.JacksonUtil;
 import com.lenovo.invoice.service.VatInvoiceService;
 import com.lenovo.kafka.api.core.consumer.KafkaConsumer;
@@ -14,7 +15,7 @@ import java.util.Map;
  * Created by mayan3 on 2017/3/3.
  */
 public class DeliverOrderVatInvoiceMessageCustomer {
-    private static final Logger LOGGER = LoggerFactory.getLogger("com.lenovo.invoice.customer.order.throw.deliver");
+    private static final Logger LOGGER = LoggerFactory.getLogger("com.lenovo.invoice.customer.order.deliver");
 
 
     private KafkaConsumer kafkaConsumer;
@@ -32,8 +33,9 @@ public class DeliverOrderVatInvoiceMessageCustomer {
             LOGGER.info("DeliverOrderVatInvoiceMessageCustomer Start:" + msg);
             int rows = 0;
             try {
-                Map map= JacksonUtil.fromJson(msg, Map.class);
-                rows = vatInvoiceService.updateOrderStatus((String)map.get("orderCode"), 3);
+
+                JSONObject object=JSONObject.parseObject(msg);
+                rows = vatInvoiceService.updateOrderStatus(object.getString("orderCode") , 3);
             } catch (Exception e) {
                 LOGGER.error(e.getMessage(), e);
             }

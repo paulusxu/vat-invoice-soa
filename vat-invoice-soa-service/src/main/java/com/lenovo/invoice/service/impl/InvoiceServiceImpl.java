@@ -46,46 +46,6 @@ public class InvoiceServiceImpl implements InvoiceService {
 
 
     @Override
-    public boolean checkVatInvoiceInfo(List<VatInvoice> vatInvoiceList) {
-        logger.info("CheckVatInvoiceInfo Start:" + JacksonUtil.toJson(vatInvoiceList));
-        try {
-            List<Invoice> orderList = new ArrayList<Invoice>();
-            if (CollectionUtils.isNotEmpty(vatInvoiceList)) {
-                for (VatInvoice vatInvoice : vatInvoiceList) {
-                    Invoice order = new Invoice();
-                    order.setBankNo(vatInvoice.getAccountno());//账号
-                    order.setRegisterAddress(vatInvoice.getAddress());//地址
-                    order.setDepositBank(vatInvoice.getBankname());//开户行
-                    order.setTitle(vatInvoice.getCustomername());//客户名称
-                    order.setTaxpayerIdentity(vatInvoice.getTaxno());//税号
-                    order.setRegisterPhone(vatInvoice.getPhoneno());
-                    order.setZid(String.valueOf(vatInvoice.getId()));
-                    orderList.add(order);
-                }
-            }
-            RemoteResult remoteResult=vatApiOrderCenter.invoiceCallBackService(orderList,0);
-            logger.info("CheckVatInvoiceInfo End:" + JacksonUtil.toJson(remoteResult));
-            return true;
-        } catch (Exception e) {
-            logger.error(e.getMessage(), e);
-            return false;
-        }
-    }
-@Override
-    public boolean checkVatInvoiceInfoNew(List<Invoice> vatInvoiceList) {
-        logger.info("checkVatInvoiceInfoNew Start:" + JacksonUtil.toJson(vatInvoiceList));
-        try {
-
-            RemoteResult remoteResult=vatApiOrderCenter.invoiceCallBackService(vatInvoiceList, 1);
-            logger.info("checkVatInvoiceInfoNew End:" + JacksonUtil.toJson(remoteResult));
-            return true;
-        } catch (Exception e) {
-            logger.error(e.getMessage(), e);
-            return false;
-        }
-    }
-
-    @Override
     public InvoiceOpen getIncreaseOrderList(String id, String rows, String page) {
         RemoteResult<InvoiceOpen> invoiceOpenRemoteResult=null;
         try {

@@ -31,6 +31,8 @@ public class VatInvoiceServiceImpl implements VatInvoiceService {
 
     private static final Logger LOGGER = LoggerFactory.getLogger("com.lenovo.invoice.service.impl.vatinvoice");
     private static final Logger LOGGER_BTCP = LoggerFactory.getLogger("com.lenovo.invoice.service.impl.throwBtcp");
+    private static final Logger LOGGER_THROW = LoggerFactory.getLogger("com.lenovo.invoice.customer.order.throw");
+
 
     @Autowired
     private OrderDetailService orderDetailService;
@@ -95,18 +97,33 @@ public class VatInvoiceServiceImpl implements VatInvoiceService {
                             vathrowBtcp.setRegisteraddress(vatInvoice.getAddress());//注册地址
                             vathrowBtcp.setRegisterphone(vatInvoice.getPhoneno());//电话
                         }
-                        int rows = vathrowBtcpMapper.insert(vathrowBtcp);
+                        int rows = vathrowBtcpMapper.updateVathrowbtcp(vathrowBtcp);
                         if (rows > 0) {
                             //更新增票状态
                             updateVatInvoiceIsvalid(zid, shopid + "");
                         }
-                        LOGGER.info("VathrowBtcp:{},{}", JacksonUtil.toJson(vathrowBtcp), rows);
+                        LOGGER_THROW.info("VathrowBtcp:{},{}", JacksonUtil.toJson(vathrowBtcp), rows);
                     }
                 }
             }
         } catch (Exception e) {
-            LOGGER.error(e.getMessage(), e);
+            LOGGER_THROW.error(e.getMessage(), e);
         }
+    }
+
+    @Override
+    public long initVathrowBtcp(String orderCode) {
+        long rows = 0;
+        try {
+            VathrowBtcp vathrowBtcp = new VathrowBtcp();
+            vathrowBtcp.setOrderStatus(1);
+            vathrowBtcp.setOrderCode(orderCode);
+            //初始化
+            rows = vathrowBtcpMapper.insertVathrowBtcp(vathrowBtcp);
+        } catch (Exception e) {
+            LOGGER.error(e.getMessage());
+        }
+        return rows;
     }
 
     @Override
@@ -176,15 +193,17 @@ public class VatInvoiceServiceImpl implements VatInvoiceService {
                             invoice.setRegisterAddress(vathrowBtcp.getRegisteraddress());
                             invoice.setRegisterPhone(vathrowBtcp.getRegisterphone());
                             invoice.setOrderId(Long.parseLong(vathrowBtcp.getOrderCode()));
+                            invoice.setThrowStatus(2);
+                            invoice.setType(2);
 
                             vatApiOrderCenter.updateInvoice(invoice);
                         }
                     } else {
                         int rows = vathrowBtcpMapper.updateByOrderCode(vathrowBtcp.getOrderCode(), 4, message);
-                        if (rows > 0) {
-                            //btcp抛送失败
-                            vatApiOrderCenter.updateFailureReasonByOrderId(message, Long.parseLong(vathrowBtcp.getOrderCode()));
-                        }
+//                        if (rows > 0) {
+//                            //btcp抛送失败
+//                            vatApiOrderCenter.updateFailureReasonByOrderId(message, Long.parseLong(vathrowBtcp.getOrderCode()));
+//                        }
 
                     }
 
@@ -213,6 +232,30 @@ public class VatInvoiceServiceImpl implements VatInvoiceService {
         int rows = 0;
         try {
             rows = vathrowBtcpMapper.updateThrowingStatus(orderCode, status);
+        } catch (Exception e) {
+            LOGGER.error(e.getMessage(), e);
+        }
+        return rows;
+    }
+
+    @Override
+    public List<VathrowBtcp> getThrowBtcpList() {
+        List<VathrowBtcp> btcpList = null;
+        try {
+            btcpList = vathrowBtcpMapper.getThrowBtcpList();
+        } catch (Exception e) {
+            LOGGER_BTCP.error(e.getMessage(), e);
+        }
+        return btcpList;
+    }
+
+    @Override
+    public long updateZid(String zid, String zids) {
+        long rows = 0;
+        try {
+            VatInvoice vatInvoice = vatInvoiceMapper.getVatInvoiceInfoById(Long.parseLong(zid));
+            vatInvoice.setFaid(zids);
+            rows = vathrowBtcpMapper.updateZid(vatInvoice);
         } catch (Exception e) {
             LOGGER.error(e.getMessage(), e);
         }
