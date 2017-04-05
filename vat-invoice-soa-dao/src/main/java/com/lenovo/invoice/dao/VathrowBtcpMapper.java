@@ -36,4 +36,7 @@ public interface VathrowBtcpMapper {
 
     long updateVatInvoice(UpdateVatInvoiceBatchParam param);
 
+    //根据订单code获取增值税发票信息
+    public VathrowBtcp getVatInvoiceByOrderCode(String orderCode);
+
 }

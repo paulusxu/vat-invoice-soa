@@ -3,29 +3,29 @@ package com.lenovo.invoice.domain;
 import java.util.Date;
 
 public class VathrowBtcp {
-    private Integer id;
-    private String title;
-    private String taxpayeridentity;
-    private String depositbank;
-    private String bankno;
-    private String registeraddress;
-    private String registerphone;
+    private Integer id; //主键id
+    private String title; //发票抬头
+    private String taxpayeridentity;  //纳税人识别号
+    private String depositbank; //开户行
+    private String bankno; //银行账户
+    private String registeraddress;  //注册地址
+    private String registerphone;  //注册电话
     private String outid;
-    private String membercode;
-    private String name;
-    private String provinceid;
-    private String city;
-    private String county;
-    private String address;
-    private String phone;
-    private String zip;
-    private int isneedmerge;
-    private int throwingStatus;
+    private String membercode;  //用户账号
+    private String name;  //收货人姓名
+    private String provinceid;  //省市编号
+    private String city;  //市名称
+    private String county;  //区县名称
+    private String address;  //详细地址
+    private String phone;  //固定电话
+    private String zip;  //邮编
+    private int isneedmerge;  //是否合并开票
+    private int throwingStatus; //是否抛单成功 0:未抛单 1:不允许抛单 2:已抛单 3：抛单成功 4:抛单失败
     private Date createtime;
-    private String orderCode;
-    private String zid;
-    private int orderStatus;
-    private String throwResult;
+    private String orderCode;  //订单号
+    private String zid;  //增票id
+    private int orderStatus;  //订单状态1:已支付 2:已抛单 3:已发货
+    private String throwResult;  //抛送返回值
 
     public Integer getId() {
         return id;

@@ -12,6 +12,8 @@
     <artifactId>vat-invoice-soa-service</artifactId>
 
     <properties>
+        <quartz.version>2.2.1</quartz.version>
+
         <!-- Docker & Kubernetes & Jenkins 插件配置 -->
         <project.docker.canDeploy>true</project.docker.canDeploy>
         <project.docker.role>d</project.docker.role>                            <!-- 建议dubbo应用设为 svc, 减少最终 pod 名字的长度 -->
@@ -125,6 +127,24 @@
             <groupId>com.lenovo.m2.stock.soa</groupId>
             <artifactId>stock-soa-api</artifactId>
             <version>2.3-SNAPSHOT</version>
+        </dependency>
+
+        <!--quartz-->
+        <dependency>
+            <groupId>org.quartz-scheduler</groupId>
+            <artifactId>quartz</artifactId>
+            <version>${quartz.version}</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.slf4j</groupId>
+                    <artifactId>slf4j-log4j12</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+        <dependency>
+            <groupId>org.quartz-scheduler</groupId>
+            <artifactId>quartz-jobs</artifactId>
+            <version>${quartz.version}</version>
         </dependency>
 
     </dependencies>

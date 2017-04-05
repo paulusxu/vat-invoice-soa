@@ -7,6 +7,25 @@ public class PropertiesUtil {
     private String url;
     private String key;
 
+    private String exchangeinvoiceurl;
+    private String exchangeinvoicekey;
+
+    public String getExchangeinvoiceurl() {
+        return exchangeinvoiceurl;
+    }
+
+    public void setExchangeinvoiceurl(String exchangeinvoiceurl) {
+        this.exchangeinvoiceurl = exchangeinvoiceurl;
+    }
+
+    public String getExchangeinvoicekey() {
+        return exchangeinvoicekey;
+    }
+
+    public void setExchangeinvoicekey(String exchangeinvoicekey) {
+        this.exchangeinvoicekey = exchangeinvoicekey;
+    }
+
     public String getUrl() {
         return url;
     }

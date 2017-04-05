@@ -20,7 +20,8 @@
         <property name="rebalanceBackOff" value="${rebalanceBackOff}" />
         <property name="rebalanceMaxRetries" value="${rebalanceMaxRetries}" />
         <property name="autoOffsetReset" value="${autoOffsetReset}" />
-        <property name="topicName" value="${product.topicName}" />
+        <property name="topicName" value="aaa" />
+        <!--<property name="topicName" value="${product.topicName}" />-->
     </bean>
     <bean id="kafkaConsumerFactory_product" class="com.lenovo.kafka.api.core.factory.KafkaConsumerFactory"
           init-method="initialize">
@@ -44,7 +45,8 @@
         <property name="rebalanceBackOff" value="${rebalanceBackOff}" />
         <property name="rebalanceMaxRetries" value="${rebalanceMaxRetries}" />
         <property name="autoOffsetReset" value="${autoOffsetReset}" />
-        <property name="topicName" value="${order.topicName}" />
+        <property name="topicName" value="bbb" />
+        <!--<property name="topicName" value="${order.topicName}" />-->
     </bean>
     <bean id="kafkaConsumerFactory_order" class="com.lenovo.kafka.api.core.factory.KafkaConsumerFactory"
           init-method="initialize">
@@ -64,7 +66,8 @@
         <property name="rebalanceBackOff" value="${rebalanceBackOff}" />
         <property name="rebalanceMaxRetries" value="${rebalanceMaxRetries}" />
         <property name="autoOffsetReset" value="${autoOffsetReset}" />
-        <property name="topicName" value="${order.throwStatus.topicName}" />
+        <property name="topicName" value="ccc" />
+<!--        <property name="topicName" value="${order.throwStatus.topicName}" />-->
     </bean>
     <bean id="kafkaConsumerFactory_order_throwStatus" class="com.lenovo.kafka.api.core.factory.KafkaConsumerFactory"
           init-method="initialize">
@@ -106,7 +109,8 @@
         <property name="rebalanceBackOff" value="${rebalanceBackOff}" />
         <property name="rebalanceMaxRetries" value="${rebalanceMaxRetries}" />
         <property name="autoOffsetReset" value="${autoOffsetReset}" />
-        <property name="topicName" value="${order.deliver.topicName}" />
+        <property name="topicName" value="dd" />
+<!--        <property name="topicName" value="${order.deliver.topicName}" />-->
     </bean>
     <bean id="kafkaConsumerFactory_order_deliver" class="com.lenovo.kafka.api.core.factory.KafkaConsumerFactory"
           init-method="initialize">

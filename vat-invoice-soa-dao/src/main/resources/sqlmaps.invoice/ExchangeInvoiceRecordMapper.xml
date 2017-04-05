@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.lenovo.invoice.dao.ExchangeInvoiceRecordMapper" >
+
+  <sql id="allColumn">
+    id,itCode,orderCode,old_invoice_type,old_invoice_id,old_invoice_title,new_invoice_type,new_invoice_id,new_invoice_title,taxNo,bankName,bankNo,address,phone,state,exchangeTime
+  </sql>
+  
+  <insert id="addExchangeInvoiceRecord" parameterType="com.lenovo.invoice.domain.ExchangeInvoiceRecord">
+    insert into exchangeInvoiceRecord
+      (id,itCode,orderCode,old_invoice_type,old_invoice_id,old_invoice_title,new_invoice_type,new_invoice_id,new_invoice_title,taxNo,bankName,bankNo,address,phone,state,exchangeTime)
+    values
+      (#{id},#{itCode},#{orderCode},#{oldInvoiceType},#{oldInvoiceId},#{oldInvoiceTitle},#{newInvoiceType},#{newInvoiceId},#{newInvoiceTitle},#{taxNo},#{bankName},#{bankNo},#{address},#{phone},#{state},#{exchangeTime})
+  </insert>
+
+  <select id="getExchangeInvoiceRecord" parameterType="java.lang.String" resultMap="exchangeInvoiceRecordResultMap">
+    SELECT
+    <include refid="allColumn"/>
+    FROM exchangeInvoiceRecord
+    WHERE id=#{id}
+  </select>
+
+  <resultMap id="exchangeInvoiceRecordResultMap" type="com.lenovo.invoice.domain.ExchangeInvoiceRecord">
+    <id column="id" property="id"/>
+    <result column="itCode" property="itCode"/>
+    <result column="orderCode" property="orderCode"/>
+    <result column="old_invoice_type" property="oldInvoiceType"/>
+    <result column="old_invoice_id" property="oldInvoiceId"/>
+    <result column="old_invoice_title" property="oldInvoiceTitle"/>
+    <result column="new_invoice_type" property="newInvoiceType"/>
+    <result column="new_invoice_id" property="newInvoiceId"/>
+    <result column="new_invoice_title" property="newInvoiceTitle"/>
+    <result column="taxNo" property="taxNo"/>
+    <result column="bankName" property="bankName"/>
+    <result column="bankNo" property="bankNo"/>
+    <result column="address" property="address"/>
+    <result column="phone" property="phone"/>
+    <result column="state" property="state"/>
+    <result column="exchangeTime" property="exchangeTime"/>
+  </resultMap>
+
+  <update id="updateExchangeInvoiceRecord" parameterType="com.lenovo.invoice.domain.ExchangeInvoiceRecord">
+    UPDATE exchangeInvoiceRecord set state=#{state} WHERE id=#{id}
+  </update>
+
+  <insert id="addErrorUpdateOrder" parameterType="com.lenovo.invoice.domain.UpdateInvoiceInOrderParams">
+    INSERT INTO error_updateorder_invoice
+      (orderCode,invoiceType,invoiceTitle,taxNo,bankName,bankNo,address,phone,createTime)
+    VALUES
+      (#{orderCode},#{invoiceType},#{invoiceTitle},#{taxNo},#{bankName},#{bankNo},#{address},#{phone},#{createTime})
+  </insert>
+
+  <select id="getErrorUpdateOrder" resultMap="com.lenovo.invoice.domain.UpdateInvoiceInOrderParams">
+    SELECT * FROM error_updateorder_invoice
+  </select>
+
+  <delete id="deleteErrorUpdateOrder" parameterType="java.lang.Integer">
+    DELETE FROM error_updateorder_invoice WHERE id=#{id}
+  </delete>
+
+</mapper>

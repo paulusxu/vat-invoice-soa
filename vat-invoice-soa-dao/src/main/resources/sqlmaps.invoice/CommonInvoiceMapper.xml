@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.lenovo.invoice.dao.CommonInvoiceMapper" >
+
+  <select id="getCommonInvoice" parameterType="java.lang.Integer" resultMap="CommonInvoiceResultMap" >
+    select id,invoice_title,shopid,createtime,createBy
+    from common_invoice
+    where id=#{id}
+  </select>
+
+  <select id="getCommonInvoiceByTitle" parameterType="com.lenovo.invoice.domain.CommonInvoice" resultMap="CommonInvoiceResultMap">
+    select id,invoice_title,shopid,createtime,createBy
+    from common_invoice
+    where invoice_title=#{invoiceTitle} AND shopid=#{shopid}
+  </select>
+
+  <resultMap id="CommonInvoiceResultMap" type="com.lenovo.invoice.domain.CommonInvoice">
+    <id column="id" property="id"/>
+    <result column="invoice_title" property="invoiceTitle"/>
+    <result column="shopid" property="shopid"/>
+    <result column="createtime" property="createtime"/>
+    <result column="createBy" property="createBy"/>
+  </resultMap>
+  
+  <insert id="addCommonInvoice" parameterType="com.lenovo.invoice.domain.CommonInvoice">
+
+    <selectKey resultType="java.lang.Integer" keyProperty="id" order="AFTER">
+      SELECT @@IDENTITY
+    </selectKey>
+
+    insert into common_invoice (invoice_title,shopid,createtime,createBy) values (#{invoiceTitle}, #{shopid},#{createtime},#{createBy})
+  </insert>
+
+
+  <update id="updateCommonInvoice" parameterType="com.lenovo.invoice.domain.CommonInvoice">
+      UPDATE common_invoice SET invoice_title=#{invoiceTitle} WHERE id=#{id}
+  </update>
+
+</mapper>

@@ -22,6 +22,10 @@
     <dubbo:consumer timeout="30000"></dubbo:consumer>
     <!--设置超时时间-->
 
+    <!--换票-->
+    <dubbo:service interface="com.lenovo.invoice.api.ExchangeInvoiceService" ref="exchangeInvoiceService"/>
+    <dubbo:service interface="com.lenovo.invoice.api.CommonInvoiceService" ref="commonInvoiceService"/>
+
 
    <!--17shop发票-->
     <dubbo:service interface="com.lenovo.invoice.api.InvoiceShopApiService" ref="invoiceShopApiService"/>
