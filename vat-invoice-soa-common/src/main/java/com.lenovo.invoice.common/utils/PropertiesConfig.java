@@ -15,6 +15,7 @@ import com.lenovo.leconf.client.common.update.ILeconfUpdate;
 public class PropertiesConfig implements ILeconfUpdate{
 	@Value(value = "on")
 	private String openO2O = "on";
+	@Value(value = "on")
 	private String openZy = "on";
 
 	@LeconfFileItem(name = "openO2O")

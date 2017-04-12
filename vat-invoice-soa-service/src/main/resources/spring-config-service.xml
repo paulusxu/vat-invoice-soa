@@ -22,6 +22,8 @@
     <bean id="propertiesUtil" class="com.lenovo.invoice.common.utils.PropertiesUtil">
         <property name="key" value="${increase.key}"/>
         <property name="url" value="${increase.url}"/>
+        <property name="openO2O" value="${openO2O}"/>
+        <property name="openZy" value="${openZy}"/>
     </bean>
 
 </beans>
