@@ -1,12 +1,10 @@
 package com.lenovo.invoice.api;
 
+import com.lenovo.invoice.domain.InvoiceList;
 import com.lenovo.invoice.domain.O2oVatInvoice;
 import com.lenovo.invoice.domain.VatInvoice;
 import com.lenovo.invoice.domain.VathrowBtcp;
-import com.lenovo.invoice.domain.param.AddVatInvoiceInfoParam;
-import com.lenovo.invoice.domain.param.GetVatInvoiceInfoListParam;
-import com.lenovo.invoice.domain.param.GetVatInvoiceInfoParam;
-import com.lenovo.invoice.domain.param.UpdateVatInvoiceBatchParam;
+import com.lenovo.invoice.domain.param.*;
 import com.lenovo.invoice.domain.result.GetVatInvoiceInfoResult;
 import com.lenovo.m2.arch.framework.domain.PageModel2;
 import com.lenovo.m2.arch.framework.domain.PageQuery;
@@ -62,4 +60,10 @@ public interface InvoiceApiService {
     //修改单条增票
     long updateVatInvoice(UpdateVatInvoiceBatchParam param);
 
+    /**
+     * 获取可开具的发票
+     * @param getInvoiceTypeParam
+     * @return
+     */
+    InvoiceList getInvoiceTypes(GetInvoiceTypeParam getInvoiceTypeParam);
 }
