@@ -1,6 +1,7 @@
 package com.lenovo.invoice.domain.param;
 
 import java.io.Serializable;
+import java.util.List;
 
 /**
  * Created by xuweihua on 2017/4/12.
@@ -8,8 +9,15 @@ import java.io.Serializable;
 public class GetInvoiceTypeParam implements Serializable {
     private int shopId;
     private int salesType;
-    private int fatype;
-    private String faid;
+    private List<FaData> faDatas;
+
+    public List<FaData> getFaDatas() {
+        return faDatas;
+    }
+
+    public void setFaDatas(List<FaData> faDatas) {
+        this.faDatas = faDatas;
+    }
 
     public int getShopId() {
         return shopId;
@@ -27,19 +35,4 @@ public class GetInvoiceTypeParam implements Serializable {
         this.salesType = salesType;
     }
 
-    public int getFatype() {
-        return fatype;
-    }
-
-    public void setFatype(int fatype) {
-        this.fatype = fatype;
-    }
-
-    public String getFaid() {
-        return faid;
-    }
-
-    public void setFaid(String faid) {
-        this.faid = faid;
-    }
 }

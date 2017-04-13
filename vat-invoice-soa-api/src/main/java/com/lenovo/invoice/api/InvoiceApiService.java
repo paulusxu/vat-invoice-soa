@@ -5,6 +5,7 @@ import com.lenovo.invoice.domain.O2oVatInvoice;
 import com.lenovo.invoice.domain.VatInvoice;
 import com.lenovo.invoice.domain.VathrowBtcp;
 import com.lenovo.invoice.domain.param.*;
+import com.lenovo.invoice.domain.result.FaInvoiceResult;
 import com.lenovo.invoice.domain.result.GetVatInvoiceInfoResult;
 import com.lenovo.m2.arch.framework.domain.PageModel2;
 import com.lenovo.m2.arch.framework.domain.PageQuery;
@@ -65,5 +66,5 @@ public interface InvoiceApiService {
      * @param getInvoiceTypeParam
      * @return
      */
-    InvoiceList getInvoiceTypes(GetInvoiceTypeParam getInvoiceTypeParam);
+    List<FaInvoiceResult> getInvoiceTypes(GetInvoiceTypeParam getInvoiceTypeParam);
 }

@@ -14,6 +14,7 @@ import com.lenovo.invoice.dao.VathrowBtcpMapper;
 import com.lenovo.invoice.domain.*;
 import com.lenovo.invoice.domain.param.*;
 import com.lenovo.invoice.domain.result.AddVatInvoiceInfoResult;
+import com.lenovo.invoice.domain.result.FaInvoiceResult;
 import com.lenovo.invoice.domain.result.GetVatInvoiceInfoResult;
 import com.lenovo.invoice.service.BaseService;
 import com.lenovo.invoice.service.MemberVatInvoiceService;
@@ -721,13 +722,22 @@ public class InvoiceApiServiceImpl extends BaseService implements InvoiceApiServ
     }
 
     @Override
-    public InvoiceList getInvoiceTypes(GetInvoiceTypeParam getInvoiceTypeParam) {
-        return getInvoiceTypes(getInvoiceTypeParam.getShopId(),
-                getInvoiceTypeParam.getSalesType(),
-                getInvoiceTypeParam.getFatype(),
-                getInvoiceTypeParam.getFaid(),
-                getInvoiceTypes.getOpenO2O(),
-                getInvoiceTypes.getOpenZy());
+    public List<FaInvoiceResult> getInvoiceTypes(GetInvoiceTypeParam getInvoiceTypeParam) {
+        List<FaInvoiceResult> faInvoiceResults=new ArrayList<FaInvoiceResult>();
+        List<FaData> faDatas=getInvoiceTypeParam.getFaDatas();
+        for (int i=0;i<faDatas.size();i++){
+            FaInvoiceResult faInvoiceResult=new FaInvoiceResult();
+            faInvoiceResult.setFaid(faDatas.get(i).getFaid());
+            faInvoiceResult.setInvoiceList(getInvoiceTypes(getInvoiceTypeParam.getShopId(),
+                    getInvoiceTypeParam.getSalesType(),
+                    faDatas.get(i).getFatype(),
+                    faDatas.get(i).getFaid(),
+                    getInvoiceTypes.getOpenO2O(),
+                    getInvoiceTypes.getOpenZy()));
+            faInvoiceResults.add(faInvoiceResult);
+        }
+
+        return faInvoiceResults;
     }
 
 
