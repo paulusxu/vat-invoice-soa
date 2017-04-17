@@ -2,16 +2,20 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
 <mapper namespace="com.lenovo.invoice.dao.CommonInvoiceMapper" >
 
-  <select id="getCommonInvoice" parameterType="java.lang.Integer" resultMap="CommonInvoiceResultMap" >
-    select id,invoice_title,shopid,createtime,createBy
+  <select id="getCommonInvoiceById" parameterType="java.lang.Integer" resultMap="CommonInvoiceResultMap" >
+    select id,invoice_title,shopid,createtime,createBy,type
     from common_invoice
     where id=#{id}
   </select>
 
+  <delete id="deleteCommonInvoice" parameterType="java.lang.Integer">
+    DELETE FROM common_invoice WHERE id=#{id}
+  </delete>
+
   <select id="getCommonInvoiceByTitle" parameterType="com.lenovo.invoice.domain.CommonInvoice" resultMap="CommonInvoiceResultMap">
-    select id,invoice_title,shopid,createtime,createBy
+    select id,invoice_title,shopid,createtime,createBy,type
     from common_invoice
-    where invoice_title=#{invoiceTitle} AND shopid=#{shopid}
+    where invoice_title=#{invoiceTitle} AND shopid=#{shopid} AND type=#{type}
   </select>
 
   <resultMap id="CommonInvoiceResultMap" type="com.lenovo.invoice.domain.CommonInvoice">
@@ -20,6 +24,7 @@
     <result column="shopid" property="shopid"/>
     <result column="createtime" property="createtime"/>
     <result column="createBy" property="createBy"/>
+    <result column="type" property="type"/>
   </resultMap>
   
   <insert id="addCommonInvoice" parameterType="com.lenovo.invoice.domain.CommonInvoice">
@@ -28,7 +33,7 @@
       SELECT @@IDENTITY
     </selectKey>
 
-    insert into common_invoice (invoice_title,shopid,createtime,createBy) values (#{invoiceTitle}, #{shopid},#{createtime},#{createBy})
+    insert into common_invoice (invoice_title,shopid,createtime,createBy,type) values (#{invoiceTitle}, #{shopid},#{createtime},#{createBy},#{type})
   </insert>
 
 

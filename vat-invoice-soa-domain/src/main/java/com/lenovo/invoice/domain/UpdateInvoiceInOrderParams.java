@@ -10,7 +10,7 @@ public class UpdateInvoiceInOrderParams implements Serializable {
 
     private Integer id;//主键id
     private Long orderCode;//订单号
-    private Integer invoiceType;//发票类型
+    private Integer invoiceType;//发票类型，1电，2增，3普
     private String invoiceTitle;//发票抬头
     private String taxNo;//税号
     private String bankName;//开户银行

@@ -11,9 +11,18 @@ public class CommonInvoice implements Serializable{
 
     private Integer id;//主键id
     private String invoiceTitle;//发票抬头
-    private Integer shopid;
+    private Integer shopid;//商城
+    private Integer type;//开票方式，1是公司，2是个人
     private Date createtime;//创建时间
     private String createBy;//创建人
+
+    public Integer getType() {
+        return type;
+    }
+
+    public void setType(Integer type) {
+        this.type = type;
+    }
 
     public Integer getId() {
         return id;

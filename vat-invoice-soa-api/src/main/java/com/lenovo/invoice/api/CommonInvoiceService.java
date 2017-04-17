@@ -8,9 +8,9 @@ import com.lenovo.m2.arch.framework.domain.RemoteResult;
  */
 public interface CommonInvoiceService {
 
-    public RemoteResult addCommonInvoice(String lenovoId,String invoiceTitle,Integer shopid,String createBy) throws Exception;
+    public RemoteResult addCommonInvoice(String lenovoId,String invoiceTitle,Integer shopid,String createBy,Integer type) throws Exception;
 
-    public RemoteResult<CommonInvoice> getCommonInvoice(String lenovoId,Integer shopid) throws Exception;
+    public RemoteResult<CommonInvoice> getCommonInvoice(String lenovoId,Integer shopid,Integer type) throws Exception;
 
     //public RemoteResult updateCommonInvoice(Integer id,String invoiceTitle);
 

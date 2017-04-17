@@ -11,6 +11,8 @@ public interface CommonInvoiceMapper {
 
     public CommonInvoice getCommonInvoiceById(Integer id);
 
+    public int deleteCommonInvoice(Integer id);
+
     public CommonInvoice getCommonInvoiceByTitle(CommonInvoice commonInvoice);
 
     public int updateCommonInvoice(CommonInvoice commonInvoice);

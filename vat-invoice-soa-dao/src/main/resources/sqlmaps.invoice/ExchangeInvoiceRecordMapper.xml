@@ -3,45 +3,51 @@
 <mapper namespace="com.lenovo.invoice.dao.ExchangeInvoiceRecordMapper" >
 
   <sql id="allColumn">
-    id,itCode,orderCode,old_invoice_type,old_invoice_id,old_invoice_title,new_invoice_type,new_invoice_id,new_invoice_title,taxNo,bankName,bankNo,address,phone,state,exchangeTime
+    id,itCode,orderCode,BTCPOrderCode,shopid,exchangeTime,updateTime,state,exchangeType,
+    oldType,oldInvoiceId,oldInvoiceTitle,oldInvoiceType,oldTaxNo,oldBankName,oldBankNo,oldAddress,oldPhone,
+    newType,newInvoiceId,newInvoiceTitle,newInvoiceType,newTaxNo,newBankName,newBankNo,newAddress,newPhone
   </sql>
   
   <insert id="addExchangeInvoiceRecord" parameterType="com.lenovo.invoice.domain.ExchangeInvoiceRecord">
     insert into exchangeInvoiceRecord
-      (id,itCode,orderCode,old_invoice_type,old_invoice_id,old_invoice_title,new_invoice_type,new_invoice_id,new_invoice_title,taxNo,bankName,bankNo,address,phone,state,exchangeTime)
+      <include refid="allColumn"/>
     values
-      (#{id},#{itCode},#{orderCode},#{oldInvoiceType},#{oldInvoiceId},#{oldInvoiceTitle},#{newInvoiceType},#{newInvoiceId},#{newInvoiceTitle},#{taxNo},#{bankName},#{bankNo},#{address},#{phone},#{state},#{exchangeTime})
+      (#{id},#{itCode},#{orderCode},#{BTCPOrderCode},#{shopid},#{exchangeTime},#{updateTime},#{state},#{exchangeType},
+    #{oldType},#{oldInvoiceId},#{oldInvoiceTitle},#{oldInvoiceType},#{oldTaxNo},#{oldBankName},#{oldBankNo},#{oldAddress},#{oldPhone},
+    #{newType},#{newInvoiceId},#{newInvoiceTitle},#{newInvoiceType},#{newTaxNo},#{newBankName},#{newBankNo},#{newAddress},#{newPhone})
   </insert>
 
-  <select id="getExchangeInvoiceRecord" parameterType="java.lang.String" resultMap="exchangeInvoiceRecordResultMap">
+  <select id="getExchangeInvoiceRecord" parameterType="java.lang.String" resultType="com.lenovo.invoice.domain.ExchangeInvoiceRecord">
     SELECT
     <include refid="allColumn"/>
     FROM exchangeInvoiceRecord
     WHERE id=#{id}
   </select>
 
-  <resultMap id="exchangeInvoiceRecordResultMap" type="com.lenovo.invoice.domain.ExchangeInvoiceRecord">
-    <id column="id" property="id"/>
-    <result column="itCode" property="itCode"/>
-    <result column="orderCode" property="orderCode"/>
-    <result column="old_invoice_type" property="oldInvoiceType"/>
-    <result column="old_invoice_id" property="oldInvoiceId"/>
-    <result column="old_invoice_title" property="oldInvoiceTitle"/>
-    <result column="new_invoice_type" property="newInvoiceType"/>
-    <result column="new_invoice_id" property="newInvoiceId"/>
-    <result column="new_invoice_title" property="newInvoiceTitle"/>
-    <result column="taxNo" property="taxNo"/>
-    <result column="bankName" property="bankName"/>
-    <result column="bankNo" property="bankNo"/>
-    <result column="address" property="address"/>
-    <result column="phone" property="phone"/>
-    <result column="state" property="state"/>
-    <result column="exchangeTime" property="exchangeTime"/>
-  </resultMap>
-
   <update id="updateExchangeInvoiceRecord" parameterType="com.lenovo.invoice.domain.ExchangeInvoiceRecord">
-    UPDATE exchangeInvoiceRecord set state=#{state} WHERE id=#{id}
+    UPDATE exchangeInvoiceRecord set state=#{state},updateTime=#{updateTime} WHERE id=#{id}
   </update>
+
+  <select id="getExchangeInvoiceRecordByPage" parameterType="com.lenovo.invoice.domain.ExchangeInvoiceRecord" resultType="com.lenovo.invoice.domain.ExchangeInvoiceRecord">
+    SELECT
+    <include refid="allColumn"/>
+    FROM exchangeInvoiceRecord
+    <where>
+      <if test="param2.shopid!=null and param2.shopid!=''">
+        and shopid=#{param2.shopid}
+      </if>
+      <if test="param2.orderCode!=null and param2.orderCode!=''">
+        and orderCode=#{param2.orderCode}
+      </if>
+      <if test="param2.beginTime!=null and param2.beginTime!=''">
+        and exchangeTime>#{param2.beginTime}
+      </if>
+      <if test="param2.endTime!=null and param2.endTime!=''">
+        <![CDATA[ and exchangeTime<#{param2.endTime} ]]>
+      </if>
+    </where>
+    ORDER BY updateTime DESC
+  </select>
 
   <insert id="addErrorUpdateOrder" parameterType="com.lenovo.invoice.domain.UpdateInvoiceInOrderParams">
     INSERT INTO error_updateorder_invoice
@@ -50,7 +56,7 @@
       (#{orderCode},#{invoiceType},#{invoiceTitle},#{taxNo},#{bankName},#{bankNo},#{address},#{phone},#{createTime})
   </insert>
 
-  <select id="getErrorUpdateOrder" resultMap="com.lenovo.invoice.domain.UpdateInvoiceInOrderParams">
+  <select id="getErrorUpdateOrder" resultType="com.lenovo.invoice.domain.UpdateInvoiceInOrderParams">
     SELECT * FROM error_updateorder_invoice
   </select>
 

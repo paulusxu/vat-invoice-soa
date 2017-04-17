@@ -3,9 +3,9 @@
 <mapper namespace="com.lenovo.invoice.dao.CommonInvoiceMappingMapper" >
 
   <select id="getCommonInvoiceMapping" parameterType="com.lenovo.invoice.domain.CommonInvoiceMapping" resultMap="CommonInvoiceMappingResultMap" >
-    select id,lenovoId,common_invoice_id,shopid,createtime,createBy
+    select id,lenovoId,common_invoice_id,shopid,createtime,createBy,type
     from common_invoice_mapping
-    where lenovoId=#{lenovoId} AND shopid=#{shopid}
+    where lenovoId=#{lenovoId} AND shopid=#{shopid} AND type=#{type}
     ORDER BY createtime DESC limit 1;
   </select>
 
@@ -16,10 +16,11 @@
     <result column="shopid" property="shopid"/>
     <result column="createtime" property="createtime"/>
     <result column="createBy" property="createBy"/>
+    <result column="type" property="type"/>
   </resultMap>
   
   <insert id="addCommonInvoiceMapping" parameterType="com.lenovo.invoice.domain.CommonInvoiceMapping">
-    insert into common_invoice_mapping (lenovoId,common_invoice_id,shopid,createtime,createBy) values (#{lenovoId},#{commonInvoiceId},#{shopid},#{createtime},#{createBy})
+    insert into common_invoice_mapping (lenovoId,common_invoice_id,shopid,createtime,createBy,type) values (#{lenovoId},#{commonInvoiceId},#{shopid},#{createtime},#{createBy},#{type})
   </insert>
 
 </mapper>
