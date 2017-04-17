@@ -11,6 +11,7 @@ import com.lenovo.invoice.domain.param.AddVatInvoiceInfoParam;
 import com.lenovo.invoice.domain.result.AddVatInvoiceInfoResult;
 import com.lenovo.invoice.service.BaseService;
 import com.lenovo.m2.arch.framework.domain.*;
+import com.lenovo.m2.ordercenter.soa.api.model.forward.InvoiceChangeApi;
 import com.lenovo.m2.ordercenter.soa.api.query.order.InvoiceQueryService;
 import com.lenovo.m2.ordercenter.soa.api.vat.VatApiOrderCenter;
 import com.lenovo.m2.ordercenter.soa.domain.forward.Invoice;
@@ -52,10 +53,11 @@ public class ExchangeInvoiceServiceImpl extends BaseService implements ExchangeI
 
     //换普票
     @Override
-    public RemoteResult exchangeToCommon(String orderCode, Integer shopid, String lenovoId,String itCode,Integer oldInvoiceType,Integer exchangeType,Integer type,String newInvoiceTitle) {
-        LOGGER.info("exchangeToCommon参数==orderCode="+orderCode+";shopid="+shopid+";lenovoId="+lenovoId+";oldInvoiceType="+oldInvoiceType+";itCode="+itCode+";exchangeType="+exchangeType+";type="+type+";newInvoiceTitle="+newInvoiceTitle);
+    public RemoteResult exchangeToCommon(String orderCode,String itCode,Integer oldInvoiceType,Integer exchangeType,Integer type,String newInvoiceTitle) {
+        LOGGER.info("exchangeToCommon参数==orderCode="+orderCode+";oldInvoiceType="+oldInvoiceType+";itCode="+itCode+";exchangeType="+exchangeType+";type="+type+";newInvoiceTitle="+newInvoiceTitle);
 
         RemoteResult remoteResult = new RemoteResult();
+
         try {
             //第一步：获取订单状态
             VathrowBtcp vathrowBtcp = vathrowBtcpMapper.getVatInvoiceByOrderCode(orderCode);
@@ -68,9 +70,19 @@ public class ExchangeInvoiceServiceImpl extends BaseService implements ExchangeI
                 LOGGER.info("exchangeToCommon返回值==" + JacksonUtil.toJson(remoteResult));
                 return remoteResult;
             }else {
+                //获取老发票信息和订单信息
+                RemoteResult<InvoiceChangeApi> invoiceChangeApiByOrderId = vatApiOrderCenter.getInvoiceChangeApiByOrderId(orderCode);
+                InvoiceChangeApi invoiceChangeApi = invoiceChangeApiByOrderId.getT();
+                if (invoiceChangeApi==null){
+                    //获取老发票信息和订单信息失败
+                    remoteResult.setResultCode(InvoiceResultCode.GETORDERFAIL);
+                    remoteResult.setResultMsg("获取老发票信息和订单信息失败");
+                    LOGGER.info("exchangeToCommon返回值==" + JacksonUtil.toJson(remoteResult));
+                    return remoteResult;
+                }
                 //还未发货，客户换票，首先添加新得普票
                 CommonInvoiceServiceImpl commonInvoiceService = new CommonInvoiceServiceImpl();
-                RemoteResult<CommonInvoice> remoteResult1 = commonInvoiceService.addCommonInvoice(lenovoId, newInvoiceTitle, shopid,itCode,type);
+                RemoteResult<CommonInvoice> remoteResult1 = commonInvoiceService.addCommonInvoice(invoiceChangeApi.getLenovoId(), newInvoiceTitle, invoiceChangeApi.getShopId(),itCode,type);
                 if (!remoteResult1.isSuccess()){
                     //添加失败
                     remoteResult.setResultCode(InvoiceResultCode.ADDCOMMONINVOICEFAIL);
@@ -106,18 +118,14 @@ public class ExchangeInvoiceServiceImpl extends BaseService implements ExchangeI
 
                         ExchangeInvoiceRecord record = new ExchangeInvoiceRecord();
                         try {
-                            //获取订单原来的发票信息
-                            RemoteResult<Invoice> invoiceByOrderId = invoiceQueryService.getInvoiceByOrderId(orderCode);
-                            invoice = invoiceByOrderId.getT();
-
                             Date date = new Date();
 
                             //添加换票记录
                             record.setId(applyId);
                             record.setItCode(itCode);
                             record.setOrderCode(orderCode);
-                            record.setBTCPOrderCode(vathrowBtcp2.getOutid());
-                            record.setShopid(shopid);
+                            record.setBTCPOrderCode(invoiceChangeApi.getOutId());
+                            record.setShopid(invoiceChangeApi.getShopId());
                             //换票成功，暂时写3
                             record.setState(3);
                             record.setExchangeTime(date);
@@ -135,15 +143,15 @@ public class ExchangeInvoiceServiceImpl extends BaseService implements ExchangeI
                             }
 
                             //老发票信息
-                            record.setOldType(1);//暂时没有 TODO
+                            record.setOldType(invoiceChangeApi.getInvoiceHeader());//暂时写死的
                             record.setOldInvoiceId(1);//暂时没有
-                            record.setOldInvoiceTitle(invoice.getTitle());
-                            record.setOldInvoiceType(invoice.getType());
-                            record.setOldTaxNo(invoice.getTaxpayerIdentity());
-                            record.setOldBankName(invoice.getDepositBank());
-                            record.setOldBankNo(invoice.getBankNo());
-                            record.setOldAddress(invoice.getRegisterAddress());
-                            record.setOldPhone(invoice.getRegisterPhone());
+                            record.setOldInvoiceTitle(invoiceChangeApi.getTitle());
+                            record.setOldInvoiceType(invoiceChangeApi.getType());
+                            record.setOldTaxNo(invoiceChangeApi.getTaxpayerIdentity());
+                            record.setOldBankName(invoiceChangeApi.getDepositBank());
+                            record.setOldBankNo(invoiceChangeApi.getBankNo());
+                            record.setOldAddress(invoiceChangeApi.getRegisterAddress());
+                            record.setOldPhone(invoiceChangeApi.getRegisterPhone());
 
                             //新发票信息
                             record.setNewType(type);
@@ -167,7 +175,7 @@ public class ExchangeInvoiceServiceImpl extends BaseService implements ExchangeI
                     String xml = "<InvoiceEditUnit>";
                     xml += "<ApplyId>"+applyId+"</ApplyId>"; //唯一标识，
                     xml += "<CID>GM</CID>"; //官网是GM
-                    xml += "<BTCPSO>"+vathrowBtcp2.getOutid()+"</BTCPSO>";
+                    xml += "<BTCPSO>"+invoiceChangeApi.getOutId()+"</BTCPSO>";
                     xml += "<InvoiceType>P</InvoiceType>"; //普票P，增票Z，电子票D
                     xml += "<invoiceTitle>"+newInvoiceTitle+"</invoiceTitle>";
                     xml += "<UpdatedBy>"+itCode+"</UpdatedBy>";
@@ -198,18 +206,14 @@ public class ExchangeInvoiceServiceImpl extends BaseService implements ExchangeI
 
                         ExchangeInvoiceRecord record = new ExchangeInvoiceRecord();
                         try {
-                            //获取订单原来的发票信息
-                            RemoteResult<Invoice> invoiceByOrderId = invoiceQueryService.getInvoiceByOrderId(orderCode);
-                            Invoice invoice = invoiceByOrderId.getT();
-
                             Date date = new Date();
 
                             //添加换票记录
                             record.setId(applyId);
                             record.setItCode(itCode);
                             record.setOrderCode(orderCode);
-                            record.setBTCPOrderCode(vathrowBtcp2.getOutid());
-                            record.setShopid(shopid);
+                            record.setBTCPOrderCode(invoiceChangeApi.getOutId());
+                            record.setShopid(invoiceChangeApi.getShopId());
                             //换票成功，暂时写3
                             record.setState(3);
                             record.setExchangeTime(date);
@@ -227,15 +231,15 @@ public class ExchangeInvoiceServiceImpl extends BaseService implements ExchangeI
                             }
 
                             //老发票信息
-                            record.setOldType(1);//暂时没有 TODO
+                            record.setOldType(invoiceChangeApi.getInvoiceHeader());//暂时写死
                             record.setOldInvoiceId(1);//暂时没有
-                            record.setOldInvoiceTitle(invoice.getTitle());
-                            record.setOldInvoiceType(invoice.getType());
-                            record.setOldTaxNo(invoice.getTaxpayerIdentity());
-                            record.setOldBankName(invoice.getDepositBank());
-                            record.setOldBankNo(invoice.getBankNo());
-                            record.setOldAddress(invoice.getRegisterAddress());
-                            record.setOldPhone(invoice.getRegisterPhone());
+                            record.setOldInvoiceTitle(invoiceChangeApi.getTitle());
+                            record.setOldInvoiceType(invoiceChangeApi.getType());
+                            record.setOldTaxNo(invoiceChangeApi.getTaxpayerIdentity());
+                            record.setOldBankName(invoiceChangeApi.getDepositBank());
+                            record.setOldBankNo(invoiceChangeApi.getBankNo());
+                            record.setOldAddress(invoiceChangeApi.getRegisterAddress());
+                            record.setOldPhone(invoiceChangeApi.getRegisterPhone());
 
                             //新发票信息
                             record.setNewType(type);
@@ -267,13 +271,10 @@ public class ExchangeInvoiceServiceImpl extends BaseService implements ExchangeI
 
     //换增票
     @Override
-    public RemoteResult exchangeToVat(String orderCode, Integer shopid, String lenovoId,String itCode,
-                                      Integer oldInvoiceType,Integer exchangeType,String newInvoiceTitle,
-                                      String newTaxNo,String newBankName,String newBankNo,String newAddress,
-                                      String newPhone,String faid,String faType) {
-        LOGGER.info("exchangeToVat参数==orderCode=" + orderCode + ";shopid=" + shopid + ";lenovoId=" + lenovoId + ";oldInvoiceType=" +
-                oldInvoiceType + ";itCode=" + itCode + ";exchangeType=" + exchangeType + ";newInvoiceTitle=" + newInvoiceTitle + ";newTaxNo=" +
-                newTaxNo + ";newBankName=" + newBankName + ";newBankNo=" + newBankNo + ";newAddress=" + newAddress + ";newPhone=" + newPhone + ";faid=" + faid + ";faType=" + faType);
+    public RemoteResult exchangeToVat(String orderCode,String itCode,Integer oldInvoiceType,Integer exchangeType,String newInvoiceTitle,
+                                      String newTaxNo,String newBankName,String newBankNo,String newAddress,String newPhone) {
+        LOGGER.info("exchangeToVat参数==orderCode=" + orderCode + ";oldInvoiceType=" + oldInvoiceType + ";itCode=" + itCode + ";exchangeType=" + exchangeType
+                + ";newInvoiceTitle=" + newInvoiceTitle + ";newTaxNo=" + newTaxNo + ";newBankName=" + newBankName + ";newBankNo=" + newBankNo + ";newAddress=" + newAddress + ";newPhone=" + newPhone);
 
         RemoteResult remoteResult = new RemoteResult();
         try {
@@ -288,21 +289,31 @@ public class ExchangeInvoiceServiceImpl extends BaseService implements ExchangeI
                 LOGGER.info("exchangeToVat返回值==" + JacksonUtil.toJson(remoteResult));
                 return remoteResult;
             } else {
+                //获取老发票信息和订单信息
+                RemoteResult<InvoiceChangeApi> invoiceChangeApiByOrderId = vatApiOrderCenter.getInvoiceChangeApiByOrderId(orderCode);
+                InvoiceChangeApi invoiceChangeApi = invoiceChangeApiByOrderId.getT();
+                if (invoiceChangeApi==null){
+                    //获取老发票信息和订单信息失败
+                    remoteResult.setResultCode(InvoiceResultCode.GETORDERFAIL);
+                    remoteResult.setResultMsg("获取老发票信息和订单信息失败");
+                    LOGGER.info("exchangeToCommon返回值==" + JacksonUtil.toJson(remoteResult));
+                    return remoteResult;
+                }
                 //添加增票
                 InvoiceApiServiceImpl invoiceApiServiceImpl = new InvoiceApiServiceImpl();
                 Tenant tenant = new Tenant();
-                tenant.setShopId(shopid);
+                tenant.setShopId(invoiceChangeApi.getShopId());
                 AddVatInvoiceInfoParam param = new AddVatInvoiceInfoParam();
-                param.setLenovoId(lenovoId);
-                param.setShopId(shopid);
+                param.setLenovoId(invoiceChangeApi.getLenovoId());
+                param.setShopId(invoiceChangeApi.getShopId());
                 param.setCustomerName(newInvoiceTitle);
                 param.setTaxNo(newTaxNo);
                 param.setBankName(newBankName);
                 param.setAccountNo(newBankNo);
                 param.setAddress(newAddress);
                 param.setPhoneNo(newPhone);
-                param.setFaid(faid);
-                param.setFaType(faType);
+                param.setFaid(invoiceChangeApi.getFaid());
+                param.setFaType(invoiceChangeApi.getFaType()+"");
                 RemoteResult<AddVatInvoiceInfoResult> remoteResult1 = invoiceApiServiceImpl.addVatInvoiceInfo(param, tenant);
                 if (!remoteResult1.isSuccess()) {
                     //添加失败
@@ -344,18 +355,14 @@ public class ExchangeInvoiceServiceImpl extends BaseService implements ExchangeI
 
                         ExchangeInvoiceRecord record = new ExchangeInvoiceRecord();
                         try {
-                            //获取订单原来的发票信息
-                            RemoteResult<Invoice> invoiceByOrderId = invoiceQueryService.getInvoiceByOrderId(orderCode);
-                            invoice = invoiceByOrderId.getT();
-
                             Date date = new Date();
 
                             //添加换票记录
                             record.setId(applyId);
                             record.setItCode(itCode);
                             record.setOrderCode(orderCode);
-                            record.setBTCPOrderCode(vathrowBtcp2.getOutid());
-                            record.setShopid(shopid);
+                            record.setBTCPOrderCode(invoiceChangeApi.getOutId());
+                            record.setShopid(invoiceChangeApi.getShopId());
                             //换票成功，暂时写3
                             record.setState(3);
                             record.setExchangeTime(date);
@@ -373,15 +380,15 @@ public class ExchangeInvoiceServiceImpl extends BaseService implements ExchangeI
                             }
 
                             //老发票信息
-                            record.setOldType(1);//暂时没有 TODO
+                            record.setOldType(invoiceChangeApi.getInvoiceHeader());//暂时写死的
                             record.setOldInvoiceId(1);//暂时没有
-                            record.setOldInvoiceTitle(invoice.getTitle());
-                            record.setOldInvoiceType(invoice.getType());
-                            record.setOldTaxNo(invoice.getTaxpayerIdentity());
-                            record.setOldBankName(invoice.getDepositBank());
-                            record.setOldBankNo(invoice.getBankNo());
-                            record.setOldAddress(invoice.getRegisterAddress());
-                            record.setOldPhone(invoice.getRegisterPhone());
+                            record.setOldInvoiceTitle(invoiceChangeApi.getTitle());
+                            record.setOldInvoiceType(invoiceChangeApi.getType());
+                            record.setOldTaxNo(invoiceChangeApi.getTaxpayerIdentity());
+                            record.setOldBankName(invoiceChangeApi.getDepositBank());
+                            record.setOldBankNo(invoiceChangeApi.getBankNo());
+                            record.setOldAddress(invoiceChangeApi.getRegisterAddress());
+                            record.setOldPhone(invoiceChangeApi.getRegisterPhone());
 
                             //新发票信息
                             record.setNewType(1);//增票只有公司的
@@ -441,18 +448,14 @@ public class ExchangeInvoiceServiceImpl extends BaseService implements ExchangeI
 
                         ExchangeInvoiceRecord record = new ExchangeInvoiceRecord();
                         try {
-                            //获取订单原来的发票信息
-                            RemoteResult<Invoice> invoiceByOrderId = invoiceQueryService.getInvoiceByOrderId(orderCode);
-                            Invoice invoice = invoiceByOrderId.getT();
-
                             Date date = new Date();
 
                             //添加换票记录
                             record.setId(applyId);
                             record.setItCode(itCode);
                             record.setOrderCode(orderCode);
-                            record.setBTCPOrderCode(vathrowBtcp2.getOutid());
-                            record.setShopid(shopid);
+                            record.setBTCPOrderCode(invoiceChangeApi.getOutId());
+                            record.setShopid(invoiceChangeApi.getShopId());
                             //换票成功，暂时写3
                             record.setState(3);
                             record.setExchangeTime(date);
@@ -470,15 +473,15 @@ public class ExchangeInvoiceServiceImpl extends BaseService implements ExchangeI
                             }
 
                             //老发票信息
-                            record.setOldType(1);//暂时没有 TODO
+                            record.setOldType(invoiceChangeApi.getInvoiceHeader());//暂时写死的
                             record.setOldInvoiceId(1);//暂时没有
-                            record.setOldInvoiceTitle(invoice.getTitle());
-                            record.setOldInvoiceType(invoice.getType());
-                            record.setOldTaxNo(invoice.getTaxpayerIdentity());
-                            record.setOldBankName(invoice.getDepositBank());
-                            record.setOldBankNo(invoice.getBankNo());
-                            record.setOldAddress(invoice.getRegisterAddress());
-                            record.setOldPhone(invoice.getRegisterPhone());
+                            record.setOldInvoiceTitle(invoiceChangeApi.getTitle());
+                            record.setOldInvoiceType(invoiceChangeApi.getType());
+                            record.setOldTaxNo(invoiceChangeApi.getTaxpayerIdentity());
+                            record.setOldBankName(invoiceChangeApi.getDepositBank());
+                            record.setOldBankNo(invoiceChangeApi.getBankNo());
+                            record.setOldAddress(invoiceChangeApi.getRegisterAddress());
+                            record.setOldPhone(invoiceChangeApi.getRegisterPhone());
 
                             //新发票信息
                             record.setNewType(1);//增票只有公司的

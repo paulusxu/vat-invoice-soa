@@ -17,6 +17,7 @@ public class InvoiceResultCode {
     public static final String UPDATEORDERFAIL = "07";//修改订单失败
     public static final String THROWBTCPFAIL = "08";//抛BTCP失败
     public static final String PARAMSFAIL = "09";//必填参数错误
+    public static final String GETORDERFAIL = "10";//获取老发票信息和订单信息失败
 
 
 

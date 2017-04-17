@@ -17,14 +17,12 @@ public interface ExchangeInvoiceService {
     public RemoteResult BTCPCallback(String applyId,String code,String message);
 
     //换普票
-    public RemoteResult exchangeToCommon(String orderCode, Integer shopid, String lenovoId,String itCode,Integer oldInvoiceType,
+    public RemoteResult exchangeToCommon(String orderCode,String itCode,Integer oldInvoiceType,
                                          Integer exchangeType,Integer type,String newInvoiceTitle);
 
     //换增票
-    public RemoteResult exchangeToVat(String orderCode, Integer shopid, String lenovoId,String itCode,
-                                      Integer oldInvoiceType,Integer exchangeType,String newInvoiceTitle,
-                                      String newTaxNo,String newBankName,String newBankNo,String newAddress,
-                                      String newPhone,String faid,String faType);
+    public RemoteResult exchangeToVat(String orderCode,String itCode, Integer oldInvoiceType,Integer exchangeType,String newInvoiceTitle,
+                                      String newTaxNo,String newBankName,String newBankNo,String newAddress,String newPhone);
 
     //获取换票记录，加分页
     public RemoteResult<PageModel2<ExchangeInvoiceRecord>> getExchangeInvoiceRecordByPage(PageQuery pageQuery, ExchangeInvoiceRecord exchangeInvoiceRecord);
