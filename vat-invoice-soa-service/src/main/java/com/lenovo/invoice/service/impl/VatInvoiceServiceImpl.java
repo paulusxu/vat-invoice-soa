@@ -115,11 +115,17 @@ public class VatInvoiceServiceImpl implements VatInvoiceService {
     public long initVathrowBtcp(String orderCode) {
         long rows = 0;
         try {
-            VathrowBtcp vathrowBtcp = new VathrowBtcp();
-            vathrowBtcp.setOrderStatus(1);
-            vathrowBtcp.setOrderCode(orderCode);
-            //初始化
-            rows = vathrowBtcpMapper.insertVathrowBtcp(vathrowBtcp);
+            RemoteResult<Invoice> remoteResultInvoice = orderDetailService.getInvoiceByOrderId(Long.parseLong(orderCode));
+            if (remoteResultInvoice.isSuccess()) {
+                Invoice invoice = remoteResultInvoice.getT();//发票类型1:电子票2:增票3:普票
+                if (invoice != null && invoice.getType() == 2) {
+                    VathrowBtcp vathrowBtcp = new VathrowBtcp();
+                    vathrowBtcp.setOrderStatus(1);
+                    vathrowBtcp.setOrderCode(orderCode);
+                    //初始化
+                    rows = vathrowBtcpMapper.insertVathrowBtcp(vathrowBtcp);
+                }
+            }
         } catch (Exception e) {
             LOGGER.error(e.getMessage());
         }
