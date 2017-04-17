@@ -86,6 +86,7 @@
         count(1)
         FROM vathrowbtcp btcp, vatinvoice vat WHERE btcp.Zid=vat.Id AND btcp.OrderStatus=3 AND btcp.ThrowingStatus
         IN(0,4) <include refid="queryVatInvoice" />
+        GROUP BY vat.id ORDER BY vat.CreateTime
     </select>
 
     <sql id="queryVatInvoice">
