@@ -9,7 +9,16 @@ import java.util.List;
 public class GetInvoiceTypeParam implements Serializable {
     private int shopId;
     private int salesType;
+    private int bu;
     private List<FaData> faDatas;
+
+    public int getBu() {
+        return bu;
+    }
+
+    public void setBu(int bu) {
+        this.bu = bu;
+    }
 
     public List<FaData> getFaDatas() {
         return faDatas;
