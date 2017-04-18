@@ -757,26 +757,36 @@ public class InvoiceApiServiceImpl extends BaseService implements InvoiceApiServ
     }
 
     @Override
-    public List<FaInvoiceResult> getInvoiceTypes(GetInvoiceTypeParam getInvoiceTypeParam) {
-        List<FaInvoiceResult> faInvoiceResults = new ArrayList<FaInvoiceResult>();
-        List<FaData> faDatas = getInvoiceTypeParam.getFaDatas();
-        for (int i = 0; i < faDatas.size(); i++) {
-            FaInvoiceResult faInvoiceResult = new FaInvoiceResult();
-            faInvoiceResult.setFaid(faDatas.get(i).getFaid());
-            faInvoiceResult.setInvoiceList(getInvoiceTypes(getInvoiceTypeParam.getShopId(),
-                    getInvoiceTypeParam.getSalesType(),
-                    faDatas.get(i).getFatype(),
-                    faDatas.get(i).getFaid(),
-                    getInvoiceTypes.getOpenO2O(),
-                    getInvoiceTypes.getOpenZy()));
-            faInvoiceResults.add(faInvoiceResult);
+    public RemoteResult<List<FaInvoiceResult>> getInvoiceTypes(GetInvoiceTypeParam getInvoiceTypeParam) {
+        LOGGER_BTCP.info("getInvoiceTypes 参数"+JacksonUtil.toJson(getInvoiceTypeParam));
+        RemoteResult<List<FaInvoiceResult>> listRemoteResult= null;
+        try {
+            listRemoteResult = new RemoteResult<List<FaInvoiceResult>>(false);
+            List<FaInvoiceResult> faInvoiceResults = new ArrayList<FaInvoiceResult>();
+            List<FaData> faDatas = getInvoiceTypeParam.getFaDatas();
+            for (int i = 0; i < faDatas.size(); i++) {
+                FaInvoiceResult faInvoiceResult = new FaInvoiceResult();
+                faInvoiceResult.setFaid(faDatas.get(i).getFaid());
+                faInvoiceResult.setInvoiceList(getInvoiceTypes(getInvoiceTypeParam.getShopId(),
+                        getInvoiceTypeParam.getSalesType(),
+                        faDatas.get(i).getFatype(),
+                        faDatas.get(i).getFaid(),
+                        getInvoiceTypes.getOpenO2O(),
+                        getInvoiceTypes.getOpenZy()));
+                faInvoiceResults.add(faInvoiceResult);
+            }
+            listRemoteResult.setSuccess(true);
+            listRemoteResult.setT(faInvoiceResults);
+        } catch (Exception e) {
+            e.printStackTrace();
+            LOGGER_BTCP.error("getInvoiceTypes 异常" + e.getMessage());
         }
-
-        return faInvoiceResults;
+        LOGGER_BTCP.info("getInvoiceTypes 返回" + JacksonUtil.toJson(listRemoteResult));
+        return listRemoteResult;
     }
 
     @Override
-    public List<FaInvoiceResult> getInvoiceTypes(GetInvoiceTypeParam getInvoiceTypeParam, Tenant tenant) {
+    public RemoteResult<List<FaInvoiceResult>> getInvoiceTypes(GetInvoiceTypeParam getInvoiceTypeParam, Tenant tenant) {
         return getInvoiceTypes(getInvoiceTypeParam);
     }
 
