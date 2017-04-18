@@ -65,5 +65,7 @@ public interface InvoiceApiService {
      * @param getInvoiceTypeParam
      * @return
      */
-    List<FaInvoiceResult> getInvoiceTypes(GetInvoiceTypeParam getInvoiceTypeParam);
+    RemoteResult<List<FaInvoiceResult>> getInvoiceTypes(GetInvoiceTypeParam getInvoiceTypeParam);
+
+    RemoteResult<List<FaInvoiceResult>> getInvoiceTypes(GetInvoiceTypeParam getInvoiceTypeParam,Tenant tenant);
 }
