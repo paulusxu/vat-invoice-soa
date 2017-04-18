@@ -740,6 +740,11 @@ public class InvoiceApiServiceImpl extends BaseService implements InvoiceApiServ
         return faInvoiceResults;
     }
 
+    @Override
+    public List<FaInvoiceResult> getInvoiceTypes(GetInvoiceTypeParam getInvoiceTypeParam, Tenant tenant) {
+        return getInvoiceTypes(getInvoiceTypeParam);
+    }
+
 
     public InvoiceList getInvoiceTypes(int shopId,int salesType,int fatype,String faid,String openO2O,String openZy) {
         HashSet<Integer> fatypesets=new HashSet<Integer>();
