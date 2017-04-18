@@ -25,8 +25,12 @@ import com.lenovo.m2.arch.framework.domain.PageQuery;
 import com.lenovo.m2.arch.framework.domain.RemoteResult;
 import com.lenovo.m2.arch.framework.domain.Tenant;
 import com.lenovo.m2.arch.tool.util.StringUtils;
+import com.lenovo.m2.buy.order.middleware.api.OrderInvoiceService;
+import com.lenovo.m2.buy.order.middleware.domain.btcp.IncreaseOrderRequest;
+import com.lenovo.m2.buy.order.middleware.domain.param.InvoiceReviewParam;
 import com.lenovo.m2.ordercenter.soa.api.vat.VatApiOrderCenter;
 import com.lenovo.m2.ordercenter.soa.domain.forward.Invoice;
+import com.lenovo.m2.ordercenter.soa.domain.forward.Main;
 import com.lenovo.m2.stock.soa.api.service.StoreInfoApiService;
 import com.lenovo.m2.stock.soa.domain.param.GetStoreInfoIdParam;
 import org.apache.ibatis.annotations.Param;
@@ -70,9 +74,11 @@ public class InvoiceApiServiceImpl extends BaseService implements InvoiceApiServ
     private VatApiOrderCenter vatApiOrderCenter;
     @Autowired
     private PropertiesConfig getInvoiceTypes;
+    @Autowired
+    private OrderInvoiceService orderInvoiceService;
 
     @Override
-    public String getType(String faid,String faType) {
+    public String getType(String faid, String faType) {
         String type = null;
         String cacheKey = CacheConstant.CACHE_PREFIX_INIT_FAID + faid;
         if (redisObjectManager.existsKey(cacheKey)) {//获取fatype,没有增加缓存
@@ -183,10 +189,10 @@ public class InvoiceApiServiceImpl extends BaseService implements InvoiceApiServ
 
     @Override
     public int updateThrowingStatus(String orderCode, int status) {
-        int rows=0;
+        int rows = 0;
         try {
-            rows=vathrowBtcpMapper.updateThrowingStatus(orderCode,status);
-        }catch (Exception e){
+            rows = vathrowBtcpMapper.updateThrowingStatus(orderCode, status);
+        } catch (Exception e) {
             LOGGER.error(e.getMessage());
         }
         return rows;
@@ -194,14 +200,43 @@ public class InvoiceApiServiceImpl extends BaseService implements InvoiceApiServ
 
     @Override
     public long updateVatInvoice(UpdateVatInvoiceBatchParam param) {
-        long rows=0;
+        long rows = 0;
         try {
-            rows=vathrowBtcpMapper.updateVatInvoice(param);
+            rows = vathrowBtcpMapper.updateVatInvoice(param);
 
-        } catch (Exception e){
+        } catch (Exception e) {
             LOGGER.error(e.getMessage());
         }
         return rows;
+    }
+
+    @Override
+    public long btcpSyncVatInvoice(IncreaseOrderRequest increaseOrderRequest) {
+
+        try {
+            int status = increaseOrderRequest.getStatus();
+            if (IncreaseOrderRequest.SUCCEED != status) {
+                status = InvoiceReviewParam.REVIEW_STATUS_REJECTED;
+            } else {
+                status = InvoiceReviewParam.REVIEW_STATUS_ACCEPT;
+            }
+
+            long orderId = 0;
+            RemoteResult<Main> remoteResult = orderInvoiceService.getOrderInvoiceDetail(increaseOrderRequest.getBtcpSO());
+            if (remoteResult.isSuccess()) {
+                Main main = remoteResult.getT();
+                InvoiceReviewParam invoiceReviewParam = new InvoiceReviewParam();
+                invoiceReviewParam.setOrderId(main.getId());
+                invoiceReviewParam.setReviewStatus(status);
+                invoiceReviewParam.setFailureReason(increaseOrderRequest.getReason());
+                orderInvoiceService.updateInvoiceReviewStatus(invoiceReviewParam);
+                updateThrowingStatus(orderId+"",4);
+            }
+
+        } catch (Exception e) {
+            LOGGER_BTCP.error(e.getMessage(), e);
+        }
+        return 0;
     }
 
     @Override
@@ -226,7 +261,7 @@ public class InvoiceApiServiceImpl extends BaseService implements InvoiceApiServ
 
             String storeId = null;
             String faid = param.getFaid();
-            String type = getType(faid,param.getFaType());
+            String type = getType(faid, param.getFaType());
 //            if(param.getFaid().equals(O2oFaIdUtil.getProperty("o2ofaid"))){
 //                GetStoreInfoIdParam storeInfoIdParam = new GetStoreInfoIdParam();
 //                storeInfoIdParam.setFaid(param.getFaid());
@@ -317,7 +352,7 @@ public class InvoiceApiServiceImpl extends BaseService implements InvoiceApiServ
         RemoteResult<List<GetVatInvoiceInfoResult>> remoteResult = new RemoteResult<List<GetVatInvoiceInfoResult>>(false);
         String lenovoId = param.getLenovoId();
         String faid = param.getFaid();
-        String type = getType(faid,param.getFaType());
+        String type = getType(faid, param.getFaType());
 
         if (type.equals("0")) {
             faid = param.getFaid();
@@ -723,10 +758,10 @@ public class InvoiceApiServiceImpl extends BaseService implements InvoiceApiServ
 
     @Override
     public List<FaInvoiceResult> getInvoiceTypes(GetInvoiceTypeParam getInvoiceTypeParam) {
-        List<FaInvoiceResult> faInvoiceResults=new ArrayList<FaInvoiceResult>();
-        List<FaData> faDatas=getInvoiceTypeParam.getFaDatas();
-        for (int i=0;i<faDatas.size();i++){
-            FaInvoiceResult faInvoiceResult=new FaInvoiceResult();
+        List<FaInvoiceResult> faInvoiceResults = new ArrayList<FaInvoiceResult>();
+        List<FaData> faDatas = getInvoiceTypeParam.getFaDatas();
+        for (int i = 0; i < faDatas.size(); i++) {
+            FaInvoiceResult faInvoiceResult = new FaInvoiceResult();
             faInvoiceResult.setFaid(faDatas.get(i).getFaid());
             faInvoiceResult.setInvoiceList(getInvoiceTypes(getInvoiceTypeParam.getShopId(),
                     getInvoiceTypeParam.getSalesType(),
@@ -746,50 +781,50 @@ public class InvoiceApiServiceImpl extends BaseService implements InvoiceApiServ
     }
 
 
-    public InvoiceList getInvoiceTypes(int shopId,int salesType,int fatype,String faid,String openO2O,String openZy) {
-        HashSet<Integer> fatypesets=new HashSet<Integer>();
+    public InvoiceList getInvoiceTypes(int shopId, int salesType, int fatype, String faid, String openO2O, String openZy) {
+        HashSet<Integer> fatypesets = new HashSet<Integer>();
         fatypesets.add(1);
         fatypesets.add(2);
         fatypesets.add(4);
-        if(shopId==8){
-            return new InvoiceList(Arrays.asList(new InvoiceType[]{InvoiceType.PTFP}),Arrays.asList(new InvoiceType[]{InvoiceType.ZZFP,InvoiceType.PTFP}));
+        if (shopId == 8) {
+            return new InvoiceList(Arrays.asList(new InvoiceType[]{InvoiceType.PTFP}), Arrays.asList(new InvoiceType[]{InvoiceType.ZZFP, InvoiceType.PTFP}));
         }
-        if(shopId==14){
-            return new InvoiceList(null,Arrays.asList(new InvoiceType[]{InvoiceType.ZZFP,InvoiceType.PTFP}));
+        if (shopId == 14) {
+            return new InvoiceList(null, Arrays.asList(new InvoiceType[]{InvoiceType.ZZFP, InvoiceType.PTFP}));
         }
-        if(salesType==98){//alesType=o2o && openO2OVatInvoice.eq(“on”)
-            if(openO2O.equals("on")){
-                return new InvoiceList(Arrays.asList(new InvoiceType[]{InvoiceType.PTFP}),Arrays.asList(new InvoiceType[]{InvoiceType.ZZFP,InvoiceType.PTFP}));
-            }else {
-                return new InvoiceList(null,Arrays.asList(new InvoiceType[]{InvoiceType.ZZFP}));
+        if (salesType == 98) {//alesType=o2o && openO2OVatInvoice.eq(“on”)
+            if (openO2O.equals("on")) {
+                return new InvoiceList(Arrays.asList(new InvoiceType[]{InvoiceType.PTFP}), Arrays.asList(new InvoiceType[]{InvoiceType.ZZFP, InvoiceType.PTFP}));
+            } else {
+                return new InvoiceList(null, Arrays.asList(new InvoiceType[]{InvoiceType.ZZFP}));
             }
         }
-        if(salesType==97){//salesType=ZC_SALES(众筹)
-            return new InvoiceList(Arrays.asList(new InvoiceType[]{InvoiceType.PTFP}),Arrays.asList(new InvoiceType[]{InvoiceType.ZZFP,InvoiceType.PTFP}));
+        if (salesType == 97) {//salesType=ZC_SALES(众筹)
+            return new InvoiceList(Arrays.asList(new InvoiceType[]{InvoiceType.PTFP}), Arrays.asList(new InvoiceType[]{InvoiceType.ZZFP, InvoiceType.PTFP}));
         }
-        if("36d0caa1-af7a-459b-b147-04b86ad25dd7".equals(faid)) {//faids.contains(zukFaid)
-            return new InvoiceList(Arrays.asList(new InvoiceType[]{InvoiceType.DZFP}),null);
+        if ("36d0caa1-af7a-459b-b147-04b86ad25dd7".equals(faid)) {//faids.contains(zukFaid)
+            return new InvoiceList(Arrays.asList(new InvoiceType[]{InvoiceType.DZFP}), null);
         }
-        if(fatypesets.contains(fatype)) {//非直营 fatypesets.congtains(1/2/4)
-            return new InvoiceList(Arrays.asList(new InvoiceType[]{InvoiceType.PTFP}),Arrays.asList(new InvoiceType[]{InvoiceType.PTFP}));
+        if (fatypesets.contains(fatype)) {//非直营 fatypesets.congtains(1/2/4)
+            return new InvoiceList(Arrays.asList(new InvoiceType[]{InvoiceType.PTFP}), Arrays.asList(new InvoiceType[]{InvoiceType.PTFP}));
         }
-        HashSet<Integer> smartTv= new HashSet<Integer>();
+        HashSet<Integer> smartTv = new HashSet<Integer>();
         smartTv.add(9);
         smartTv.add(10);
-        if(smartTv.contains(fatype)) {//smart.Tv  fatypesets.contains(9/10)
-            return new InvoiceList(Arrays.asList(new InvoiceType[]{InvoiceType.DZFP,InvoiceType.PTFP}),Arrays.asList(new InvoiceType[]{InvoiceType.PTFP,InvoiceType.ZZFP}));
+        if (smartTv.contains(fatype)) {//smart.Tv  fatypesets.contains(9/10)
+            return new InvoiceList(Arrays.asList(new InvoiceType[]{InvoiceType.DZFP, InvoiceType.PTFP}), Arrays.asList(new InvoiceType[]{InvoiceType.PTFP, InvoiceType.ZZFP}));
         }
-        HashSet<Integer> zyFaTye= new HashSet<Integer>();
+        HashSet<Integer> zyFaTye = new HashSet<Integer>();
         zyFaTye.add(0);
         zyFaTye.add(3);
-        if(zyFaTye.contains(fatype)) {//直营 fatypes.contains(0/3)
-            if(openZy.equals("on")) {
+        if (zyFaTye.contains(fatype)) {//直营 fatypes.contains(0/3)
+            if (openZy.equals("on")) {
                 return new InvoiceList(Arrays.asList(new InvoiceType[]{InvoiceType.DZFP, InvoiceType.PTFP}), Arrays.asList(new InvoiceType[]{InvoiceType.PTFP, InvoiceType.ZZFP}));
-            }else{
+            } else {
                 return new InvoiceList(Arrays.asList(new InvoiceType[]{InvoiceType.DZFP}), Arrays.asList(new InvoiceType[]{InvoiceType.ZZFP}));
             }
         }
-        if(shopId==9||shopId==15||fatype==5){
+        if (shopId == 9 || shopId == 15 || fatype == 5) {
             return null;
         }
         return null;
