@@ -117,6 +117,7 @@ public class VatInvoiceServiceImpl implements VatInvoiceService {
     public long initVathrowBtcp(String orderCode) {
         long rows = 0;
         try {
+            Thread.sleep(20000); //睡眠20s去订单获取
             RemoteResult<Invoice> remoteResultInvoice = orderDetailService.getInvoiceByOrderId(Long.parseLong(orderCode));
             LOGGER_PAID.info("InitVathrowBtcp:{}",JacksonUtil.toJson(remoteResultInvoice));
             if (remoteResultInvoice.isSuccess()) {
