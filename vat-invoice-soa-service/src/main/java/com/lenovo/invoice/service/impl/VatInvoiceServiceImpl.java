@@ -32,6 +32,8 @@ public class VatInvoiceServiceImpl implements VatInvoiceService {
     private static final Logger LOGGER = LoggerFactory.getLogger("com.lenovo.invoice.service.impl.vatinvoice");
     private static final Logger LOGGER_BTCP = LoggerFactory.getLogger("com.lenovo.invoice.service.impl.throwBtcp");
     private static final Logger LOGGER_THROW = LoggerFactory.getLogger("com.lenovo.invoice.customer.order.throw");
+    private static final Logger LOGGER_PAID = LoggerFactory.getLogger("com.lenovo.invoice.customer.order.paid");
+
 
 
     @Autowired
@@ -116,6 +118,7 @@ public class VatInvoiceServiceImpl implements VatInvoiceService {
         long rows = 0;
         try {
             RemoteResult<Invoice> remoteResultInvoice = orderDetailService.getInvoiceByOrderId(Long.parseLong(orderCode));
+            LOGGER_PAID.info("InitVathrowBtcp:{}",JacksonUtil.toJson(remoteResultInvoice));
             if (remoteResultInvoice.isSuccess()) {
                 Invoice invoice = remoteResultInvoice.getT();//发票类型1:电子票2:增票3:普票
                 if (invoice != null && invoice.getType() == 2) {
@@ -127,7 +130,7 @@ public class VatInvoiceServiceImpl implements VatInvoiceService {
                 }
             }
         } catch (Exception e) {
-            LOGGER.error(e.getMessage());
+            LOGGER_PAID.error(e.getMessage());
         }
         return rows;
     }
