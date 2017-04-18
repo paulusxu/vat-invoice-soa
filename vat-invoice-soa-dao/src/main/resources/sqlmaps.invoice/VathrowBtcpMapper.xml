@@ -107,7 +107,9 @@
         <if test="shopid != null and shopid!=''">
             AND vat.ShopId = ${shopid}
         </if>
-
+        <if test="ischeck != null and ischeck!=''">
+            AND vat.isCheck = ${ischeck}
+        </if>
     </sql>
 
 
