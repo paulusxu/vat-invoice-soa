@@ -12,12 +12,12 @@
         <aop:include name="timingAspect"/>
     </aop:aspectj-autoproxy>
     <!-- 自动发现bean，包括@Component@Service@Controller等 -->
-    <context:component-scan base-package="com.lenovo.invoice.service.**"/>
+    <!--<context:component-scan base-package="com.lenovo.invoice.service.**"/>-->
 
     <!--<import resource="classpath*:spring-config-service.xml"/>-->
     <import resource="classpath*:spring-config-dao-test.xml"/>
-    <import resource="classpath*:spring-config-dubbo-test.xml"/>
-    <!--<import resource="classpath*:spring-redis-shard.xml"/>-->
+    <!--<import resource="classpath*:spring-config-dubbo-test.xml"/>-->
+    <import resource="classpath*:spring-redis-shard-test.xml"/>
 
 
 
