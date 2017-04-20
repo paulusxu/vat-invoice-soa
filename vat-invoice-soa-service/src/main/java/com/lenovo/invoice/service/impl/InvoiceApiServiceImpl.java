@@ -759,9 +759,12 @@ public class InvoiceApiServiceImpl extends BaseService implements InvoiceApiServ
     @Override
     public RemoteResult<List<FaInvoiceResult>> getInvoiceTypes(GetInvoiceTypeParam getInvoiceTypeParam) {
         LOGGER_BTCP.info("getInvoiceTypes 参数"+JacksonUtil.toJson(getInvoiceTypeParam));
-        RemoteResult<List<FaInvoiceResult>> listRemoteResult= null;
+        RemoteResult<List<FaInvoiceResult>> listRemoteResult= new RemoteResult<List<FaInvoiceResult>>(false);
         try {
-            listRemoteResult = new RemoteResult<List<FaInvoiceResult>>(false);
+            if(getInvoiceTypeParam.getBu()==140){//
+                listRemoteResult.setResultMsg("不能开具发票");
+                return listRemoteResult;
+            }
             List<FaInvoiceResult> faInvoiceResults = new ArrayList<FaInvoiceResult>();
             List<FaData> faDatas = getInvoiceTypeParam.getFaDatas();
             for (int i = 0; i < faDatas.size(); i++) {
