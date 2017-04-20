@@ -12,7 +12,7 @@ import java.util.List;
 public enum InvoiceType {
     DZFP(0,"电子发票"),
     PTFP(1,"普通发票"),
-    ZZFP(2,"增至发票");
+    ZZFP(2,"增值发票");
 
 
     private InvoiceType(int type, String descr) {

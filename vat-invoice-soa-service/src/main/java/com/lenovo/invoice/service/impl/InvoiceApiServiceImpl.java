@@ -766,10 +766,13 @@ public class InvoiceApiServiceImpl extends BaseService implements InvoiceApiServ
 
     @Override
     public RemoteResult<List<FaInvoiceResult>> getInvoiceTypes(GetInvoiceTypeParam getInvoiceTypeParam) {
-        LOGGER_BTCP.info("getInvoiceTypes 参数" + JacksonUtil.toJson(getInvoiceTypeParam));
-        RemoteResult<List<FaInvoiceResult>> listRemoteResult = null;
+        LOGGER_BTCP.info("getInvoiceTypes 参数"+JacksonUtil.toJson(getInvoiceTypeParam));
+        RemoteResult<List<FaInvoiceResult>> listRemoteResult= new RemoteResult<List<FaInvoiceResult>>(false);
         try {
-            listRemoteResult = new RemoteResult<List<FaInvoiceResult>>(false);
+            if(getInvoiceTypeParam.getBu()==140){//
+                listRemoteResult.setResultMsg("不能开具发票");
+                return listRemoteResult;
+            }
             List<FaInvoiceResult> faInvoiceResults = new ArrayList<FaInvoiceResult>();
             List<FaData> faDatas = getInvoiceTypeParam.getFaDatas();
             for (int i = 0; i < faDatas.size(); i++) {
@@ -795,6 +798,10 @@ public class InvoiceApiServiceImpl extends BaseService implements InvoiceApiServ
 
     @Override
     public RemoteResult<List<FaInvoiceResult>> getInvoiceTypes(GetInvoiceTypeParam getInvoiceTypeParam, Tenant tenant) {
+        LOGGER_BTCP.info("getInvoiceTypes Tenant 参数"+JacksonUtil.toJson(tenant));
+        if(tenant!=null&&tenant.getShopId()!=null){
+            getInvoiceTypeParam.setShopId(tenant.getShopId());
+        }
         return getInvoiceTypes(getInvoiceTypeParam);
     }
 
@@ -830,7 +837,7 @@ public class InvoiceApiServiceImpl extends BaseService implements InvoiceApiServ
         smartTv.add(9);
         smartTv.add(10);
         if (smartTv.contains(fatype)) {//smart.Tv  fatypesets.contains(9/10)
-            return new InvoiceList(Arrays.asList(new InvoiceType[]{InvoiceType.DZFP, InvoiceType.PTFP}), Arrays.asList(new InvoiceType[]{InvoiceType.PTFP, InvoiceType.ZZFP}));
+            return new InvoiceList(Arrays.asList(new InvoiceType[]{InvoiceType.PTFP}), Arrays.asList(new InvoiceType[]{InvoiceType.PTFP}));
         }
         HashSet<Integer> zyFaTye = new HashSet<Integer>();
         zyFaTye.add(0);
