@@ -829,7 +829,7 @@ public class InvoiceApiServiceImpl extends BaseService implements InvoiceApiServ
         smartTv.add(9);
         smartTv.add(10);
         if (smartTv.contains(fatype)) {//smart.Tv  fatypesets.contains(9/10)
-            return new InvoiceList(Arrays.asList(new InvoiceType[]{InvoiceType.DZFP, InvoiceType.PTFP}), Arrays.asList(new InvoiceType[]{InvoiceType.PTFP, InvoiceType.ZZFP}));
+            return new InvoiceList(Arrays.asList(new InvoiceType[]{InvoiceType.PTFP}), Arrays.asList(new InvoiceType[]{InvoiceType.PTFP}));
         }
         HashSet<Integer> zyFaTye = new HashSet<Integer>();
         zyFaTye.add(0);
