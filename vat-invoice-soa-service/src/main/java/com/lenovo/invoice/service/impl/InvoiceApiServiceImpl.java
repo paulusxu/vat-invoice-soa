@@ -790,6 +790,10 @@ public class InvoiceApiServiceImpl extends BaseService implements InvoiceApiServ
 
     @Override
     public RemoteResult<List<FaInvoiceResult>> getInvoiceTypes(GetInvoiceTypeParam getInvoiceTypeParam, Tenant tenant) {
+        LOGGER_BTCP.info("getInvoiceTypes Tenant 参数"+JacksonUtil.toJson(tenant));
+        if(tenant!=null&&tenant.getShopId()!=null){
+            getInvoiceTypeParam.setShopId(tenant.getShopId());
+        }
         return getInvoiceTypes(getInvoiceTypeParam);
     }
 
