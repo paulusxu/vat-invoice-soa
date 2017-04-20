@@ -26,9 +26,6 @@
     <include refid="Base_Column_List" />
     from membervatinvoice
     where LenovoID = #{lenovoId,jdbcType=VARCHAR} and type=${type}
-    <if test="faid!=null and faid!=''">
-      and faid=#{faid}
-    </if>
     <if test="storesid!=null and storesid!=''">
       and  storesid=${storesid}
     </if>
