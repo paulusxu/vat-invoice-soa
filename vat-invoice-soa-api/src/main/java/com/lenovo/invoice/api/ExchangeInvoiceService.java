@@ -30,16 +30,4 @@ public interface ExchangeInvoiceService {
     //获取换票记录详情
     public RemoteResult<ExchangeInvoiceRecord> getExchangeInvoiceRecord(String id);
 
-    /*public RemoteResult vatToVat(String orderCode,String itCode,Integer oldInvoiceId,String oldInvoiceTitle,
-                                 AddVatInvoiceInfoParam addVatInvoiceInfoParam);*/
-
-    /*public RemoteResult exchangeInvoice(String itCode,String lenovoId,String orderCode, Integer shopid,
-                                        Integer oldInvoiceId,String oldInvoiceTitle,Integer oldInvoiceType,
-                                        Integer newInvoiceId,String newInvoiceTitle,Integer newInvoiceType,
-                                        String taxNo,String bankName,String bankNo,String address,String phone
-                                        ,String faid,String faType);*/
-
-    /*public RemoteResult vatToCommon(String orderCode,Integer shopid,String lenovoId,String invoiceTitle,
-                                    String itCode, Integer oldInvoiceId,String oldInvoiceTitle);*/
-
 }
