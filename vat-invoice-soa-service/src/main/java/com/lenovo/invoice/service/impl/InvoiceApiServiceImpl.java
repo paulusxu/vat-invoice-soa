@@ -28,6 +28,7 @@ import com.lenovo.m2.arch.tool.util.StringUtils;
 import com.lenovo.m2.buy.order.middleware.api.OrderInvoiceService;
 import com.lenovo.m2.buy.order.middleware.domain.btcp.IncreaseOrderRequest;
 import com.lenovo.m2.buy.order.middleware.domain.param.InvoiceReviewParam;
+import com.lenovo.m2.ordercenter.soa.api.query.order.OrderDetailService;
 import com.lenovo.m2.ordercenter.soa.api.vat.VatApiOrderCenter;
 import com.lenovo.m2.ordercenter.soa.domain.forward.Invoice;
 import com.lenovo.m2.ordercenter.soa.domain.forward.Main;
@@ -76,6 +77,8 @@ public class InvoiceApiServiceImpl extends BaseService implements InvoiceApiServ
     private PropertiesConfig getInvoiceTypes;
     @Autowired
     private OrderInvoiceService orderInvoiceService;
+    @Autowired
+    private OrderDetailService orderDetailService;
 
     @Override
     public String getType(String faid, String faType) {
@@ -230,7 +233,12 @@ public class InvoiceApiServiceImpl extends BaseService implements InvoiceApiServ
                 invoiceReviewParam.setReviewStatus(status);
                 invoiceReviewParam.setFailureReason(increaseOrderRequest.getReason());
                 orderInvoiceService.updateInvoiceReviewStatus(invoiceReviewParam);
-                updateThrowingStatus(orderId+"",4);
+                RemoteResult<Invoice> remoteResultInvoice = orderDetailService.getInvoiceByOrderId(orderId);
+                if (remoteResultInvoice.isSuccess()) {
+                    Invoice invoice = remoteResultInvoice.getT();
+                    changeVatInvoiceState(invoice.getZid(), status == 1 ? true : false, null);
+                }
+                updateThrowingStatus(orderId + "", 4);
             }
 
         } catch (Exception e) {
@@ -758,8 +766,8 @@ public class InvoiceApiServiceImpl extends BaseService implements InvoiceApiServ
 
     @Override
     public RemoteResult<List<FaInvoiceResult>> getInvoiceTypes(GetInvoiceTypeParam getInvoiceTypeParam) {
-        LOGGER_BTCP.info("getInvoiceTypes 参数"+JacksonUtil.toJson(getInvoiceTypeParam));
-        RemoteResult<List<FaInvoiceResult>> listRemoteResult= null;
+        LOGGER_BTCP.info("getInvoiceTypes 参数" + JacksonUtil.toJson(getInvoiceTypeParam));
+        RemoteResult<List<FaInvoiceResult>> listRemoteResult = null;
         try {
             listRemoteResult = new RemoteResult<List<FaInvoiceResult>>(false);
             List<FaInvoiceResult> faInvoiceResults = new ArrayList<FaInvoiceResult>();
