@@ -82,11 +82,9 @@
     </select>
 
     <select id="getNotThrowBtcpVatInvoiceCount" resultType="java.lang.Integer" parameterType="java.util.Map">
-        select
-        count(1)
-        FROM vathrowbtcp btcp, vatinvoice vat WHERE btcp.Zid=vat.Id AND btcp.OrderStatus=3 AND btcp.ThrowingStatus
-        IN(0,4) <include refid="queryVatInvoice" />  group by vat.taxNo
-        ORDER BY vat.CreateTime
+        SELECT COUNT(1) FROM
+        (SELECT vat.* FROM vathrowbtcp btcp, vatinvoice vat WHERE btcp.Zid=vat.Id AND btcp.OrderStatus=3 AND btcp.ThrowingStatus IN(0,4)
+         GROUP BY vat.taxNo ORDER BY vat.CreateTime DESC) a
     </select>
 
     <sql id="queryVatInvoice">
