@@ -30,9 +30,6 @@ public class PropertiesUtil {
         this.openZy = openZy;
     }
 
-    private String exchangeinvoiceurl;
-    private String exchangeinvoicekey;
-
     public String getExchangeinvoiceurl() {
         return exchangeinvoiceurl;
     }
@@ -64,4 +61,6 @@ public class PropertiesUtil {
     public void setKey(String key) {
         this.key = key;
     }
+
+
 }
