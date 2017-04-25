@@ -32,6 +32,7 @@ public class VatInvoiceServiceImpl implements VatInvoiceService {
     private static final Logger LOGGER = LoggerFactory.getLogger("com.lenovo.invoice.service.impl.vatinvoice");
     private static final Logger LOGGER_BTCP = LoggerFactory.getLogger("com.lenovo.invoice.service.impl.throwBtcp");
     private static final Logger LOGGER_THROW = LoggerFactory.getLogger("com.lenovo.invoice.customer.order.throw");
+    private static final Logger LOGGER_PAID = LoggerFactory.getLogger("com.lenovo.invoice.customer.order.paid");
 
 
     @Autowired
@@ -112,16 +113,18 @@ public class VatInvoiceServiceImpl implements VatInvoiceService {
     }
 
     @Override
-    public long initVathrowBtcp(String orderCode) {
+    public long initVathrowBtcp(String orderCode, String zid) {
         long rows = 0;
         try {
+            Thread.sleep(20000); //睡眠20s去订单获取
             VathrowBtcp vathrowBtcp = new VathrowBtcp();
             vathrowBtcp.setOrderStatus(1);
             vathrowBtcp.setOrderCode(orderCode);
+            vathrowBtcp.setZid(zid);
             //初始化
             rows = vathrowBtcpMapper.insertVathrowBtcp(vathrowBtcp);
         } catch (Exception e) {
-            LOGGER.error(e.getMessage());
+            LOGGER_PAID.error(e.getMessage());
         }
         return rows;
     }

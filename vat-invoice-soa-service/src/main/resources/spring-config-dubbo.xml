@@ -43,4 +43,8 @@
     <dubbo:reference id="orderDetailService"
                      interface="com.lenovo.m2.ordercenter.soa.api.query.order.OrderDetailService"
                      timeout="100000"    check="false"/>
+
+    <dubbo:reference id="orderInvoiceService"
+                     interface="com.lenovo.m2.buy.order.middleware.api.OrderInvoiceService"
+                     timeout="100000"    check="false"/>
 </beans>

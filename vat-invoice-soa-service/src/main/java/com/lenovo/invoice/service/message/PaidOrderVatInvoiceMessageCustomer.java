@@ -23,10 +23,10 @@ public class PaidOrderVatInvoiceMessageCustomer {
     private VatInvoiceService vatInvoiceService;
 
 
-    public PaidOrderVatInvoiceMessageCustomer(KafkaConsumer kafkaConsumer, InvoiceService invoiceService,VatInvoiceService vatInvoiceService) {
+    public PaidOrderVatInvoiceMessageCustomer(KafkaConsumer kafkaConsumer, InvoiceService invoiceService, VatInvoiceService vatInvoiceService) {
         this.kafkaConsumer = kafkaConsumer;
         this.invoiceService = invoiceService;
-        this.vatInvoiceService=vatInvoiceService;
+        this.vatInvoiceService = vatInvoiceService;
         this.kafkaConsumer.start(new ConsumerHandler());
     }
 
@@ -38,7 +38,7 @@ public class PaidOrderVatInvoiceMessageCustomer {
                 Map map = JacksonUtil.fromJson(msg, Map.class);
                 String zid = (String) map.get("invoiceId");
                 Integer orderCode = (Integer) map.get("orderCode");
-                long rows = vatInvoiceService.initVathrowBtcp(orderCode+"");
+                long rows = vatInvoiceService.initVathrowBtcp(orderCode + "", zid);
                 LOGGER.info("PaidOrderVatInvoiceMessageCustomer End:{},{}", msg, rows);
                 invoiceService.updateIsvalid(zid);
             } catch (Exception e) {

@@ -1,21 +1,16 @@
 package com.lenovo.invoice.api;
 
-import com.lenovo.invoice.domain.O2oVatInvoice;
 import com.lenovo.invoice.domain.VatInvoice;
 import com.lenovo.invoice.domain.VathrowBtcp;
-import com.lenovo.invoice.domain.param.AddVatInvoiceInfoParam;
-import com.lenovo.invoice.domain.param.GetVatInvoiceInfoListParam;
-import com.lenovo.invoice.domain.param.GetVatInvoiceInfoParam;
-import com.lenovo.invoice.domain.param.UpdateVatInvoiceBatchParam;
+import com.lenovo.invoice.domain.param.*;
+import com.lenovo.invoice.domain.result.FaInvoiceResult;
 import com.lenovo.invoice.domain.result.GetVatInvoiceInfoResult;
 import com.lenovo.m2.arch.framework.domain.PageModel2;
 import com.lenovo.m2.arch.framework.domain.PageQuery;
 import com.lenovo.m2.arch.framework.domain.RemoteResult;
 import com.lenovo.m2.arch.framework.domain.Tenant;
-import com.lenovo.m2.ordercenter.soa.domain.forward.Invoice;
-import org.apache.ibatis.annotations.Param;
+import com.lenovo.m2.buy.order.middleware.domain.btcp.IncreaseOrderRequest;
 
-import java.io.InputStream;
 import java.util.List;
 import java.util.Map;
 
@@ -62,4 +57,15 @@ public interface InvoiceApiService {
     //修改单条增票
     long updateVatInvoice(UpdateVatInvoiceBatchParam param);
 
+    //btcp同步增票
+    long btcpSyncVatInvoice(IncreaseOrderRequest increaseOrderRequest);
+
+    /**
+     * 获取可开具的发票
+     * @param getInvoiceTypeParam
+     * @return
+     */
+    RemoteResult<List<FaInvoiceResult>> getInvoiceTypes(GetInvoiceTypeParam getInvoiceTypeParam);
+
+    RemoteResult<List<FaInvoiceResult>> getInvoiceTypes(GetInvoiceTypeParam getInvoiceTypeParam,Tenant tenant);
 }

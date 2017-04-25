@@ -19,7 +19,7 @@
     <!-- 使用leconf必须添加以下配置 -->
     <bean id="leconfMgrBean" class="com.lenovo.leconf.client.LeconfMgrBean"
           destroy-method="destroy">
-        <!--<property name="scanPackage" value="com.lenovo.raise"/>-->
+        <property name="scanPackage" value="com.lenovo.invoice.common.utils"/>
     </bean>
     <bean id="leconfMgrBean2" class="com.lenovo.leconf.client.LeconfMgrBeanSecond"
           init-method="init" destroy-method="destroy">
