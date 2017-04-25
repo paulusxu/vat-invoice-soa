@@ -6,6 +6,7 @@ import com.lenovo.invoice.dao.ExchangeInvoiceRecordMapper;
 import com.lenovo.invoice.dao.VathrowBtcpMapper;
 import com.lenovo.invoice.domain.CommonInvoice;
 import com.lenovo.invoice.domain.ExchangeInvoiceRecord;
+import com.lenovo.invoice.domain.UpdateInvoiceInOrderParams;
 import com.lenovo.invoice.domain.VathrowBtcp;
 import com.lenovo.invoice.domain.param.AddVatInvoiceInfoParam;
 import com.lenovo.invoice.domain.result.AddVatInvoiceInfoResult;
@@ -632,7 +633,7 @@ public class ExchangeInvoiceServiceImpl extends BaseService implements ExchangeI
                 LOGGER.info("BTCP通知=修改订单参数==" + JacksonUtil.toJson(invoice));
                 RemoteResult remoteResult1 = vatApiOrderCenter.updateInvoice(invoice);
                 LOGGER.info("BTCP通知=修改订单返回值=="+JacksonUtil.toJson(remoteResult1));
-                /*if (!remoteResult1.isSuccess()){
+                if (!remoteResult1.isSuccess()){
                     //修改订单失败，写入数据库
                     UpdateInvoiceInOrderParams params = new UpdateInvoiceInOrderParams();
                     params.setOrderCode(invoice.getOrderId());
@@ -649,7 +650,7 @@ public class ExchangeInvoiceServiceImpl extends BaseService implements ExchangeI
                     if (i==0){
                         LOGGER.info("修改订单失败，添加数据库错误记录失败！"+JacksonUtil.toJson(params));
                     }
-                }*/
+                }
             }else {
                 try {
                     record.setId(applyId);

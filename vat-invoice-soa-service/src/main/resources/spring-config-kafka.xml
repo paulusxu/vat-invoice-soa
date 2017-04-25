@@ -97,6 +97,28 @@
         <constructor-arg ref="kafkaConsumerFactory_order_throw" />
     </bean>
 
+    <!--订单抛单后 订单推送 用来完善修改发票记录的BTCP号-->
+    <bean id="completeExchangeInvoiceRecord" class="com.lenovo.kafka.api.core.factory.KafkaConsumerOptions">
+        <property name="connectionZk" value="${connectionZk}" />
+        <property name="groupName" value="${record_groupName}" />
+        <property name="zkSessionTimeout" value="${zkSessionTimeout}" />
+        <property name="zkSyncTime" value="${zkSyncTime}" />
+        <property name="autoCommitInterval" value="${autoCommitInterval}" />
+        <property name="rebalanceBackOff" value="${rebalanceBackOff}" />
+        <property name="rebalanceMaxRetries" value="${rebalanceMaxRetries}" />
+        <property name="autoOffsetReset" value="${autoOffsetReset}" />
+        <property name="topicName" value="${order.throw.topicName}" />
+    </bean>
+    <bean id="completeExchangeInvoiceRecord_factory" class="com.lenovo.kafka.api.core.factory.KafkaConsumerFactory"
+          init-method="initialize">
+        <constructor-arg ref="completeExchangeInvoiceRecord" />
+    </bean>
+    <bean id="completeExchangeInvoiceRecord_consumer" class="com.lenovo.kafka.api.core.consumer.KafkaConsumer">
+        <constructor-arg ref="completeExchangeInvoiceRecord_factory" />
+    </bean>
+    <bean id="completeExchangeInvoiceRecordConsumer" class="com.lenovo.invoice.service.message.CompleteExchangeInvoiceRecordConsumer">
+        <constructor-arg ref="completeExchangeInvoiceRecord_consumer"/>
+    </bean>
 
 
     <!--订单发货后 订单推送-->

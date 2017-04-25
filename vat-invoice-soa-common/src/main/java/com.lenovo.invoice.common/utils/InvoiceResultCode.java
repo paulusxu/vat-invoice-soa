@@ -8,7 +8,7 @@ public class InvoiceResultCode {
     public static final String FAIL = "99";//错误
     public static final String SUCCESS = "00";//成功
     public static final String ADDCOMMONINVOICEFAIL = "01";//添加新的普票失败
-    public static final String ADDCOMMONINVOICEMAPPINGFAIL = "09";//添加普票映射失败
+    public static final String ADDCOMMONINVOICEMAPPINGFAIL = "11";//添加普票映射失败
     public static final String UNEXCHANGEINVOICE = "02"; //订单已发货，不能进行换票操作
     public static final String ORDERSTATUSFAIL = "03"; //订单状态错误
     public static final String ADDVATINVOICEFAIL = "04";//添加新的增票失败

@@ -21,6 +21,9 @@ public interface ExchangeInvoiceRecordMapper {
     //修改换票记录的状态
     public int updateExchangeInvoiceRecord(ExchangeInvoiceRecord exchangeInvoiceRecord);
 
+    //修改换票记录的BTCP号
+    public int updateRecordBTCPCode(ExchangeInvoiceRecord exchangeInvoiceRecord);
+
     //获取换票记录，加分页
     public PageModel<ExchangeInvoiceRecord> getExchangeInvoiceRecordByPage(PageQuery pageQuery,ExchangeInvoiceRecord exchangeInvoiceRecord);
 

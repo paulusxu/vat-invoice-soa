@@ -1,6 +1,5 @@
 package com.lenovo.invoice.service.works;
 
-import com.lenovo.invoice.common.utils.PropertiesUtil;
 import com.lenovo.invoice.dao.ExchangeInvoiceRecordMapper;
 import com.lenovo.invoice.domain.UpdateInvoiceInOrderParams;
 import com.lenovo.m2.arch.framework.domain.RemoteResult;
@@ -19,9 +18,6 @@ import java.util.List;
 public class UpdateInvoiceInOrderWork {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(UpdateInvoiceInOrderWork.class);
-
-    @Autowired
-    private PropertiesUtil propertiesUtil;
 
     @Autowired
     private VatApiOrderCenter vatApiOrderCenter;
