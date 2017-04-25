@@ -10,6 +10,10 @@ public class PropertiesUtil {
     private String openO2O;
     private String openZy;
 
+    private String exchangeinvoiceurl;
+    private String exchangeinvoicekey;
+
+
     public String getOpenO2O() {
         return openO2O;
     }
@@ -24,6 +28,25 @@ public class PropertiesUtil {
 
     public void setOpenZy(String openZy) {
         this.openZy = openZy;
+    }
+
+    private String exchangeinvoiceurl;
+    private String exchangeinvoicekey;
+
+    public String getExchangeinvoiceurl() {
+        return exchangeinvoiceurl;
+    }
+
+    public void setExchangeinvoiceurl(String exchangeinvoiceurl) {
+        this.exchangeinvoiceurl = exchangeinvoiceurl;
+    }
+
+    public String getExchangeinvoicekey() {
+        return exchangeinvoicekey;
+    }
+
+    public void setExchangeinvoicekey(String exchangeinvoicekey) {
+        this.exchangeinvoicekey = exchangeinvoicekey;
     }
 
     public String getUrl() {

@@ -65,6 +65,12 @@
     IsThrowing, CreateTime, CreateBy, UpdateTime, UpdateBy, IsShared, isNeedMerge, ShopId,
     ShardedBy, ShardedTime,faid,storesid,type,isvalid
   </sql>
+    <select id="getVatInvoiceByOrderCode" parameterType="java.lang.String" resultMap="BaseResultMap">
+        SELECT
+        <include refid="Base_Column_List" />
+        FROM vathrowbtcp
+        WHERE OrderCode=#{orderCode}
+    </select>
 
     <select id="getVatInvoice2BtcpList" resultMap="BaseResultMap" parameterType="java.lang.String">
         select
@@ -73,6 +79,13 @@
         where zid=#{zid} and OrderStatus=3 and ThrowingStatus in(0,4)
     </select>
 
+  <select id="getNotThrowBtcpVatInvoicePage" resultMap="BaseVatInvoiceResultMap" parameterType="java.util.Map">
+    select
+    vat.*
+    FROM vathrowbtcp btcp, vatinvoice vat WHERE btcp.Zid=vat.Id AND btcp.OrderStatus=3 AND btcp.ThrowingStatus
+    IN(0,4) <include refid="queryVatInvoice" />
+    GROUP BY vat.id ORDER BY vat.CreateTime DESC limit ${pageIndex},${pageSize}
+  </select>
     <select id="getNotThrowBtcpVatInvoicePage" resultMap="BaseVatInvoiceResultMap" parameterType="java.util.Map">
         select
         vat.*
@@ -81,6 +94,12 @@
         ORDER BY vat.CreateTime DESC limit ${pageIndex},${pageSize}
     </select>
 
+  <select id="getNotThrowBtcpVatInvoiceCount" resultType="java.lang.Integer" parameterType="java.util.Map">
+    select
+    count(1)
+    FROM vathrowbtcp btcp, vatinvoice vat WHERE btcp.Zid=vat.Id AND btcp.OrderStatus=3 AND btcp.ThrowingStatus
+    IN(0,4) <include refid="queryVatInvoice" />
+  </select>
     <select id="getNotThrowBtcpVatInvoiceCount" resultType="java.lang.Integer" parameterType="java.util.Map">
         SELECT COUNT(1) FROM
         (SELECT vat.* FROM vathrowbtcp btcp, vatinvoice vat WHERE btcp.Zid=vat.Id AND btcp.OrderStatus=3 AND btcp.ThrowingStatus IN(0,4)

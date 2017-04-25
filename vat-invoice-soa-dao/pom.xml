@@ -15,6 +15,11 @@
     </properties>
 
     <dependencies>
+        <dependency>
+            <groupId>com.lenovo.m2.ordercenter.soa</groupId>
+            <artifactId>ordercenter-domain</artifactId>
+            <version>3.0.0</version>
+        </dependency>
 
         <dependency>
             <groupId>com.lenovo.dtc.buy.invoice</groupId>
