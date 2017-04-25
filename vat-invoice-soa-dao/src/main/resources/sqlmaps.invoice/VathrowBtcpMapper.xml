@@ -77,7 +77,7 @@
         select
         vat.*
         FROM vathrowbtcp btcp, vatinvoice vat WHERE btcp.Zid=vat.Id AND btcp.OrderStatus=3 AND btcp.ThrowingStatus
-        IN(0,4) <include refid="queryVatInvoice" />
+        IN(0,4) <include refid="queryVatInvoice" />  group by vat.taxNo
         ORDER BY vat.CreateTime DESC limit ${pageIndex},${pageSize}
     </select>
 
@@ -85,7 +85,7 @@
         select
         count(1)
         FROM vathrowbtcp btcp, vatinvoice vat WHERE btcp.Zid=vat.Id AND btcp.OrderStatus=3 AND btcp.ThrowingStatus
-        IN(0,4) <include refid="queryVatInvoice" />
+        IN(0,4) <include refid="queryVatInvoice" />  group by vat.taxNo
         ORDER BY vat.CreateTime
     </select>
 
@@ -181,8 +181,8 @@
   </update>
 
     <insert id="insertVathrowBtcp" parameterType="com.lenovo.invoice.domain.VathrowBtcp">
-    insert into vathrowbtcp (CreateTime,OrderCode,OrderStatus)
-    values (now(),#{orderCode},#{orderStatus})
+    insert into vathrowbtcp (CreateTime,OrderCode,OrderStatus,zid)
+    values (now(),#{orderCode},#{orderStatus},#{zid})
   </insert>
 
     <update id="updateVathrowbtcp" parameterType="map">

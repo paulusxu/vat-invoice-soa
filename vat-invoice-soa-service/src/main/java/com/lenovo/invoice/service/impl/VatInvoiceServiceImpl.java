@@ -35,7 +35,6 @@ public class VatInvoiceServiceImpl implements VatInvoiceService {
     private static final Logger LOGGER_PAID = LoggerFactory.getLogger("com.lenovo.invoice.customer.order.paid");
 
 
-
     @Autowired
     private OrderDetailService orderDetailService;
     @Autowired
@@ -114,22 +113,16 @@ public class VatInvoiceServiceImpl implements VatInvoiceService {
     }
 
     @Override
-    public long initVathrowBtcp(String orderCode) {
+    public long initVathrowBtcp(String orderCode, String zid) {
         long rows = 0;
         try {
             Thread.sleep(20000); //睡眠20s去订单获取
-            RemoteResult<Invoice> remoteResultInvoice = orderDetailService.getInvoiceByOrderId(Long.parseLong(orderCode));
-            LOGGER_PAID.info("InitVathrowBtcp:{}",JacksonUtil.toJson(remoteResultInvoice));
-            if (remoteResultInvoice.isSuccess()) {
-                Invoice invoice = remoteResultInvoice.getT();//发票类型1:电子票2:增票3:普票
-                if (invoice != null && invoice.getType() == 2) {
-                    VathrowBtcp vathrowBtcp = new VathrowBtcp();
-                    vathrowBtcp.setOrderStatus(1);
-                    vathrowBtcp.setOrderCode(orderCode);
-                    //初始化
-                    rows = vathrowBtcpMapper.insertVathrowBtcp(vathrowBtcp);
-                }
-            }
+            VathrowBtcp vathrowBtcp = new VathrowBtcp();
+            vathrowBtcp.setOrderStatus(1);
+            vathrowBtcp.setOrderCode(orderCode);
+            vathrowBtcp.setZid(zid);
+            //初始化
+            rows = vathrowBtcpMapper.insertVathrowBtcp(vathrowBtcp);
         } catch (Exception e) {
             LOGGER_PAID.error(e.getMessage());
         }
