@@ -12,7 +12,7 @@ import java.util.Map;
 public interface VatInvoiceService {
     void parseInvoice(String orderCode);
 
-    long initVathrowBtcp(String orderCode);
+    long initVathrowBtcp(String orderCode,String zid);
 
     VatInvoice getVatInvoiceByZid(String zid, String shopid);
 

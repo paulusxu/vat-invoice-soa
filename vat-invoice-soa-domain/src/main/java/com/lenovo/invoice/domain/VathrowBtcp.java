@@ -1,8 +1,9 @@
 package com.lenovo.invoice.domain;
 
+import java.io.Serializable;
 import java.util.Date;
 
-public class VathrowBtcp {
+public class VathrowBtcp implements Serializable{
     private Integer id;
     private String title;
     private String taxpayeridentity;
