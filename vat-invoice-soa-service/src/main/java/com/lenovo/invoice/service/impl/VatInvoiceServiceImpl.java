@@ -211,12 +211,9 @@ public class VatInvoiceServiceImpl implements VatInvoiceService {
                             vatApiOrderCenter.updateInvoice(invoice);
                         }
                     } else {
-                        int rows = vathrowBtcpMapper.updateByOrderCode(vathrowBtcp.getOrderCode(), 4, message);
-//                        if (rows > 0) {
-//                            //btcp抛送失败
-//                            vatApiOrderCenter.updateFailureReasonByOrderId(message, Long.parseLong(vathrowBtcp.getOrderCode()));
-//                        }
-
+                        if (null != message && !message.equals("只有审批被拒绝的情况下才可二次抛送")) {
+                            int rows = vathrowBtcpMapper.updateByOrderCode(vathrowBtcp.getOrderCode(), 4, message);
+                        }
                     }
 
                 } catch (Exception e) {
