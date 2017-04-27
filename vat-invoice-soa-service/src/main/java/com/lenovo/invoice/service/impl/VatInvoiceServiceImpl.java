@@ -116,13 +116,22 @@ public class VatInvoiceServiceImpl implements VatInvoiceService {
     public long initVathrowBtcp(String orderCode, String zid) {
         long rows = 0;
         try {
-            Thread.sleep(20000); //睡眠20s去订单获取
-            VathrowBtcp vathrowBtcp = new VathrowBtcp();
-            vathrowBtcp.setOrderStatus(1);
-            vathrowBtcp.setOrderCode(orderCode);
-            vathrowBtcp.setZid(zid);
-            //初始化
-            rows = vathrowBtcpMapper.insertVathrowBtcp(vathrowBtcp);
+            RemoteResult<Invoice> remoteResultInvoice = orderDetailService.getInvoiceByOrderId(Long.parseLong(orderCode));
+            LOGGER_PAID.info("InitVathrowBtcp:{}", JacksonUtil.toJson(remoteResultInvoice));
+            if (remoteResultInvoice.isSuccess()) {
+                Invoice invoice = remoteResultInvoice.getT();
+                int shopId = invoice.getTenant().getShopId();
+                if (invoice != null && (shopId != 14 || shopId != 15)) {
+                    Thread.sleep(20000); //睡眠20s去订单获取
+                    VathrowBtcp vathrowBtcp = new VathrowBtcp();
+                    vathrowBtcp.setOrderStatus(1);
+                    vathrowBtcp.setOrderCode(orderCode);
+                    vathrowBtcp.setZid(zid);
+                    //初始化
+                    rows = vathrowBtcpMapper.insertVathrowBtcp(vathrowBtcp);
+                }
+            }
+
         } catch (Exception e) {
             LOGGER_PAID.error(e.getMessage());
         }

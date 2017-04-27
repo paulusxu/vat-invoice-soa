@@ -112,7 +112,7 @@
   </select>
 
   <select id="getVatInvoiceByZid" resultType="java.lang.String" resultMap="BaseResultMap">
-    SELECT  <include refid="Base_Column_List" /> FROM vatinvoice WHERE id=#{zid} AND shopid=#{shopid} ORDER BY CreateTime LIMIT 1
+    SELECT  <include refid="Base_Column_List" /> FROM vatinvoice WHERE id=#{zid} ORDER BY CreateTime LIMIT 1
   </select>
 
   <select id="getVatInvoice" resultMap="BaseResultMap" >
