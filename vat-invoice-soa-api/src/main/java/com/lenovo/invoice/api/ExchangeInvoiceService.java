@@ -1,6 +1,7 @@
 package com.lenovo.invoice.api;
 
 import com.lenovo.invoice.domain.ExchangeInvoiceRecord;
+import com.lenovo.invoice.domain.result.GetVatInvoiceInfoResult;
 import com.lenovo.m2.arch.framework.domain.PageModel2;
 import com.lenovo.m2.arch.framework.domain.PageQuery;
 import com.lenovo.m2.arch.framework.domain.RemoteResult;
@@ -29,5 +30,8 @@ public interface ExchangeInvoiceService {
 
     //获取换票记录详情
     public RemoteResult<ExchangeInvoiceRecord> getExchangeInvoiceRecord(String id);
+
+    //换增票校验接口，如果存在，回显增票信息
+    public RemoteResult<GetVatInvoiceInfoResult> ifVatInvoiceExist(String taxNO,String orderCode);
 
 }

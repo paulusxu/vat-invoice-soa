@@ -9,7 +9,9 @@ import com.lenovo.invoice.domain.ExchangeInvoiceRecord;
 import com.lenovo.invoice.domain.UpdateInvoiceInOrderParams;
 import com.lenovo.invoice.domain.VathrowBtcp;
 import com.lenovo.invoice.domain.param.AddVatInvoiceInfoParam;
+import com.lenovo.invoice.domain.param.GetVatInvoiceInfoParam;
 import com.lenovo.invoice.domain.result.AddVatInvoiceInfoResult;
+import com.lenovo.invoice.domain.result.GetVatInvoiceInfoResult;
 import com.lenovo.invoice.service.BaseService;
 import com.lenovo.m2.arch.framework.domain.*;
 import com.lenovo.m2.ordercenter.soa.api.model.forward.InvoiceChangeApi;
@@ -67,13 +69,13 @@ public class ExchangeInvoiceServiceImpl extends BaseService implements ExchangeI
                 LOGGER.info("exchangeToCommon返回值==" + JacksonUtil.toJson(remoteResult));
                 return remoteResult;
             }else {
-                //获取老发票信息和订单信息
+                //获取订单信息
                 RemoteResult<InvoiceChangeApi> invoiceChangeApiByOrderId = vatApiOrderCenter.getInvoiceChangeApiByOrderId(orderCode);
                 InvoiceChangeApi invoiceChangeApi = invoiceChangeApiByOrderId.getT();
                 if (invoiceChangeApi==null){
-                    //获取老发票信息和订单信息失败
+                    //获取订单信息失败
                     remoteResult.setResultCode(InvoiceResultCode.GETORDERFAIL);
-                    remoteResult.setResultMsg("获取老发票信息和订单信息失败");
+                    remoteResult.setResultMsg("获取订单信息失败");
                     LOGGER.info("exchangeToCommon返回值==" + JacksonUtil.toJson(remoteResult));
                     return remoteResult;
                 }
@@ -286,13 +288,13 @@ public class ExchangeInvoiceServiceImpl extends BaseService implements ExchangeI
                 LOGGER.info("exchangeToVat返回值==" + JacksonUtil.toJson(remoteResult));
                 return remoteResult;
             } else {
-                //获取老发票信息和订单信息
+                //获取订单信息
                 RemoteResult<InvoiceChangeApi> invoiceChangeApiByOrderId = vatApiOrderCenter.getInvoiceChangeApiByOrderId(orderCode);
                 InvoiceChangeApi invoiceChangeApi = invoiceChangeApiByOrderId.getT();
                 if (invoiceChangeApi==null){
-                    //获取老发票信息和订单信息失败
+                    //获取订单信息失败
                     remoteResult.setResultCode(InvoiceResultCode.GETORDERFAIL);
-                    remoteResult.setResultMsg("获取老发票信息和订单信息失败");
+                    remoteResult.setResultMsg("获取订单信息失败");
                     LOGGER.info("exchangeToCommon返回值==" + JacksonUtil.toJson(remoteResult));
                     return remoteResult;
                 }
@@ -674,4 +676,44 @@ public class ExchangeInvoiceServiceImpl extends BaseService implements ExchangeI
         return remoteResult;
     }
 
+    //换增票校验接口，如果存在，回显增票信息
+    @Override
+    public RemoteResult<GetVatInvoiceInfoResult> ifVatInvoiceExist(String taxNO,String orderCode) {
+        LOGGER.info("ifVatInvoiceExist参数==orderCode="+orderCode+";taxNO="+taxNO);
+        RemoteResult<GetVatInvoiceInfoResult> remoteResult = new RemoteResult<GetVatInvoiceInfoResult>();
+        try {
+            if (StringUtil.isEmpty(taxNO,orderCode)){
+                remoteResult.setResultCode(InvoiceResultCode.PARAMSFAIL);
+                remoteResult.setResultMsg("必填参数错误");
+                LOGGER.info("ifVatInvoiceExist返回值==" + JacksonUtil.toJson(remoteResult));
+                return remoteResult;
+            }
+
+            //获取订单信息
+            RemoteResult<InvoiceChangeApi> invoiceChangeApiByOrderId = vatApiOrderCenter.getInvoiceChangeApiByOrderId(orderCode);
+            InvoiceChangeApi invoiceChangeApi = invoiceChangeApiByOrderId.getT();
+            if (invoiceChangeApi==null){
+                //获取订单信息失败
+                remoteResult.setResultCode(InvoiceResultCode.GETORDERFAIL);
+                remoteResult.setResultMsg("获取订单信息失败");
+                LOGGER.info("ifVatInvoiceExist返回值==" + JacksonUtil.toJson(remoteResult));
+                return remoteResult;
+            }
+            GetVatInvoiceInfoParam param = new GetVatInvoiceInfoParam();
+            param.setLenovoId(invoiceChangeApi.getLenovoId());
+            param.setShopId(invoiceChangeApi.getShopId());
+            param.setFaid(invoiceChangeApi.getFaid());
+            param.setFaType(invoiceChangeApi.getFaType() + "");
+            param.setTaxNo(taxNO);
+
+            InvoiceApiServiceImpl invoiceApiService = new InvoiceApiServiceImpl();
+            remoteResult = invoiceApiService.getVatInvoiceInfo(param, new Tenant());
+        }catch (Exception e){
+            remoteResult.setResultCode(InvoiceResultCode.FAIL);
+            remoteResult.setResultMsg("系统异常");
+            LOGGER.error(e.getMessage(),e);
+        }
+        LOGGER.info("ifExchangeInvoice End返回值 : "+JacksonUtil.toJson(remoteResult));
+        return remoteResult;
+    }
 }
