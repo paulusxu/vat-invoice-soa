@@ -14,6 +14,7 @@ import com.lenovo.m2.ordercenter.soa.domain.forward.Main;
 import com.lenovo.m2.ordercenter.soa.domain.forward.DeliveryAddress;
 
 
+import org.apache.logging.log4j.util.Strings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -60,6 +61,8 @@ public class VatInvoiceServiceImpl implements VatInvoiceService {
             if (remoteResultInvoice.isSuccess()) {
                 Invoice invoice = remoteResultInvoice.getT();//发票类型1:电子票2:增票3:普票
                 if (invoice != null && invoice.getType() == 2) {
+                    LOGGER_THROW.info("invoice:",JacksonUtil.toJson(invoice));
+
                     vathrowBtcp.setIsneedmerge(invoice.getIsNeedMerge());
                     vathrowBtcp.setOrderCode(orderId + "");
                     //获取订单相关信息
@@ -73,6 +76,7 @@ public class VatInvoiceServiceImpl implements VatInvoiceService {
                             vathrowBtcp.setMembercode(main.getMemberCode());
                         }
                         DeliveryAddress deliveryAddress = remoteResultDeliveryAddress.getT();
+                        LOGGER_THROW.info("deliveryAddress:",JacksonUtil.toJson(deliveryAddress));
                         if (deliveryAddress != null) {
                             //设置收货信息
                             vathrowBtcp.setName(deliveryAddress.getName());//收货人姓名
