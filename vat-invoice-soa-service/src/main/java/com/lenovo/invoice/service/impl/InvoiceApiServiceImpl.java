@@ -356,6 +356,7 @@ public class InvoiceApiServiceImpl extends BaseService implements InvoiceApiServ
         return remoteResult;
     }
 
+
     @Override
     public RemoteResult<List<GetVatInvoiceInfoResult>> getVatInvoiceInfo(GetVatInvoiceInfoListParam param, Tenant tenant) {
         RemoteResult<List<GetVatInvoiceInfoResult>> remoteResult = new RemoteResult<List<GetVatInvoiceInfoResult>>(false);
@@ -440,6 +441,105 @@ public class InvoiceApiServiceImpl extends BaseService implements InvoiceApiServ
         return result;
     }
 
+    @Override
+    public RemoteResult addVatInvoiceInfoForChange(AddVatInvoiceInfoParam param, Tenant tenant) {
+        LOGGER.info("AddVatInvoiceInfoForChange Start:" + JacksonUtil.toJson(param));
+        RemoteResult remoteResult = new RemoteResult(false);
+        try {
+            String lenovoId = param.getLenovoId();
+            String customerName = param.getCustomerName();
+            String taxNo = param.getTaxNo();
+            String bankName = param.getBankName();
+            String accountNo = param.getAccountNo();
+            String address = param.getAddress();
+            String phoneNo = param.getPhoneNo();
+
+            int shopId = param.getShopId();
+
+            //判断入参是否为空
+            if (isNull(lenovoId, customerName, taxNo, bankName, accountNo, address, phoneNo, param.getFaid())) {
+                remoteResult.setResultCode(ErrorUtils.ERR_CODE_COM_REQURIE);
+                remoteResult.setResultMsg("必填的参数错误");
+                return remoteResult;
+            }
+            String faid;
+            String storeId = null;
+            String type = getFaType(param.getFaType());
+
+            if ("1".equals(type)) {
+                faid = null;
+            } else if ("0".equals(type)) {
+                faid = param.getFaid();
+            } else {
+                remoteResult.setResultMsg("获取直营失败！");
+                return remoteResult;
+            }
+
+            //验证位数，转大写
+            Pattern pattern = Pattern.compile("^.{15}$|^.{18}$|^.{20}$");
+            Matcher matcher = pattern.matcher(taxNo);
+            if (matcher.matches()) {
+                taxNo = taxNo.toUpperCase();
+            } else {
+                return remoteResult;
+            }
+
+            VatInvoice vatInvoice = vatInvoiceMapper.getVatInvoiceBySelected(new VatInvoice(customerName, taxNo, bankName, accountNo, address, phoneNo, type, faid, storeId));
+            Long id = null;
+            if (vatInvoice == null) {
+                //新建增值税发票
+                vatInvoice = new VatInvoice();
+                vatInvoice.setAddress(address);
+                vatInvoice.setAccountno(accountNo);
+                vatInvoice.setBankname(bankName);
+                vatInvoice.setTaxno(taxNo);
+                vatInvoice.setCustomername(customerName);
+                vatInvoice.setPhoneno(phoneNo);
+                vatInvoice.setCreateby(lenovoId);
+                vatInvoice.setIsshared(0);
+                vatInvoice.setIsNeedMerge(0);
+                vatInvoice.setIsvalid(1);
+                vatInvoice.setIscheck(1);
+                vatInvoice.setShopid(shopId);
+                vatInvoice.setFaid(param.getFaid());
+                vatInvoice.setType(type);
+                vatInvoice.setStoresid(storeId);
+
+                long rows = vatInvoiceMapper.insertVatInvoiceInfo(vatInvoice);
+                if (rows > 0) {
+                    //写映射表
+                    MemberVatInvoice memberVatInvoice = memberVatInvoiceService.getMemberVatInvoice(vatInvoice.getId(), lenovoId);
+                    if (memberVatInvoice == null) {
+                        memberVatInvoiceService.insertMemberVatInvoice(vatInvoice.getId(), lenovoId, shopId, type, param.getFaid(), storeId);
+                    }
+
+                    remoteResult.setT(parseAddVatInvoiceInfoResult(vatInvoice, lenovoId));
+                    remoteResult.setSuccess(true);
+                    remoteResult.setResultCode(ErrorUtils.INVOICE_SUCCESS);
+                } else {
+                    remoteResult.setResultCode(ErrorUtils.SYSTEM_UNKNOWN_EXCEPTION);
+                    remoteResult.setResultMsg("系统异常错误");
+                }
+            } else {
+
+                remoteResult.setT(parseAddVatInvoiceInfoResult(vatInvoice, lenovoId));
+                remoteResult.setSuccess(true);
+                remoteResult.setResultCode(ErrorUtils.INVOICE_SUCCESS);
+
+                MemberVatInvoice memberVatInvoice = memberVatInvoiceService.getMemberVatInvoice(vatInvoice.getId(), lenovoId);
+                if (memberVatInvoice == null) {
+                    memberVatInvoiceService.insertMemberVatInvoice(vatInvoice.getId(), lenovoId, shopId, type, param.getFaid(), storeId);
+                }
+            }
+
+        } catch (Exception e) {
+            remoteResult.setResultCode(ErrorUtils.SYSTEM_UNKNOWN_EXCEPTION);
+            remoteResult.setResultMsg("系统异常错误");
+            LOGGER.error(e.getMessage(), e);
+        }
+        LOGGER.info("AddVatInvoiceInfoForChange End:{}", JacksonUtil.toJson(remoteResult));
+        return remoteResult;
+    }
 
     @Override
     public RemoteResult addVatInvoiceInfo(AddVatInvoiceInfoParam param, Tenant tenant) {
@@ -587,6 +687,7 @@ public class InvoiceApiServiceImpl extends BaseService implements InvoiceApiServ
         LOGGER.info("AddVatInvoiceInfo End:{}", JacksonUtil.toJson(remoteResult));
         return remoteResult;
     }
+
 
     @Override
     public RemoteResult checkVatInvoiceInfo(String id, String lenovoId, String region, Tenant tenant) {
@@ -767,10 +868,10 @@ public class InvoiceApiServiceImpl extends BaseService implements InvoiceApiServ
 
     @Override
     public RemoteResult<List<FaInvoiceResult>> getInvoiceTypes(GetInvoiceTypeParam getInvoiceTypeParam) {
-        LOGGER_BTCP.info("getInvoiceTypes 参数"+JacksonUtil.toJson(getInvoiceTypeParam));
-        RemoteResult<List<FaInvoiceResult>> listRemoteResult= new RemoteResult<List<FaInvoiceResult>>(false);
+        LOGGER_BTCP.info("getInvoiceTypes 参数" + JacksonUtil.toJson(getInvoiceTypeParam));
+        RemoteResult<List<FaInvoiceResult>> listRemoteResult = new RemoteResult<List<FaInvoiceResult>>(false);
         try {
-            if(getInvoiceTypeParam.getBu()==140){//
+            if (getInvoiceTypeParam.getBu() == 140) {//
                 listRemoteResult.setResultMsg("不能开具发票");
                 return listRemoteResult;
             }
@@ -799,8 +900,8 @@ public class InvoiceApiServiceImpl extends BaseService implements InvoiceApiServ
 
     @Override
     public RemoteResult<List<FaInvoiceResult>> getInvoiceTypes(GetInvoiceTypeParam getInvoiceTypeParam, Tenant tenant) {
-        LOGGER_BTCP.info("getInvoiceTypes Tenant 参数"+JacksonUtil.toJson(tenant));
-        if(tenant!=null&&tenant.getShopId()!=null){
+        LOGGER_BTCP.info("getInvoiceTypes Tenant 参数" + JacksonUtil.toJson(tenant));
+        if (tenant != null && tenant.getShopId() != null) {
             getInvoiceTypeParam.setShopId(tenant.getShopId());
         }
         return getInvoiceTypes(getInvoiceTypeParam);
@@ -808,35 +909,35 @@ public class InvoiceApiServiceImpl extends BaseService implements InvoiceApiServ
 
     @Override
     public RemoteResult<ConfigurationInformation> getConfigurationInformation(GetCiParam getCiParam, Tenant tenant) {
-        LOGGER_BTCP.info("getConfigurationInformation 参数"+JacksonUtil.toJson(getCiParam));
-        RemoteResult<ConfigurationInformation> result=new RemoteResult<ConfigurationInformation>(false);
-        ConfigurationInformation information=new ConfigurationInformation();
+        LOGGER_BTCP.info("getConfigurationInformation 参数" + JacksonUtil.toJson(getCiParam));
+        RemoteResult<ConfigurationInformation> result = new RemoteResult<ConfigurationInformation>(false);
+        ConfigurationInformation information = new ConfigurationInformation();
         try {
-            GetInvoiceTypeParam getInvoiceTypeParam=new GetInvoiceTypeParam();
+            GetInvoiceTypeParam getInvoiceTypeParam = new GetInvoiceTypeParam();
             BeanUtils.copyProperties(getInvoiceTypeParam, getCiParam);
             information.setFaInvoiceResults(getInvoiceTypes(getInvoiceTypeParam, tenant).getT());
-            information.setPaymentTypes(getPaymentType(getCiParam,tenant));
+            information.setPaymentTypes(getPaymentType(getCiParam, tenant));
             result.setSuccess(true);
             result.setT(information);
         } catch (Exception e) {
             e.printStackTrace();
         }
-        LOGGER_BTCP.info("getConfigurationInformation 返回"+JacksonUtil.toJson(result));
+        LOGGER_BTCP.info("getConfigurationInformation 返回" + JacksonUtil.toJson(result));
         return result;
     }
 
-    public List<PaymentType> getPaymentType(GetCiParam getCiParam,Tenant tenant){
-        if(getCiParam.getSalesType()==98){
-            return Arrays.asList(new PaymentType[]{PaymentType.HDFK,PaymentType.ZXZF});
+    public List<PaymentType> getPaymentType(GetCiParam getCiParam, Tenant tenant) {
+        if (getCiParam.getSalesType() == 98) {
+            return Arrays.asList(new PaymentType[]{PaymentType.HDFK, PaymentType.ZXZF});
         }
-        if(tenant.getShopId()==8){
-            if(getCiParam.getFaDatas().size()==1&&getCiParam.getFaDatas().get(0).getFatype()==7){//只有一个fa并且faType=SMB_ZY_ALL()直营总代  ：线下转账并默认
+        if (tenant.getShopId() == 8) {
+            if (getCiParam.getFaDatas().size() == 1 && getCiParam.getFaDatas().get(0).getFatype() == 7) {//只有一个fa并且faType=SMB_ZY_ALL()直营总代  ：线下转账并默认
                 return Arrays.asList(new PaymentType[]{PaymentType.XXZZ});
             }
-            if(getCiParam.getBigDecimal().doubleValue()>5000){
+            if (getCiParam.getBigDecimal().doubleValue() > 5000) {
                 return Arrays.asList(new PaymentType[]{PaymentType.XXZZ});
             }
-            return Arrays.asList(new PaymentType[]{PaymentType.XXZZ,PaymentType.ZXZF});
+            return Arrays.asList(new PaymentType[]{PaymentType.XXZZ, PaymentType.ZXZF});
         }
 
         return Arrays.asList(new PaymentType[]{PaymentType.ZXZF});
