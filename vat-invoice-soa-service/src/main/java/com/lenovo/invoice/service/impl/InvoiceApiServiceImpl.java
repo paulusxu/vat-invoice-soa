@@ -13,9 +13,7 @@ import com.lenovo.invoice.dao.VatInvoiceMapper;
 import com.lenovo.invoice.dao.VathrowBtcpMapper;
 import com.lenovo.invoice.domain.*;
 import com.lenovo.invoice.domain.param.*;
-import com.lenovo.invoice.domain.result.AddVatInvoiceInfoResult;
-import com.lenovo.invoice.domain.result.FaInvoiceResult;
-import com.lenovo.invoice.domain.result.GetVatInvoiceInfoResult;
+import com.lenovo.invoice.domain.result.*;
 import com.lenovo.invoice.service.BaseService;
 import com.lenovo.invoice.service.MemberVatInvoiceService;
 import com.lenovo.invoice.service.VatInvoiceService;
@@ -34,12 +32,15 @@ import com.lenovo.m2.ordercenter.soa.domain.forward.Invoice;
 import com.lenovo.m2.ordercenter.soa.domain.forward.Main;
 import com.lenovo.m2.stock.soa.api.service.StoreInfoApiService;
 import com.lenovo.m2.stock.soa.domain.param.GetStoreInfoIdParam;
+import org.apache.commons.beanutils.BeanUtils;
 import org.apache.ibatis.annotations.Param;
+import org.apache.xmlbeans.impl.xb.xsdschema.Public;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -805,6 +806,41 @@ public class InvoiceApiServiceImpl extends BaseService implements InvoiceApiServ
         return getInvoiceTypes(getInvoiceTypeParam);
     }
 
+    @Override
+    public RemoteResult<ConfigurationInformation> getConfigurationInformation(GetCiParam getCiParam, Tenant tenant) {
+        LOGGER_BTCP.info("getConfigurationInformation 参数"+JacksonUtil.toJson(getCiParam));
+        RemoteResult<ConfigurationInformation> result=new RemoteResult<ConfigurationInformation>(false);
+        ConfigurationInformation information=new ConfigurationInformation();
+        try {
+            GetInvoiceTypeParam getInvoiceTypeParam=new GetInvoiceTypeParam();
+            BeanUtils.copyProperties(getInvoiceTypeParam, getCiParam);
+            information.setFaInvoiceResults(getInvoiceTypes(getInvoiceTypeParam, tenant).getT());
+            information.setPaymentTypes(getPaymentType(getCiParam,tenant));
+            result.setSuccess(true);
+            result.setT(information);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        LOGGER_BTCP.info("getConfigurationInformation 返回"+JacksonUtil.toJson(result));
+        return result;
+    }
+
+    public List<PaymentType> getPaymentType(GetCiParam getCiParam,Tenant tenant){
+        if(getCiParam.getSalesType()==98){
+            return Arrays.asList(new PaymentType[]{PaymentType.HDFK,PaymentType.ZXZF});
+        }
+        if(tenant.getShopId()==8){
+            if(getCiParam.getFaDatas().size()==1&&getCiParam.getFaDatas().get(0).getFatype()==7){//只有一个fa并且faType=SMB_ZY_ALL()直营总代  ：线下转账并默认
+                return Arrays.asList(new PaymentType[]{PaymentType.XXZZ});
+            }
+            if(getCiParam.getBigDecimal().doubleValue()>5000){
+                return Arrays.asList(new PaymentType[]{PaymentType.XXZZ});
+            }
+            return Arrays.asList(new PaymentType[]{PaymentType.XXZZ,PaymentType.ZXZF});
+        }
+
+        return Arrays.asList(new PaymentType[]{PaymentType.ZXZF});
+    }
 
     public InvoiceList getInvoiceTypes(int shopId, int salesType, int fatype, String faid, String openO2O, String openZy) {
         HashSet<Integer> fatypesets = new HashSet<Integer>();

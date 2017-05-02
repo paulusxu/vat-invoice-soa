@@ -14,6 +14,7 @@ import com.lenovo.m2.ordercenter.soa.domain.forward.Main;
 import com.lenovo.m2.ordercenter.soa.domain.forward.DeliveryAddress;
 
 
+import org.apache.logging.log4j.util.Strings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -60,6 +61,8 @@ public class VatInvoiceServiceImpl implements VatInvoiceService {
             if (remoteResultInvoice.isSuccess()) {
                 Invoice invoice = remoteResultInvoice.getT();//发票类型1:电子票2:增票3:普票
                 if (invoice != null && invoice.getType() == 2) {
+                    LOGGER_THROW.info("invoice:",JacksonUtil.toJson(invoice));
+
                     vathrowBtcp.setIsneedmerge(invoice.getIsNeedMerge());
                     vathrowBtcp.setOrderCode(orderId + "");
                     //获取订单相关信息
@@ -73,6 +76,7 @@ public class VatInvoiceServiceImpl implements VatInvoiceService {
                             vathrowBtcp.setMembercode(main.getMemberCode());
                         }
                         DeliveryAddress deliveryAddress = remoteResultDeliveryAddress.getT();
+                        LOGGER_THROW.info("deliveryAddress:",JacksonUtil.toJson(deliveryAddress));
                         if (deliveryAddress != null) {
                             //设置收货信息
                             vathrowBtcp.setName(deliveryAddress.getName());//收货人姓名
@@ -116,13 +120,22 @@ public class VatInvoiceServiceImpl implements VatInvoiceService {
     public long initVathrowBtcp(String orderCode, String zid) {
         long rows = 0;
         try {
-            Thread.sleep(20000); //睡眠20s去订单获取
-            VathrowBtcp vathrowBtcp = new VathrowBtcp();
-            vathrowBtcp.setOrderStatus(1);
-            vathrowBtcp.setOrderCode(orderCode);
-            vathrowBtcp.setZid(zid);
-            //初始化
-            rows = vathrowBtcpMapper.insertVathrowBtcp(vathrowBtcp);
+            RemoteResult<Invoice> remoteResultInvoice = orderDetailService.getInvoiceByOrderId(Long.parseLong(orderCode));
+            LOGGER_PAID.info("InitVathrowBtcp:{}", JacksonUtil.toJson(remoteResultInvoice));
+            if (remoteResultInvoice.isSuccess()) {
+                Invoice invoice = remoteResultInvoice.getT();
+                int shopId = invoice.getTenant().getShopId();
+                if (invoice != null && (shopId != 14 || shopId != 15)) {
+                    Thread.sleep(20000); //睡眠20s去订单获取
+                    VathrowBtcp vathrowBtcp = new VathrowBtcp();
+                    vathrowBtcp.setOrderStatus(1);
+                    vathrowBtcp.setOrderCode(orderCode);
+                    vathrowBtcp.setZid(zid);
+                    //初始化
+                    rows = vathrowBtcpMapper.insertVathrowBtcp(vathrowBtcp);
+                }
+            }
+
         } catch (Exception e) {
             LOGGER_PAID.error(e.getMessage());
         }
@@ -202,12 +215,9 @@ public class VatInvoiceServiceImpl implements VatInvoiceService {
                             vatApiOrderCenter.updateInvoice(invoice);
                         }
                     } else {
-                        int rows = vathrowBtcpMapper.updateByOrderCode(vathrowBtcp.getOrderCode(), 4, message);
-//                        if (rows > 0) {
-//                            //btcp抛送失败
-//                            vatApiOrderCenter.updateFailureReasonByOrderId(message, Long.parseLong(vathrowBtcp.getOrderCode()));
-//                        }
-
+                        if (null != message && !message.equals("只有审批被拒绝的情况下才可二次抛送")) {
+                            int rows = vathrowBtcpMapper.updateByOrderCode(vathrowBtcp.getOrderCode(), 4, message);
+                        }
                     }
 
                 } catch (Exception e) {

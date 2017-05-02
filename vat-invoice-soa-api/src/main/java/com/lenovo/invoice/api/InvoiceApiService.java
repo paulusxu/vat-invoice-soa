@@ -3,6 +3,7 @@ package com.lenovo.invoice.api;
 import com.lenovo.invoice.domain.VatInvoice;
 import com.lenovo.invoice.domain.VathrowBtcp;
 import com.lenovo.invoice.domain.param.*;
+import com.lenovo.invoice.domain.result.ConfigurationInformation;
 import com.lenovo.invoice.domain.result.FaInvoiceResult;
 import com.lenovo.invoice.domain.result.GetVatInvoiceInfoResult;
 import com.lenovo.m2.arch.framework.domain.PageModel2;
@@ -68,4 +69,11 @@ public interface InvoiceApiService {
     RemoteResult<List<FaInvoiceResult>> getInvoiceTypes(GetInvoiceTypeParam getInvoiceTypeParam);
 
     RemoteResult<List<FaInvoiceResult>> getInvoiceTypes(GetInvoiceTypeParam getInvoiceTypeParam,Tenant tenant);
+
+
+    RemoteResult<ConfigurationInformation> getConfigurationInformation(GetCiParam getCiParam,Tenant tenant);
+
+
+
+
 }
