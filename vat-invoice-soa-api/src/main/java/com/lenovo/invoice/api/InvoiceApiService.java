@@ -28,6 +28,8 @@ public interface InvoiceApiService {
 
     //添加或修改增票信息
     RemoteResult addVatInvoiceInfo(AddVatInvoiceInfoParam param, Tenant tenant);
+    //添加或修改增票信息 换票专用
+    RemoteResult addVatInvoiceInfoForChange(AddVatInvoiceInfoParam param, Tenant tenant);
 
     //订单提交校验接口
     RemoteResult checkVatInvoiceInfo(String id, String lenovoId, String region, Tenant tenant);
