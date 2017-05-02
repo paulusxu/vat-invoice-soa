@@ -313,7 +313,7 @@ public class ExchangeInvoiceServiceImpl extends BaseService implements ExchangeI
                 param.setPhoneNo(newPhone);
                 param.setFaid(invoiceChangeApi.getFaid());
                 param.setFaType(invoiceChangeApi.getFaType()+"");
-                RemoteResult<AddVatInvoiceInfoResult> remoteResult1 = invoiceApiServiceImpl.addVatInvoiceInfo(param, tenant);
+                RemoteResult<AddVatInvoiceInfoResult> remoteResult1 = invoiceApiServiceImpl.addVatInvoiceInfoForChange(param, tenant);
                 if (!remoteResult1.isSuccess()) {
                     //添加失败
                     remoteResult.setResultCode(InvoiceResultCode.ADDVATINVOICEFAIL);
