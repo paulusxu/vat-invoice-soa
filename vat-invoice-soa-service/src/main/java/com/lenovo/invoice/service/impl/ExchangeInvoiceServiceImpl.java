@@ -23,10 +23,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 
 /**
  * Created by admin on 2017/3/19.
@@ -539,6 +536,29 @@ public class ExchangeInvoiceServiceImpl extends BaseService implements ExchangeI
         return remoteResult;
     }
 
+    //导出换票记录，必须指定时间段
+    @Override
+    public RemoteResult<List<ExchangeInvoiceRecord>> getExchangeInvoiceRecordList(ExchangeInvoiceRecord exchangeInvoiceRecord){
+        LOGGER.info("getExchangeInvoiceRecordList参数=="+JacksonUtil.toJson(exchangeInvoiceRecord));
+
+        RemoteResult<List<ExchangeInvoiceRecord>> remoteResult = new RemoteResult<List<ExchangeInvoiceRecord>>();
+
+        try {
+            List<ExchangeInvoiceRecord> list = exchangeInvoiceRecordMapper.getExchangeInvoiceRecordList(exchangeInvoiceRecord);
+
+            remoteResult.setSuccess(true);
+            remoteResult.setResultCode(InvoiceResultCode.SUCCESS);
+            remoteResult.setResultMsg("查询成功");
+            remoteResult.setT(list);
+        }catch (Exception e){
+            remoteResult.setResultCode(InvoiceResultCode.FAIL);
+            remoteResult.setResultMsg("系统异常");
+            LOGGER.error(e.getMessage(),e);
+        }
+        LOGGER.info("getExchangeInvoiceRecordList返回值=="+ JacksonUtil.toJson(remoteResult));
+        return remoteResult;
+    }
+
     //获取换票记录详情
     @Override
     public RemoteResult<ExchangeInvoiceRecord> getExchangeInvoiceRecord(String id){
@@ -583,10 +603,18 @@ public class ExchangeInvoiceServiceImpl extends BaseService implements ExchangeI
             }
 
             VathrowBtcp vathrowBtcp = vathrowBtcpMapper.getVatInvoiceByOrderCode(orderCode);
+            if (vathrowBtcp==null){
+                remoteResult.setResultMsg("查询不到该订单信息！");
+                remoteResult.setResultCode(InvoiceResultCode.GETORDERSTATUSFAIL);
+                LOGGER.info("ifExchangeVatInvoice返回值==" + JacksonUtil.toJson(remoteResult));
+                return remoteResult;
+            }
             int orderStatus = vathrowBtcp.getOrderStatus();
             if (orderStatus==3){
                 remoteResult.setResultMsg("该订单已发货，不允许换票！");
                 remoteResult.setResultCode(InvoiceResultCode.UNEXCHANGEINVOICE);
+                LOGGER.info("ifExchangeVatInvoice返回值==" + JacksonUtil.toJson(remoteResult));
+                return remoteResult;
             }
             remoteResult.setSuccess(true);
             remoteResult.setResultMsg("可以换票！");

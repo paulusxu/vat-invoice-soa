@@ -6,6 +6,8 @@ import com.lenovo.m2.arch.framework.domain.PageModel2;
 import com.lenovo.m2.arch.framework.domain.PageQuery;
 import com.lenovo.m2.arch.framework.domain.RemoteResult;
 
+import java.util.List;
+
 /**
  * Created by admin on 2017/3/19.
  */
@@ -27,6 +29,9 @@ public interface ExchangeInvoiceService {
 
     //获取换票记录，加分页
     public RemoteResult<PageModel2<ExchangeInvoiceRecord>> getExchangeInvoiceRecordByPage(PageQuery pageQuery, ExchangeInvoiceRecord exchangeInvoiceRecord);
+
+    //导出换票记录，必须指定时间段
+    public RemoteResult<List<ExchangeInvoiceRecord>> getExchangeInvoiceRecordList(ExchangeInvoiceRecord exchangeInvoiceRecord);
 
     //获取换票记录详情
     public RemoteResult<ExchangeInvoiceRecord> getExchangeInvoiceRecord(String id);
