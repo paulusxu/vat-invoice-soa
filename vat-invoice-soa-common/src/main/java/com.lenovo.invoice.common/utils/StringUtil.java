@@ -25,7 +25,7 @@ public class StringUtil {
     }
 
     public static boolean isEmpty(String key) {
-        return  !isEmpty(key);
+        return  !isNotEmpty(key);
     }
 
     public static boolean isNotEmpty(String key) {
