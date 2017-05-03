@@ -41,6 +41,7 @@ public class CompleteExchangeInvoiceRecordConsumer {
                 if (invoiceChangeApi==null){
                     //获取老发票信息和订单信息失败
                     LOGGER.info("获取老发票信息和订单信息失败");
+                    return;
                 }
                 ExchangeInvoiceRecord record = new ExchangeInvoiceRecord();
                 record.setOrderCode(orderCode);
