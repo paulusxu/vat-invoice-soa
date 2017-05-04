@@ -239,7 +239,7 @@ public class InvoiceApiServiceImpl extends BaseService implements InvoiceApiServ
                     Invoice invoice = remoteResultInvoice.getT();
                     changeVatInvoiceState(invoice.getZid(), status == 1 ? true : false, null);
                 }
-                updateThrowingStatus(orderId + "", 4);
+                updateThrowingStatus(orderId + "", status == 1 ? 3 : 4);
             }
 
         } catch (Exception e) {
@@ -767,10 +767,10 @@ public class InvoiceApiServiceImpl extends BaseService implements InvoiceApiServ
 
     @Override
     public RemoteResult<List<FaInvoiceResult>> getInvoiceTypes(GetInvoiceTypeParam getInvoiceTypeParam) {
-        LOGGER_BTCP.info("getInvoiceTypes 参数"+JacksonUtil.toJson(getInvoiceTypeParam));
-        RemoteResult<List<FaInvoiceResult>> listRemoteResult= new RemoteResult<List<FaInvoiceResult>>(false);
+        LOGGER_BTCP.info("getInvoiceTypes 参数" + JacksonUtil.toJson(getInvoiceTypeParam));
+        RemoteResult<List<FaInvoiceResult>> listRemoteResult = new RemoteResult<List<FaInvoiceResult>>(false);
         try {
-            if(getInvoiceTypeParam.getBu()==140){//
+            if (getInvoiceTypeParam.getBu() == 140) {//
                 listRemoteResult.setResultMsg("不能开具发票");
                 return listRemoteResult;
             }
@@ -799,8 +799,8 @@ public class InvoiceApiServiceImpl extends BaseService implements InvoiceApiServ
 
     @Override
     public RemoteResult<List<FaInvoiceResult>> getInvoiceTypes(GetInvoiceTypeParam getInvoiceTypeParam, Tenant tenant) {
-        LOGGER_BTCP.info("getInvoiceTypes Tenant 参数"+JacksonUtil.toJson(tenant));
-        if(tenant!=null&&tenant.getShopId()!=null){
+        LOGGER_BTCP.info("getInvoiceTypes Tenant 参数" + JacksonUtil.toJson(tenant));
+        if (tenant != null && tenant.getShopId() != null) {
             getInvoiceTypeParam.setShopId(tenant.getShopId());
         }
         return getInvoiceTypes(getInvoiceTypeParam);
@@ -808,35 +808,35 @@ public class InvoiceApiServiceImpl extends BaseService implements InvoiceApiServ
 
     @Override
     public RemoteResult<ConfigurationInformation> getConfigurationInformation(GetCiParam getCiParam, Tenant tenant) {
-        LOGGER_BTCP.info("getConfigurationInformation 参数"+JacksonUtil.toJson(getCiParam));
-        RemoteResult<ConfigurationInformation> result=new RemoteResult<ConfigurationInformation>(false);
-        ConfigurationInformation information=new ConfigurationInformation();
+        LOGGER_BTCP.info("getConfigurationInformation 参数" + JacksonUtil.toJson(getCiParam));
+        RemoteResult<ConfigurationInformation> result = new RemoteResult<ConfigurationInformation>(false);
+        ConfigurationInformation information = new ConfigurationInformation();
         try {
-            GetInvoiceTypeParam getInvoiceTypeParam=new GetInvoiceTypeParam();
+            GetInvoiceTypeParam getInvoiceTypeParam = new GetInvoiceTypeParam();
             BeanUtils.copyProperties(getInvoiceTypeParam, getCiParam);
             information.setFaInvoiceResults(getInvoiceTypes(getInvoiceTypeParam, tenant).getT());
-            information.setPaymentTypes(getPaymentType(getCiParam,tenant));
+            information.setPaymentTypes(getPaymentType(getCiParam, tenant));
             result.setSuccess(true);
             result.setT(information);
         } catch (Exception e) {
             e.printStackTrace();
         }
-        LOGGER_BTCP.info("getConfigurationInformation 返回"+JacksonUtil.toJson(result));
+        LOGGER_BTCP.info("getConfigurationInformation 返回" + JacksonUtil.toJson(result));
         return result;
     }
 
-    public List<PaymentType> getPaymentType(GetCiParam getCiParam,Tenant tenant){
-        if(getCiParam.getSalesType()==98){
-            return Arrays.asList(new PaymentType[]{PaymentType.HDFK,PaymentType.ZXZF});
+    public List<PaymentType> getPaymentType(GetCiParam getCiParam, Tenant tenant) {
+        if (getCiParam.getSalesType() == 98) {
+            return Arrays.asList(new PaymentType[]{PaymentType.HDFK, PaymentType.ZXZF});
         }
-        if(tenant.getShopId()==8){
-            if(getCiParam.getFaDatas().size()==1&&getCiParam.getFaDatas().get(0).getFatype()==7){//只有一个fa并且faType=SMB_ZY_ALL()直营总代  ：线下转账并默认
+        if (tenant.getShopId() == 8) {
+            if (getCiParam.getFaDatas().size() == 1 && getCiParam.getFaDatas().get(0).getFatype() == 7) {//只有一个fa并且faType=SMB_ZY_ALL()直营总代  ：线下转账并默认
                 return Arrays.asList(new PaymentType[]{PaymentType.XXZZ});
             }
-            if(getCiParam.getBigDecimal().doubleValue()>5000){
+            if (getCiParam.getBigDecimal().doubleValue() > 5000) {
                 return Arrays.asList(new PaymentType[]{PaymentType.XXZZ});
             }
-            return Arrays.asList(new PaymentType[]{PaymentType.XXZZ,PaymentType.ZXZF});
+            return Arrays.asList(new PaymentType[]{PaymentType.XXZZ, PaymentType.ZXZF});
         }
 
         return Arrays.asList(new PaymentType[]{PaymentType.ZXZF});
