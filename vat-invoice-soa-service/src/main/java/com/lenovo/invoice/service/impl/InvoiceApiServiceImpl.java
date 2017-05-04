@@ -239,7 +239,7 @@ public class InvoiceApiServiceImpl extends BaseService implements InvoiceApiServ
                     Invoice invoice = remoteResultInvoice.getT();
                     changeVatInvoiceState(invoice.getZid(), status == 1 ? true : false, null);
                 }
-                updateThrowingStatus(orderId + "", 4);
+                updateThrowingStatus(orderId + "", status == 1 ? 3 : 4);
             }
 
         } catch (Exception e) {
