@@ -32,6 +32,33 @@
     UPDATE exchangeInvoiceRecord set BTCPOrderCode=#{BTCPOrderCode} WHERE orderCode=#{orderCode}
   </update>
 
+  <select id="getExchangeInvoiceRecordList" parameterType="com.lenovo.invoice.domain.ExchangeInvoiceRecord" resultType="com.lenovo.invoice.domain.ExchangeInvoiceRecord">
+    SELECT
+    <include refid="allColumn"/>
+    FROM exchangeInvoiceRecord
+    <where>
+      <if test="shopid!=null and shopid!=''">
+        and shopid=#{shopid}
+      </if>
+      <if test="orderCode!=null and orderCode!=''">
+        and orderCode=#{orderCode}
+      </if>
+      <if test="state!=null and state!=''">
+        and state=#{state}
+      </if>
+      <if test="exchangeType!=null and exchangeType!=''">
+        and exchangeType=#{exchangeType}
+      </if>
+      <if test="beginTime!=null and beginTime!=''">
+        and exchangeTime>#{beginTime}
+      </if>
+      <if test="endTime!=null and endTime!=''">
+        <![CDATA[ and exchangeTime<#{endTime} ]]>
+      </if>
+    </where>
+    ORDER BY updateTime DESC
+  </select>
+
   <select id="getExchangeInvoiceRecordByPage" parameterType="com.lenovo.invoice.domain.ExchangeInvoiceRecord" resultType="com.lenovo.invoice.domain.ExchangeInvoiceRecord">
     SELECT
     <include refid="allColumn"/>

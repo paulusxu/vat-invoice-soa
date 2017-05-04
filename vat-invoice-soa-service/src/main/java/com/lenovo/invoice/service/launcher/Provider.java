@@ -15,7 +15,6 @@ public class Provider {
         try{
             ctx = new ClassPathXmlApplicationContext(
                     new String[]{
-                            "classpath*:spring-config.xml",
                             "classpath*:spring-config-resource.xml",
                             "classpath*:spring-config-service.xml",
                             "classpath*:spring-config-dao.xml",
