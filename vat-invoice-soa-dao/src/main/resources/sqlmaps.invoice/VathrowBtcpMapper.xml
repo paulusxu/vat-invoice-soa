@@ -115,7 +115,7 @@
     <select id="getThrowBtcpList" resultMap="BaseResultMap">
     select
     btcp.*
-    FROM vathrowbtcp btcp, vatinvoice vat WHERE btcp.Zid=vat.Id AND btcp.OrderStatus=3 AND btcp.ThrowingStatus IN(0,4)
+    FROM vathrowbtcp btcp, vatinvoice vat WHERE vat.isCheck in(1,2) AND btcp.Zid=vat.Id AND btcp.OrderStatus=3 AND btcp.ThrowingStatus =0
   </select>
 
     <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
