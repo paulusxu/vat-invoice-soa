@@ -13,7 +13,7 @@
 
     <appender name="stdoutAppender" class="ch.qos.logback.core.rolling.RollingFileAppender">
         <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
-            <fileNamePattern>${log.path}/vat-invoice-soa.log.%d{yyyy-MM-dd}</fileNamePattern>
+            <fileNamePattern>${log.path}/vat-invoice-soa.%d{yyyy-MM-dd}.log</fileNamePattern>
         </rollingPolicy>
         <encoder>
             <pattern>[%d{yyyy-MM-dd HH:mm:ss} %-5p] projectName : vat-invoice-soa %X{elk_leId} %X{elk_lenovoId} %X{elk_requestId} %X{ip} [%thread] %-5level %logger{5} - %msg%n</pattern>
@@ -28,7 +28,7 @@
 
     <appender name="invoiceChangeAppender" class="ch.qos.logback.core.rolling.RollingFileAppender">
         <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
-            <fileNamePattern>${log.path}/invoice/invoice.log.%d{yyyy-MM-dd}</fileNamePattern>
+            <fileNamePattern>${log.path}/invoice.%d{yyyy-MM-dd}.log</fileNamePattern>
         </rollingPolicy>
         <encoder>
             <pattern>[%d{yyyy-MM-dd HH:mm:ss} %-5p] projectName : vat-invoice-soa %X{elk_leId} %X{elk_lenovoId} %X{elk_requestId} %X{ip} [%thread] %-5level %logger{5} - %msg%n</pattern>
@@ -40,7 +40,7 @@
 
     <appender name="initAppender" class="ch.qos.logback.core.rolling.RollingFileAppender">
         <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
-            <fileNamePattern>${log.path}/invoice/init/init.log.%d{yyyy-MM-dd}</fileNamePattern>
+            <fileNamePattern>${log.path}/init.%d{yyyy-MM-dd}.log</fileNamePattern>
         </rollingPolicy>
         <encoder>
             <pattern>[%d{yyyy-MM-dd HH:mm:ss} %-5p] projectName : vat-invoice-soa %X{elk_leId} %X{elk_lenovoId} %X{elk_requestId} %X{ip} [%thread] %-5level %logger{5} - %msg%n</pattern>
@@ -54,7 +54,7 @@
     <!-- 17shop日志-->
     <appender name="17shopAppender" class="ch.qos.logback.core.rolling.RollingFileAppender">
         <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
-            <fileNamePattern>${log.path}/invoice/17shop/17shop.log.%d{yyyy-MM-dd}</fileNamePattern>
+            <fileNamePattern>${log.path}/17shop.%d{yyyy-MM-dd}.log</fileNamePattern>
         </rollingPolicy>
         <encoder>
             <pattern>[%d{yyyy-MM-dd HH:mm:ss} %-5p] projectName : vat-invoice-soa %X{elk_leId} %X{elk_lenovoId} %X{elk_requestId} %X{ip} [%thread] %-5level %logger{5} - %msg%n</pattern>
@@ -67,7 +67,7 @@
     <!-- 合同-->
     <appender name="contractAppender" class="ch.qos.logback.core.rolling.RollingFileAppender">
         <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
-            <fileNamePattern>${log.path}/message/contract/contract.log.%d{yyyy-MM-dd}</fileNamePattern>
+            <fileNamePattern>${log.path}/contract.%d{yyyy-MM-dd}.log</fileNamePattern>
         </rollingPolicy>
         <encoder>
             <pattern>[%d{yyyy-MM-dd HH:mm:ss} %-5p] projectName : vat-invoice-soa %X{elk_leId} %X{elk_lenovoId} %X{elk_requestId} %X{ip} [%thread] %-5level %logger{5} - %msg%n</pattern>
@@ -80,7 +80,7 @@
 
     <appender name="throwOrderMessageAppender" class="ch.qos.logback.core.rolling.RollingFileAppender">
         <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
-            <fileNamePattern>${log.path}/message/order/throw/throw.log.%d{yyyy-MM-dd}</fileNamePattern>
+            <fileNamePattern>${log.path}/throw.%d{yyyy-MM-dd}.log</fileNamePattern>
         </rollingPolicy>
         <encoder>
             <pattern>[%d{yyyy-MM-dd HH:mm:ss} %-5p] projectName : vat-invoice-soa %X{elk_leId} %X{elk_lenovoId} %X{elk_requestId} %X{ip} [%thread] %-5level %logger{5} - %msg%n</pattern>
@@ -92,7 +92,7 @@
 
     <appender name="deliverOrderMessageAppender" class="ch.qos.logback.core.rolling.RollingFileAppender">
         <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
-            <fileNamePattern>${log.path}/message/order/deliver/deliver.log.%d{yyyy-MM-dd}</fileNamePattern>
+            <fileNamePattern>${log.path}/deliver.%d{yyyy-MM-dd}.log</fileNamePattern>
         </rollingPolicy>
         <encoder>
             <pattern>[%d{yyyy-MM-dd HH:mm:ss} %-5p] projectName : vat-invoice-soa %X{elk_leId} %X{elk_lenovoId} %X{elk_requestId} %X{ip} [%thread] %-5level %logger{5} - %msg%n</pattern>
@@ -105,7 +105,7 @@
 
     <appender name="paidOrderMessageAppender" class="ch.qos.logback.core.rolling.RollingFileAppender">
         <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
-            <fileNamePattern>${log.path}/message/order/paid/paid.log.%d{yyyy-MM-dd}</fileNamePattern>
+            <fileNamePattern>${log.path}/paid.%d{yyyy-MM-dd}.log</fileNamePattern>
         </rollingPolicy>
         <encoder>
             <pattern>[%d{yyyy-MM-dd HH:mm:ss} %-5p] projectName : vat-invoice-soa %X{elk_leId} %X{elk_lenovoId} %X{elk_requestId} %X{ip} [%thread] %-5level %logger{5} - %msg%n</pattern>
@@ -121,7 +121,7 @@
 
     <appender name="throwBtcpAppender" class="ch.qos.logback.core.rolling.RollingFileAppender">
         <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
-            <fileNamePattern>${log.path}/btcp/btcp.log.%d{yyyy-MM-dd}</fileNamePattern>
+            <fileNamePattern>${log.path}/btcp.btcp.%d{yyyy-MM-dd}.log</fileNamePattern>
         </rollingPolicy>
         <encoder>
             <pattern>[%d{yyyy-MM-dd HH:mm:ss} %-5p] projectName : vat-invoice-soa %X{elk_leId} %X{elk_lenovoId} %X{elk_requestId} %X{ip} [%thread] %-5level %logger{5} - %msg%n</pattern>
@@ -133,7 +133,7 @@
 
     <appender name="vatinvoiceAppender" class="ch.qos.logback.core.rolling.RollingFileAppender">
         <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
-            <fileNamePattern>${log.path}/invoice/vatInvoiceService.log.%d{yyyy-MM-dd}</fileNamePattern>
+            <fileNamePattern>${log.path}/vatInvoiceService.%d{yyyy-MM-dd}.log</fileNamePattern>
         </rollingPolicy>
         <encoder>
             <pattern>[%d{yyyy-MM-dd HH:mm:ss} %-5p] projectName : vat-invoice-soa %X{elk_leId} %X{elk_lenovoId} %X{elk_requestId} %X{ip} [%thread] %-5level %logger{5} - %msg%n</pattern>
@@ -146,7 +146,7 @@
 
     <appender name="updateZidAppender" class="ch.qos.logback.core.rolling.RollingFileAppender">
         <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
-            <fileNamePattern>${log.path}/invoice/update/updateZid.log.%d{yyyy-MM-dd}</fileNamePattern>
+            <fileNamePattern>${log.path}/updateZid.%d{yyyy-MM-dd}.log</fileNamePattern>
         </rollingPolicy>
         <encoder>
             <pattern>[%d{yyyy-MM-dd HH:mm:ss} %-5p] projectName : vat-invoice-soa %X{elk_leId} %X{elk_lenovoId} %X{elk_requestId} %X{ip} [%thread] %-5level %logger{5} - %msg%n</pattern>
@@ -159,7 +159,7 @@
 
     <appender name="throwStatusAppender" class="ch.qos.logback.core.rolling.RollingFileAppender">
         <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
-            <fileNamePattern>${log.path}/order/throwStatus.log.%d{yyyy-MM-dd}</fileNamePattern>
+            <fileNamePattern>${log.path}/throwStatus.%d{yyyy-MM-dd}.log</fileNamePattern>
         </rollingPolicy>
         <encoder>
             <pattern>[%d{yyyy-MM-dd HH:mm:ss} %-5p] projectName : vat-invoice-soa %X{elk_leId} %X{elk_lenovoId} %X{elk_requestId} %X{ip} [%thread] %-5level %logger{5} - %msg%n</pattern>
