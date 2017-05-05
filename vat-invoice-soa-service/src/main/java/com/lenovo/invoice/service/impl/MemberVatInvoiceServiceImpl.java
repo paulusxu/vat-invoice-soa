@@ -21,7 +21,6 @@ import java.util.List;
 public class MemberVatInvoiceServiceImpl implements MemberVatInvoiceService {
 
     private static final Logger logger = LoggerFactory.getLogger(MemberVatInvoiceServiceImpl.class);
-    private static final Logger loggerInit = LoggerFactory.getLogger("com.lenovo.invoice.service.impl.init");
 
     @Autowired
     private RedisObjectManager redisObjectManager;
