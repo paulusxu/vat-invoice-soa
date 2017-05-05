@@ -30,7 +30,11 @@ public interface VathrowBtcpMapper {
 
     List<VatInvoice> getNotThrowBtcpVatInvoicePage(Map map);
 
+    List<VathrowBtcp> getOrderListByZidPage(Map map);
+
     int getNotThrowBtcpVatInvoiceCount(Map map);
+
+    int getOrderListByZidPageCount(Map map);
 
     long updateZid(@Param("record") VatInvoice record);
 

@@ -46,6 +46,8 @@ public interface InvoiceApiService {
     String getType(String faid,String faType);
 
     List<VathrowBtcp> getThrowBtcpList();
+    //获取某个增票下订单列表
+    PageModel2<VathrowBtcp> getOrderListByZidPage(PageQuery pageQuery, Map map);
 
     PageModel2<VatInvoice> getNotThrowBtcpVatInvoicePage(PageQuery pageQuery, Map map);
 
@@ -71,7 +73,6 @@ public interface InvoiceApiService {
     RemoteResult<List<FaInvoiceResult>> getInvoiceTypes(GetInvoiceTypeParam getInvoiceTypeParam);
 
     RemoteResult<List<FaInvoiceResult>> getInvoiceTypes(GetInvoiceTypeParam getInvoiceTypeParam,Tenant tenant);
-
 
     RemoteResult<ConfigurationInformation> getConfigurationInformation(GetCiParam getCiParam,Tenant tenant);
 

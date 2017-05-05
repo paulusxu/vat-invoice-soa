@@ -96,6 +96,16 @@
          GROUP BY vat.taxNo ORDER BY vat.CreateTime DESC) a
     </select>
 
+    <select id="getOrderListByZidPageCount" resultType="java.lang.Integer" parameterType="java.util.Map">
+        SELECT COUNT(1) FROM vathrowbtcp WHERE OrderStatus=3 AND zid=#{zid}  ORDER BY ThrowingStatus
+    </select>
+
+    <select id="getOrderListByZidPage" resultMap="BaseResultMap" parameterType="java.util.Map">
+        SELECT
+        <include refid="Base_Column_List"/>
+        FROM vathrowbtcp WHERE OrderStatus=3 AND zid=#{zid}  ORDER BY ThrowingStatus limit ${pageIndex},${pageSize}
+    </select>
+
     <sql id="queryVatInvoice">
         <if test="taxno != null and taxno!=''">
             AND vat.TaxNo=#{taxno}
@@ -123,7 +133,7 @@
     <select id="getThrowBtcpList" resultMap="BaseResultMap">
     select
     btcp.*
-    FROM vathrowbtcp btcp, vatinvoice vat WHERE btcp.Zid=vat.Id AND btcp.OrderStatus=3 AND btcp.ThrowingStatus IN(0,4)
+    FROM vathrowbtcp btcp, vatinvoice vat WHERE vat.isCheck in(1,2) AND btcp.Zid=vat.Id AND btcp.OrderStatus=3 AND btcp.ThrowingStatus =0
   </select>
 
     <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
