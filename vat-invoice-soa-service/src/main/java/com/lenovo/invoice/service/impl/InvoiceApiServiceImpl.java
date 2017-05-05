@@ -106,6 +106,28 @@ public class InvoiceApiServiceImpl extends BaseService implements InvoiceApiServ
     }
 
     @Override
+    public PageModel2<VathrowBtcp> getOrderListByZidPage(PageQuery pageQuery, Map map) {
+        List<VathrowBtcp> vathrowBtcpList = null;
+        try {
+            int count = vathrowBtcpMapper.getOrderListByZidPageCount(map);
+            pageQuery.setTotalCount(count);
+            if (pageQuery.getTotalCount() == 0) {
+                PageModel2<VathrowBtcp> pageModel2 = new PageModel2<VathrowBtcp>(pageQuery, new ArrayList<VathrowBtcp>());
+                return pageModel2;
+            }
+
+            int pageIndex = (pageQuery.getPageNum() - 1) * pageQuery.getPageSize();
+            int pageSize = pageQuery.getPageSize();
+            map.put("pageIndex", pageIndex);//0
+            map.put("pageSize", pageSize);//10
+            vathrowBtcpList = vathrowBtcpMapper.getOrderListByZidPage(map);
+        } catch (Exception e) {
+            LOGGER.error(e.getMessage(), e);
+        }
+        return new PageModel2<VathrowBtcp>(pageQuery, vathrowBtcpList);
+    }
+
+    @Override
     public PageModel2<VatInvoice> getNotThrowBtcpVatInvoicePage(PageQuery pageQuery, Map map) {
         List<VatInvoice> invoiceList = null;
         try {
