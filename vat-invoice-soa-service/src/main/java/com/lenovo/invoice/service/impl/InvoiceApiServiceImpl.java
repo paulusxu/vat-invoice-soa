@@ -294,10 +294,17 @@ public class InvoiceApiServiceImpl extends BaseService implements InvoiceApiServ
             }
 
             long orderId = 0;
+
+            updateThrowingStatus(orderId + "", status == 1 ? 3 : 4);
+            RemoteResult<Invoice> remoteResultInvoice = orderDetailService.getInvoiceByOrderId(orderId);
+            LOGGER_BTCP.info("btcpSyncVatInvoice:remoteResultInvoice{}", JacksonUtil.toJson(remoteResultInvoice));
+
+            if (remoteResultInvoice.isSuccess()) {
+                Invoice invoice = remoteResultInvoice.getT();
+                changeVatInvoiceState(invoice.getZid(), status == 1 ? true : false, null);
+            }
             RemoteResult<Main> remoteResult = orderInvoiceService.getOrderInvoiceDetail(increaseOrderRequest.getBtcpSO());
             LOGGER_BTCP.info("btcpSyncVatInvoice:{}", JacksonUtil.toJson(remoteResult));
-            updateThrowingStatus(orderId + "", status == 1 ? 3 : 4);
-
             if (remoteResult.isSuccess()) {
                 Main main = remoteResult.getT();
                 InvoiceReviewParam invoiceReviewParam = new InvoiceReviewParam();
@@ -305,11 +312,7 @@ public class InvoiceApiServiceImpl extends BaseService implements InvoiceApiServ
                 invoiceReviewParam.setReviewStatus(status);
                 invoiceReviewParam.setFailureReason(increaseOrderRequest.getReason());
                 orderInvoiceService.updateInvoiceReviewStatus(invoiceReviewParam);
-                RemoteResult<Invoice> remoteResultInvoice = orderDetailService.getInvoiceByOrderId(orderId);
-                if (remoteResultInvoice.isSuccess()) {
-                    Invoice invoice = remoteResultInvoice.getT();
-                    changeVatInvoiceState(invoice.getZid(), status == 1 ? true : false, null);
-                }
+
             }
 
         } catch (Exception e) {
