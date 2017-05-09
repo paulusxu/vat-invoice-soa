@@ -54,7 +54,7 @@ public interface InvoiceApiService {
     long updateZid(List<Long> listZids, String zid);
 
     //补单
-    long makeUpVatInvocie(String zids);
+    long makeUpVatInvocie(String orderCode);
 
     int updateThrowingStatus(String orderCode,  int status);
     //修改单条增票

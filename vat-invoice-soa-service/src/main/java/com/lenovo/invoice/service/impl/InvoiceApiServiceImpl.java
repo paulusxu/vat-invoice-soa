@@ -28,6 +28,7 @@ import com.lenovo.m2.buy.order.middleware.domain.btcp.IncreaseOrderRequest;
 import com.lenovo.m2.buy.order.middleware.domain.param.InvoiceReviewParam;
 import com.lenovo.m2.ordercenter.soa.api.query.order.OrderDetailService;
 import com.lenovo.m2.ordercenter.soa.api.vat.VatApiOrderCenter;
+import com.lenovo.m2.ordercenter.soa.domain.forward.DeliveryAddress;
 import com.lenovo.m2.ordercenter.soa.domain.forward.Invoice;
 import com.lenovo.m2.ordercenter.soa.domain.forward.Main;
 import com.lenovo.m2.stock.soa.api.service.StoreInfoApiService;
@@ -72,8 +73,7 @@ public class InvoiceApiServiceImpl extends BaseService implements InvoiceApiServ
     private VathrowBtcpMapper vathrowBtcpMapper;
     @Autowired
     private VatInvoiceService vatInvoiceService;
-    @Autowired
-    private VatApiOrderCenter vatApiOrderCenter;
+
     @Autowired
     private PropertiesConfig getInvoiceTypes;
     @Autowired
@@ -179,37 +179,84 @@ public class InvoiceApiServiceImpl extends BaseService implements InvoiceApiServ
     }
 
     @Override
-    public long makeUpVatInvocie(String zids) {
-        try {
-            LOGGER.info("MakeUpVatInvocie Start:{}", zids);
+    public long makeUpVatInvocie(String orderCodes) {
+        RemoteResult<Invoice> remoteResultInvoice = null;
+        RemoteResult<Main> remoteResultMain = null;
+        RemoteResult<DeliveryAddress> remoteResultDeliveryAddress = null;
 
-            List<VatInvoice> vatInvoiceList = new ArrayList<VatInvoice>();
-            String[] zidArr = zids.split(",");
-            for (String zid : zidArr) {
-                VatInvoice vatInvoice = vatInvoiceMapper.getVatInvoiceInfoById(Long.parseLong(zid));
-                vatInvoiceList.add(vatInvoice);
-            }
+        String []o=orderCodes.split(",");
+        for(String orderCode:o){
+            VathrowBtcp vathrowBtcp = new VathrowBtcp();
+            try {
+                long orderId = Long.parseLong(orderCode);
+                //查询主单信息  获取发票类型
+                remoteResultInvoice = orderDetailService.getInvoiceByOrderId(orderId);
+                if (remoteResultInvoice.isSuccess()) {
+                    Invoice invoice = remoteResultInvoice.getT();//发票类型1:电子票2:增票3:普票
+                    if (invoice != null && invoice.getType() == 2) {
+                        LOGGER.info("makeUpVatInvocie invoice:", JacksonUtil.toJson(invoice));
+                        vathrowBtcp.setOrderStatus(3);
+                        vathrowBtcp.setOrderCode(orderCode);
+                        vathrowBtcp.setZid(invoice.getZid());
+                        //初始化
+                        int rows = vathrowBtcpMapper.insertVathrowBtcp(vathrowBtcp);
+                        if (rows > 0) {
+                            vathrowBtcp.setIsneedmerge(invoice.getIsNeedMerge());
+                            vathrowBtcp.setOrderCode(orderId + "");
+                            //获取订单相关信息
+                            remoteResultMain = orderDetailService.getMainById(orderId);
+                            remoteResultDeliveryAddress = orderDetailService.getDeliveryAddressByOrderId(orderId, 1);//1代表是发票地址，0代表是货的地址
 
-            List<Invoice> orderList = new ArrayList<Invoice>();
-            if (CollectionUtils.isNotEmpty(vatInvoiceList)) {
-                for (VatInvoice vatInvoice : vatInvoiceList) {
-                    Invoice order = new Invoice();
-                    order.setBankNo(vatInvoice.getAccountno());//账号
-                    order.setRegisterAddress(vatInvoice.getAddress());//地址
-                    order.setDepositBank(vatInvoice.getBankname());//开户行
-                    order.setTitle(vatInvoice.getCustomername());//客户名称
-                    order.setTaxpayerIdentity(vatInvoice.getTaxno());//税号
-                    order.setRegisterPhone(vatInvoice.getPhoneno());
-                    order.setZid(String.valueOf(vatInvoice.getId()));
-                    orderList.add(order);
+                            if (remoteResultMain.isSuccess() && remoteResultDeliveryAddress.isSuccess()) {
+                                Main main = remoteResultMain.getT();
+                                if (main != null) {
+                                    vathrowBtcp.setOutid(main.getOutId());
+                                    vathrowBtcp.setMembercode(main.getMemberCode());
+                                }
+                                DeliveryAddress deliveryAddress = remoteResultDeliveryAddress.getT();
+                                LOGGER.info("makeUpVatInvocie deliveryAddress:", JacksonUtil.toJson(deliveryAddress));
+                                if (deliveryAddress != null) {
+                                    //设置收货信息
+                                    vathrowBtcp.setName(deliveryAddress.getName());//收货人姓名
+                                    vathrowBtcp.setProvinceid(deliveryAddress.getProvinceId());//省份编号
+                                    vathrowBtcp.setCity(deliveryAddress.getCity());//市名称
+                                    vathrowBtcp.setCounty(deliveryAddress.getCounty());//区县名称
+                                    vathrowBtcp.setAddress(deliveryAddress.getAddress());//详细地址
+                                    vathrowBtcp.setPhone(deliveryAddress.getPhone());//联系电话
+                                    vathrowBtcp.setZip(deliveryAddress.getZip());//邮编
+                                }
+                                //设置增票信息
+                                String shopid = invoice.getTenant().getShopId() + "";
+                                String zid = invoice.getZid();
+                                vathrowBtcp.setZid(zid);
+                                vathrowBtcp.setThrowingStatus(0);
+
+                                VatInvoice vatInvoice = vatInvoiceService.getVatInvoiceByZid(zid, shopid);
+                                if (vatInvoice != null) {
+                                    vathrowBtcp.setTitle(vatInvoice.getCustomername());//发票抬头
+                                    vathrowBtcp.setTaxpayeridentity(vatInvoice.getTaxno());//税号
+                                    vathrowBtcp.setBankno(vatInvoice.getAccountno());//开户账号
+                                    vathrowBtcp.setDepositbank(vatInvoice.getBankname());//开户行
+                                    vathrowBtcp.setRegisteraddress(vatInvoice.getAddress());//注册地址
+                                    vathrowBtcp.setRegisterphone(vatInvoice.getPhoneno());//电话
+                                }
+                                rows = vathrowBtcpMapper.updateVathrowbtcp(vathrowBtcp);
+                                if (rows > 0) {
+                                    //更新增票状态
+                                    vatInvoiceService.updateVatInvoiceIsvalid(zid, shopid + "");
+                                }
+                                LOGGER.info("makeUpVatInvocie  VathrowBtcp:{},{}", JacksonUtil.toJson(vathrowBtcp), rows);
+                            }
+                        }
+                    }
                 }
+            } catch (Exception e) {
+                LOGGER.error(e.getMessage(), e);
             }
-            RemoteResult remoteResult = vatApiOrderCenter.invoiceCallBackService(orderList, 0);
-            LOGGER.info("MakeUpVatInvocie End:" + JacksonUtil.toJson(remoteResult));
-
-        } catch (Exception e) {
-            LOGGER.error(e.getMessage(), e);
         }
+
+
+
         return 0;
     }
 
@@ -249,6 +296,9 @@ public class InvoiceApiServiceImpl extends BaseService implements InvoiceApiServ
 
             long orderId = 0;
             RemoteResult<Main> remoteResult = orderInvoiceService.getOrderInvoiceDetail(increaseOrderRequest.getBtcpSO());
+            LOGGER_BTCP.info("btcpSyncVatInvoice:{}",JacksonUtil.toJson(remoteResult));
+            updateThrowingStatus(orderId + "", status == 1 ? 3 : 4);
+
             if (remoteResult.isSuccess()) {
                 Main main = remoteResult.getT();
                 InvoiceReviewParam invoiceReviewParam = new InvoiceReviewParam();
@@ -261,7 +311,6 @@ public class InvoiceApiServiceImpl extends BaseService implements InvoiceApiServ
                     Invoice invoice = remoteResultInvoice.getT();
                     changeVatInvoiceState(invoice.getZid(), status == 1 ? true : false, null);
                 }
-                updateThrowingStatus(orderId + "", status == 1 ? 3 : 4);
             }
 
         } catch (Exception e) {
