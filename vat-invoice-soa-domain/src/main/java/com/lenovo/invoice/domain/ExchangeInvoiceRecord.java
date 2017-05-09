@@ -14,7 +14,6 @@ public class ExchangeInvoiceRecord implements Serializable {
     private String orderCode;//订单号
     private String BTCPOrderCode;//BTCP订单号
     private Integer shopid;//商城
-    //待换票、换票中、换票失败、换票成功、换票取消，状态不可逆，只有待换票状态可以取消换票
     private Integer state;//换票的状态，1换票中，2换票成功，3换票失败
     private Date exchangeTime;//换票的时间
     private Date updateTime;//最近一次修改时间

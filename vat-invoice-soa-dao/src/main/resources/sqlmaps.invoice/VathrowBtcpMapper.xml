@@ -65,6 +65,8 @@
     IsThrowing, CreateTime, CreateBy, UpdateTime, UpdateBy, IsShared, isNeedMerge, ShopId,
     ShardedBy, ShardedTime,faid,storesid,type,isvalid
   </sql>
+
+    <!--根据订单code获取增值税发票信息-->
     <select id="getVatInvoiceByOrderCode" parameterType="java.lang.String" resultMap="BaseResultMap">
         SELECT
         <include refid="Base_Column_List"/>
@@ -163,6 +165,56 @@
             </if>
         </set>
         WHERE zid IN (${record.faid}) AND ThrowingStatus=0
+    </update>
+
+    <!--根据orderCode和orderStatus修改增票信息-->
+    <update id="updateVatBTCP" parameterType="com.lenovo.invoice.domain.VathrowBtcp">
+        UPDATE vathrowbtcp
+        <set>
+            <if test="zid!=null and zid!=''">
+                Zid = #{zid},
+            </if>
+            <if test="title != null and title!=''">
+                Title = #{title},
+            </if>
+            <if test="taxpayeridentity!=null and taxpayeridentity!=''">
+                TaxpayerIdentity = #{taxpayeridentity},
+            </if>
+            <if test="depositbank!=null and depositbank!=''">
+                DepositBank = #{depositbank},
+            </if>
+            <if test="bankno!=null and bankno!=''">
+                BankNo = #{bankno},
+            </if>
+            <if test="registeraddress!=null and registeraddress!=''">
+                RegisterAddress = #{registeraddress},
+            </if>
+            <if test="registerphone!=null and registerphone!=''">
+                RegisterPhone = #{registerphone},
+            </if>
+            <if test="name!=null and name!=''">
+                Name = #{name},
+            </if>
+            <if test="provinceid!=null and provinceid!=''">
+                ProvinceId = #{provinceid},
+            </if>
+            <if test="city!=null and city!=''">
+                City = #{city},
+            </if>
+            <if test="county!=null and county!=''">
+                County = #{county},
+            </if>
+            <if test="address!=null and address!=''">
+                Address = #{address},
+            </if>
+            <if test="phone!=null and phone!=''">
+                Phone = #{phone},
+            </if>
+            <if test="zip!=null and zip!=''">
+                Zip = #{zip},
+            </if>
+        </set>
+        WHERE OrderCode=#{orderCode} AND OrderStatus IN (1,2)
     </update>
 
     <update id="updateOrderStatus">

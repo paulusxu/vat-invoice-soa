@@ -348,6 +348,13 @@
                 </exclusion>
             </exclusions>
         </dependency>
+
+        <dependency>
+            <groupId>com.lenovo.m2.buy.order.address</groupId>
+            <artifactId>order-address-api</artifactId>
+            <version>3.1.0-SNAPSHOT</version>
+        </dependency>
+
     </dependencies>
     <build>
         <plugins>

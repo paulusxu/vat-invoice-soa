@@ -30,6 +30,7 @@ import java.util.*;
 @Service("exchangeInvoiceService")
 public class ExchangeInvoiceServiceImpl extends BaseService implements ExchangeInvoiceService{
     private static final Logger LOGGER = LoggerFactory.getLogger(ExchangeInvoiceServiceImpl.class);
+    private static final Logger ERRORLOGGER = LoggerFactory.getLogger("com.lenovo.invoice.service.impl.exchangeInvoice");
 
     @Autowired
     private VathrowBtcpMapper vathrowBtcpMapper;
@@ -161,10 +162,10 @@ public class ExchangeInvoiceServiceImpl extends BaseService implements ExchangeI
 
                             int i = exchangeInvoiceRecordMapper.addExchangeInvoiceRecord(record);
                             if (i==0){
-                                LOGGER.error("添加换票记录失败==参数=="+JacksonUtil.toJson(record));
+                                ERRORLOGGER.error("添加换票记录失败==参数=="+JacksonUtil.toJson(record));
                             }
                         }catch (Exception e){
-                            LOGGER.error("添加换票记录失败==参数=="+JacksonUtil.toJson(record)+e.getMessage(),e);
+                            ERRORLOGGER.error("添加换票记录失败==参数=="+JacksonUtil.toJson(record)+e.getMessage(),e);
                         }
                     }else {
                         remoteResult.setResultCode(InvoiceResultCode.UPDATEORDERFAIL);
@@ -249,10 +250,10 @@ public class ExchangeInvoiceServiceImpl extends BaseService implements ExchangeI
 
                             int i = exchangeInvoiceRecordMapper.addExchangeInvoiceRecord(record);
                             if (i==0){
-                                LOGGER.error("添加换票记录失败==参数=="+JacksonUtil.toJson(record));
+                                ERRORLOGGER.error("添加换票记录失败==参数=="+JacksonUtil.toJson(record));
                             }
                         }catch (Exception e){
-                            LOGGER.error("添加换票记录失败==参数=="+JacksonUtil.toJson(record)+e.getMessage(),e);
+                            ERRORLOGGER.error("添加换票记录失败==参数=="+JacksonUtil.toJson(record)+e.getMessage(),e);
                         }
                     }else {
                         remoteResult.setResultCode(InvoiceResultCode.THROWBTCPFAIL);
@@ -408,10 +409,10 @@ public class ExchangeInvoiceServiceImpl extends BaseService implements ExchangeI
 
                             int i = exchangeInvoiceRecordMapper.addExchangeInvoiceRecord(record);
                             if (i == 0) {
-                                LOGGER.error("添加换票记录失败==参数==" + JacksonUtil.toJson(record));
+                                ERRORLOGGER.error("添加换票记录失败==参数==" + JacksonUtil.toJson(record));
                             }
                         } catch (Exception e) {
-                            LOGGER.error("添加换票记录失败==参数==" + JacksonUtil.toJson(record) + e.getMessage(), e);
+                            ERRORLOGGER.error("添加换票记录失败==参数==" + JacksonUtil.toJson(record) + e.getMessage(), e);
                         }
                     } else {
                         remoteResult.setResultCode(InvoiceResultCode.UPDATEORDERFAIL);
@@ -501,10 +502,10 @@ public class ExchangeInvoiceServiceImpl extends BaseService implements ExchangeI
 
                             int i = exchangeInvoiceRecordMapper.addExchangeInvoiceRecord(record);
                             if (i == 0) {
-                                LOGGER.error("添加换票记录失败==参数==" + JacksonUtil.toJson(record));
+                                ERRORLOGGER.error("添加换票记录失败==参数==" + JacksonUtil.toJson(record));
                             }
                         } catch (Exception e) {
-                            LOGGER.error("添加换票记录失败==参数==" + JacksonUtil.toJson(record) + e.getMessage(), e);
+                            ERRORLOGGER.error("添加换票记录失败==参数==" + JacksonUtil.toJson(record) + e.getMessage(), e);
                         }
                     } else {
                         remoteResult.setResultCode(InvoiceResultCode.THROWBTCPFAIL);
