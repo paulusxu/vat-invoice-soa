@@ -190,7 +190,7 @@ public class VatInvoiceServiceImpl implements VatInvoiceService {
 
                     if (!resCode.equals("") && resCode.equals("200")) {
                         //抛送成功
-                        int rows = vathrowBtcpMapper.updateByOrderCode(vathrowBtcp.getOrderCode(), 3, resCode);
+                        int rows = vathrowBtcpMapper.updateByOrderCode(vathrowBtcp.getOrderCode(), 2, resCode);
                         if (rows > 0) {
                             //增票抛单成功通知订单
                             Invoice invoice = new Invoice();
