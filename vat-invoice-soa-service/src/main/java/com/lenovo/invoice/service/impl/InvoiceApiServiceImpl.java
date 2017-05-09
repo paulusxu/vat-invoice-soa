@@ -184,8 +184,8 @@ public class InvoiceApiServiceImpl extends BaseService implements InvoiceApiServ
         RemoteResult<Main> remoteResultMain = null;
         RemoteResult<DeliveryAddress> remoteResultDeliveryAddress = null;
 
-        String []o=orderCodes.split(",");
-        for(String orderCode:o){
+        String[] o = orderCodes.split(",");
+        for (String orderCode : o) {
             VathrowBtcp vathrowBtcp = new VathrowBtcp();
             try {
                 long orderId = Long.parseLong(orderCode);
@@ -256,7 +256,6 @@ public class InvoiceApiServiceImpl extends BaseService implements InvoiceApiServ
         }
 
 
-
         return 0;
     }
 
@@ -296,7 +295,7 @@ public class InvoiceApiServiceImpl extends BaseService implements InvoiceApiServ
 
             long orderId = 0;
             RemoteResult<Main> remoteResult = orderInvoiceService.getOrderInvoiceDetail(increaseOrderRequest.getBtcpSO());
-            LOGGER_BTCP.info("btcpSyncVatInvoice:{}",JacksonUtil.toJson(remoteResult));
+            LOGGER_BTCP.info("btcpSyncVatInvoice:{}", JacksonUtil.toJson(remoteResult));
             updateThrowingStatus(orderId + "", status == 1 ? 3 : 4);
 
             if (remoteResult.isSuccess()) {
@@ -617,6 +616,7 @@ public class InvoiceApiServiceImpl extends BaseService implements InvoiceApiServ
                     remoteResult.setResultMsg("系统异常错误");
                 }
             } else {
+                vatInvoice.setIsNeedMerge(isNeedMerge ? 1 : 0);
                 if (isShard) {
                     Integer isSharded = vatInvoice.getIsshared();
                     id = vatInvoice.getId();
