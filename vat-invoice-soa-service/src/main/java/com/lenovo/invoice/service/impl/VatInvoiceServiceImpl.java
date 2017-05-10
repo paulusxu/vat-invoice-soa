@@ -209,7 +209,8 @@ public class VatInvoiceServiceImpl implements VatInvoiceService {
                             vatApiOrderCenter.updateInvoice(invoice);
                         }
                     } else {
-                        if (null != message && !message.equals("只有审批被拒绝的情况下才可二次抛送")) {
+                        //<Result><Code>213_700_020</Code><Message>213_700_020:只有审批被拒绝的情况下才可二次抛送</Message></Result>
+                        if (!resCode.equals("213_700_020")) {
                             int rows = vathrowBtcpMapper.updateByOrderCode(vathrowBtcp.getOrderCode(), 4, message);
                         }
                     }
