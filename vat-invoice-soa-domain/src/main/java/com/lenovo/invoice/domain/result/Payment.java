@@ -1,11 +1,12 @@
 package com.lenovo.invoice.domain.result;
 
+import java.io.Serializable;
 import java.util.List;
 
 /**
  * Created by xuweihua on 2017/5/10.
  */
-public class Payment {
+public class Payment implements Serializable {
     private PaymentType defaultType;
     private List<PaymentType> paymentTypes;
 
