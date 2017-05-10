@@ -907,7 +907,7 @@ public class InvoiceApiServiceImpl extends BaseService implements InvoiceApiServ
             return payment;
         }
         if (tenant.getShopId() == 8) {
-            if ((getCiParam.getFaDatas().size() == 1 && getCiParam.getFaDatas().get(0).getFatype() == 7)||getCiParam.getBigDecimal().doubleValue() > 5000) {//只有一个fa并且faType=SMB_ZY_ALL()直营总代  ：线下转账并默认
+            if ((getCiParam.getFaDatas().size() == 1 && getCiParam.getFaDatas().get(0).getFatype() == 7)||getCiParam.getBigDecimal().doubleValue() > 50000) {//只有一个fa并且faType=SMB_ZY_ALL()直营总代  ：线下转账并默认
                 Payment payment=new Payment();
                 payment.setDefaultType(PaymentType.XXZZ);
                 payment.setPaymentTypes(Arrays.asList(new PaymentType[]{PaymentType.XXZZ}));
