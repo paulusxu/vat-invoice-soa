@@ -51,8 +51,9 @@ public class CommonInvoiceServiceImpl extends BaseService implements CommonInvoi
             commonInvoice.setInvoiceTitle(invoiceTitle);
             commonInvoice.setShopid(shopid);
             commonInvoice.setType(type);
-            commonInvoice = commonInvoiceMapper.getCommonInvoiceByTitle(commonInvoice);
-            if (commonInvoice==null){
+            LOGGER.info("commonInvoiceMapper" + commonInvoiceMapper);
+            CommonInvoice commonInvoice2 = commonInvoiceMapper.getCommonInvoiceByTitle(commonInvoice);
+            if (commonInvoice2==null){
                 //不存在相同的发票，可以添加
                 commonInvoice.setInvoiceTitle(invoiceTitle);
                 commonInvoice.setShopid(shopid);
@@ -65,6 +66,8 @@ public class CommonInvoiceServiceImpl extends BaseService implements CommonInvoi
                     remoteResult.setResultCode(InvoiceResultCode.ADDCOMMONINVOICEFAIL);
                     throw new Exception();
                 }
+            }else {
+                commonInvoice = commonInvoice2;
             }
 
             CommonInvoiceMapping commonInvoiceMapping = new CommonInvoiceMapping();

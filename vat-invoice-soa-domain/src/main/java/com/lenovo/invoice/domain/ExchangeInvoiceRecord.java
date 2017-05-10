@@ -20,7 +20,7 @@ public class ExchangeInvoiceRecord implements Serializable {
     private Integer exchangeType;//换票类型，1电换普，2增换普、3普换普，4电换增、5增换增、6普换增
 
     //老发票信息
-    private Integer oldType;//开票方式，1公司，2个人
+    private Integer oldType;//开票方式，1公司，0个人
     private Integer oldInvoiceId;//发票的id
     private Integer oldInvoiceType;//发票的类型，1电，2增，3普
     private String oldInvoiceTitle;//发票的抬头
@@ -31,7 +31,7 @@ public class ExchangeInvoiceRecord implements Serializable {
     private String oldPhone;//开户电话
 
     //新发票信息
-    private Integer newType;//开票方式，1公司，2个人
+    private Integer newType;//开票方式，1公司，0个人
     private Integer newInvoiceId;//发票的id
     private Integer newInvoiceType;//发票的类型，1电，2增，3普
     private String newInvoiceTitle;//发票的抬头
