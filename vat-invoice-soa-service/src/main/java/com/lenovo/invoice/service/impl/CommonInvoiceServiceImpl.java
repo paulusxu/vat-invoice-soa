@@ -59,6 +59,7 @@ public class CommonInvoiceServiceImpl extends BaseService implements CommonInvoi
                 commonInvoice.setType(type);
                 commonInvoice.setCreateBy(createBy);
                 commonInvoice.setCreatetime(date);
+                LOGGER.info("commonInvoiceMapper"+commonInvoiceMapper);
                 int i = commonInvoiceMapper.addCommonInvoice(commonInvoice);
                 if (i==0){
                     remoteResult.setResultMsg("添加普通发票失败");
