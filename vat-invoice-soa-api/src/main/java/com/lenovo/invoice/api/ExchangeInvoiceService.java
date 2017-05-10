@@ -25,7 +25,8 @@ public interface ExchangeInvoiceService {
 
     //换增票
     public RemoteResult exchangeToVat(String orderCode,String itCode, Integer oldInvoiceType,Integer exchangeType,String newInvoiceTitle,
-                                      String newTaxNo,String newBankName,String newBankNo,String newAddress,String newPhone);
+                                      String newTaxNo,String newBankName,String newBankNo,String newAddress,String newPhone,
+                                      String name,String province,String city,String county,String address2,String phone2,String zip);
 
     //获取换票记录，加分页
     public RemoteResult<PageModel2<ExchangeInvoiceRecord>> getExchangeInvoiceRecordByPage(PageQuery pageQuery, ExchangeInvoiceRecord exchangeInvoiceRecord);

@@ -1,15 +1,10 @@
 package com.lenovo.invoice.service.works;
 
 import com.lenovo.invoice.dao.ExchangeInvoiceRecordMapper;
-import com.lenovo.invoice.domain.UpdateInvoiceInOrderParams;
-import com.lenovo.m2.arch.framework.domain.RemoteResult;
 import com.lenovo.m2.ordercenter.soa.api.vat.VatApiOrderCenter;
-import com.lenovo.m2.ordercenter.soa.domain.forward.Invoice;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-
-import java.util.List;
 
 /**
  * Created by admin on 2017/3/21.
@@ -26,7 +21,7 @@ public class UpdateInvoiceInOrderWork {
     private ExchangeInvoiceRecordMapper exchangeInvoiceRecordMapper;
 
     public void execute(){
-        LOGGER.info("执行修改订单重复发送请求work！");
+        /*LOGGER.info("执行修改订单重复发送请求work！");
         try {
             List<UpdateInvoiceInOrderParams> paramsList = exchangeInvoiceRecordMapper.getErrorUpdateOrder();
 
@@ -56,7 +51,7 @@ public class UpdateInvoiceInOrderWork {
             }
         }catch (Exception e){
             LOGGER.error(e.getMessage(),e);
-        }
+        }*/
     }
 
 }

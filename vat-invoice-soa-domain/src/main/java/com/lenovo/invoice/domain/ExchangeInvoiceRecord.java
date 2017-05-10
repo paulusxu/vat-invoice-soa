@@ -41,9 +41,83 @@ public class ExchangeInvoiceRecord implements Serializable {
     private String newAddress;//开户地址
     private String newPhone;//开户电话
 
+    //收票地址
+    private String name;//收票人姓名
+    private String provinceId;//省份id
+    private String province;//省份
+    private String city;//城市
+    private String county;//区县
+    private String address;//详细地址
+    private String phone;//收票人电话
+    private String zip;//邮编
+
     //分页查询，换票开始时间，结束时间
     private Date beginTime;
     private Date endTime;
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public String getProvinceId() {
+        return provinceId;
+    }
+
+    public void setProvinceId(String provinceId) {
+        this.provinceId = provinceId;
+    }
+
+    public String getProvince() {
+        return province;
+    }
+
+    public void setProvince(String province) {
+        this.province = province;
+    }
+
+    public String getCity() {
+        return city;
+    }
+
+    public void setCity(String city) {
+        this.city = city;
+    }
+
+    public String getCounty() {
+        return county;
+    }
+
+    public void setCounty(String county) {
+        this.county = county;
+    }
+
+    public String getAddress() {
+        return address;
+    }
+
+    public void setAddress(String address) {
+        this.address = address;
+    }
+
+    public String getPhone() {
+        return phone;
+    }
+
+    public void setPhone(String phone) {
+        this.phone = phone;
+    }
+
+    public String getZip() {
+        return zip;
+    }
+
+    public void setZip(String zip) {
+        this.zip = zip;
+    }
 
     public Date getUpdateTime() {
         return updateTime;

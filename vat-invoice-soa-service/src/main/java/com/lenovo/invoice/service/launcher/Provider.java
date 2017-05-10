@@ -20,8 +20,7 @@ public class Provider {
                             "classpath*:spring-config-dao.xml",
                             "classpath*:spring-config-dubbo.xml",
                             "classpath*:spring-redis-shard.xml",
-                            "classpath*:spring-config-kafka.xml",
-                            "classpath*:applicationContext-quartz.xml"
+                            "classpath*:spring-config-kafka.xml"
                     }
             );
             logger.info("vat-invoice-soa server started.");

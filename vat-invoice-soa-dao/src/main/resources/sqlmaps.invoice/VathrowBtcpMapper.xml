@@ -223,6 +223,9 @@
             <if test="zip!=null and zip!=''">
                 Zip = #{zip},
             </if>
+            <if test="throwingStatus!=null and throwingStatus!=''">
+                ThrowingStatus = #{throwingStatus},
+            </if>
         </set>
         WHERE OrderCode=#{orderCode} AND OrderStatus IN (1,2)
     </update>

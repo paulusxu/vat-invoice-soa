@@ -20,6 +20,9 @@ public class InvoiceResultCode {
     public static final String GETORDERFAIL = "10";//获取订单信息失败
     public static final String GETORDERSTATUSFAIL = "12";//获取订单状态失败
     public static final String GETRECORDFAIL = "13";//查询不到换票记录
+    public static final String ADDSPADDRESSFAIL = "14";//添加收票地址失败
+    public static final String UPDATEVATINVOICEFAIL = "15";//修改增票信息失败
+    public static final String GETPROVINCENOFAIL = "16";//获取省份编号失败
 
 
 
