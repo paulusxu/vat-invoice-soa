@@ -51,6 +51,7 @@ public class CommonInvoiceServiceImpl extends BaseService implements CommonInvoi
             commonInvoice.setInvoiceTitle(invoiceTitle);
             commonInvoice.setShopid(shopid);
             commonInvoice.setType(type);
+            LOGGER.info("commonInvoiceMapper"+commonInvoiceMapper);
             commonInvoice = commonInvoiceMapper.getCommonInvoiceByTitle(commonInvoice);
             if (commonInvoice==null){
                 //不存在相同的发票，可以添加
@@ -59,7 +60,6 @@ public class CommonInvoiceServiceImpl extends BaseService implements CommonInvoi
                 commonInvoice.setType(type);
                 commonInvoice.setCreateBy(createBy);
                 commonInvoice.setCreatetime(date);
-                LOGGER.info("commonInvoiceMapper"+commonInvoiceMapper);
                 int i = commonInvoiceMapper.addCommonInvoice(commonInvoice);
                 if (i==0){
                     remoteResult.setResultMsg("添加普通发票失败");
