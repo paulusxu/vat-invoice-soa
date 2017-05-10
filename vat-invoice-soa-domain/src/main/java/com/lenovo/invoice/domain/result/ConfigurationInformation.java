@@ -8,7 +8,7 @@ import java.util.List;
  */
 public class ConfigurationInformation implements Serializable {
     private List<FaInvoiceResult> faInvoiceResults;
-    private List<PaymentType> paymentTypes;
+    private Payment payment;
 
     public List<FaInvoiceResult> getFaInvoiceResults() {
         return faInvoiceResults;
@@ -18,11 +18,11 @@ public class ConfigurationInformation implements Serializable {
         this.faInvoiceResults = faInvoiceResults;
     }
 
-    public List<PaymentType> getPaymentTypes() {
-        return paymentTypes;
+    public Payment getPayment() {
+        return payment;
     }
 
-    public void setPaymentTypes(List<PaymentType> paymentTypes) {
-        this.paymentTypes = paymentTypes;
+    public void setPayment(Payment payment) {
+        this.payment = payment;
     }
 }

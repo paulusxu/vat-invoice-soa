@@ -815,7 +815,7 @@ public class InvoiceApiServiceImpl extends BaseService implements InvoiceApiServ
             GetInvoiceTypeParam getInvoiceTypeParam = new GetInvoiceTypeParam();
             BeanUtils.copyProperties(getInvoiceTypeParam, getCiParam);
             information.setFaInvoiceResults(getInvoiceTypes(getInvoiceTypeParam, tenant).getT());
-            information.setPaymentTypes(getPaymentType(getCiParam, tenant));
+            information.setPayment(getPaymentType(getCiParam, tenant));
             result.setSuccess(true);
             result.setT(information);
         } catch (Exception e) {
@@ -825,21 +825,30 @@ public class InvoiceApiServiceImpl extends BaseService implements InvoiceApiServ
         return result;
     }
 
-    public List<PaymentType> getPaymentType(GetCiParam getCiParam, Tenant tenant) {
+    public Payment getPaymentType(GetCiParam getCiParam, Tenant tenant) {
         if (getCiParam.getSalesType() == 98) {
-            return Arrays.asList(new PaymentType[]{PaymentType.HDFK, PaymentType.ZXZF});
+            Payment payment=new Payment();
+            payment.setDefaultType(PaymentType.ZXZF);
+            payment.setPaymentTypes(Arrays.asList(new PaymentType[]{PaymentType.ZXZF,PaymentType.HDFK}));
+            return payment;
         }
         if (tenant.getShopId() == 8) {
-            if (getCiParam.getFaDatas().size() == 1 && getCiParam.getFaDatas().get(0).getFatype() == 7) {//只有一个fa并且faType=SMB_ZY_ALL()直营总代  ：线下转账并默认
-                return Arrays.asList(new PaymentType[]{PaymentType.XXZZ});
+            if ((getCiParam.getFaDatas().size() == 1 && getCiParam.getFaDatas().get(0).getFatype() == 7)||getCiParam.getBigDecimal().doubleValue() > 5000) {//只有一个fa并且faType=SMB_ZY_ALL()直营总代  ：线下转账并默认
+                Payment payment=new Payment();
+                payment.setDefaultType(PaymentType.XXZZ);
+                payment.setPaymentTypes(Arrays.asList(new PaymentType[]{PaymentType.XXZZ}));
+                return payment;
             }
-            if (getCiParam.getBigDecimal().doubleValue() > 5000) {
-                return Arrays.asList(new PaymentType[]{PaymentType.XXZZ});
-            }
-            return Arrays.asList(new PaymentType[]{PaymentType.XXZZ, PaymentType.ZXZF});
+            Payment payment=new Payment();
+            payment.setDefaultType(PaymentType.XXZZ);
+            payment.setPaymentTypes(Arrays.asList(new PaymentType[]{PaymentType.XXZZ, PaymentType.ZXZF}));
+            return payment;
         }
 
-        return Arrays.asList(new PaymentType[]{PaymentType.ZXZF});
+        Payment payment=new Payment();
+        payment.setDefaultType(PaymentType.ZXZF);
+        payment.setPaymentTypes(Arrays.asList(new PaymentType[]{PaymentType.ZXZF}));
+        return payment;
     }
 
     public InvoiceList getInvoiceTypes(int shopId, int salesType, int fatype, String faid, String openO2O, String openZy) {
