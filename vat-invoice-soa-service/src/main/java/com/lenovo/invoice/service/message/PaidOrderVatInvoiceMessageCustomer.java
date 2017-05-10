@@ -38,7 +38,8 @@ public class PaidOrderVatInvoiceMessageCustomer {
                 Map map = JacksonUtil.fromJson(msg, Map.class);
                 String zid = (String) map.get("invoiceId");
                 Integer orderCode = (Integer) map.get("orderCode");
-                long rows = vatInvoiceService.initVathrowBtcp(orderCode + "", zid);
+                Integer shopId = (Integer) map.get("shopId");
+                long rows = vatInvoiceService.initVathrowBtcp(orderCode + "", zid,shopId);
                 LOGGER.info("PaidOrderVatInvoiceMessageCustomer End:{},{}", msg, rows);
                 invoiceService.updateIsvalid(zid);
             } catch (Exception e) {

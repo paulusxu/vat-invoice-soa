@@ -41,7 +41,7 @@ public interface InvoiceApiService {
 
     RemoteResult<List<VatInvoice>> queryVatInvoiceInfo(List<String> listZid);
 
-    RemoteResult<Boolean> throwVatInvoice2BTCP(String zids);
+    RemoteResult<Boolean> throwVatInvoice2BTCP(String zid,String orderCodes);
 
     String getType(String faid,String faType);
 
@@ -56,7 +56,7 @@ public interface InvoiceApiService {
     long updateZid(List<Long> listZids, String zid);
 
     //补单
-    long makeUpVatInvocie(String zids);
+    long makeUpVatInvocie(String orderCode);
 
     int updateThrowingStatus(String orderCode,  int status);
     //修改单条增票
