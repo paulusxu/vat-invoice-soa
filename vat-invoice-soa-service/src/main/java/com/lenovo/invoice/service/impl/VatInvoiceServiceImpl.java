@@ -61,7 +61,7 @@ public class VatInvoiceServiceImpl implements VatInvoiceService {
             if (remoteResultInvoice.isSuccess()) {
                 Invoice invoice = remoteResultInvoice.getT();//发票类型1:电子票2:增票3:普票
                 if (invoice != null && invoice.getType() == 2) {
-                    LOGGER_THROW.info("invoice:",JacksonUtil.toJson(invoice));
+                    LOGGER_THROW.info("invoice:", JacksonUtil.toJson(invoice));
 
                     vathrowBtcp.setIsneedmerge(invoice.getIsNeedMerge());
                     vathrowBtcp.setOrderCode(orderId + "");
@@ -76,7 +76,7 @@ public class VatInvoiceServiceImpl implements VatInvoiceService {
                             vathrowBtcp.setMembercode(main.getMemberCode());
                         }
                         DeliveryAddress deliveryAddress = remoteResultDeliveryAddress.getT();
-                        LOGGER_THROW.info("deliveryAddress:",JacksonUtil.toJson(deliveryAddress));
+                        LOGGER_THROW.info("deliveryAddress:", JacksonUtil.toJson(deliveryAddress));
                         if (deliveryAddress != null) {
                             //设置收货信息
                             vathrowBtcp.setName(deliveryAddress.getName());//收货人姓名
@@ -117,23 +117,17 @@ public class VatInvoiceServiceImpl implements VatInvoiceService {
     }
 
     @Override
-    public long initVathrowBtcp(String orderCode, String zid) {
+    public long initVathrowBtcp(String orderCode, String zid, int shopId) {
         long rows = 0;
+        LOGGER_PAID.info("InitVathrowBtcp:orderCode:{},zid:{},shopId:{}",orderCode,zid,shopId);
         try {
-            RemoteResult<Invoice> remoteResultInvoice = orderDetailService.getInvoiceByOrderId(Long.parseLong(orderCode));
-            LOGGER_PAID.info("InitVathrowBtcp:{}", JacksonUtil.toJson(remoteResultInvoice));
-            if (remoteResultInvoice.isSuccess()) {
-                Invoice invoice = remoteResultInvoice.getT();
-                int shopId = invoice.getTenant().getShopId();
-                if (invoice != null && (shopId != 14 || shopId != 15)) {
-                    Thread.sleep(20000); //睡眠20s去订单获取
-                    VathrowBtcp vathrowBtcp = new VathrowBtcp();
-                    vathrowBtcp.setOrderStatus(1);
-                    vathrowBtcp.setOrderCode(orderCode);
-                    vathrowBtcp.setZid(zid);
-                    //初始化
-                    rows = vathrowBtcpMapper.insertVathrowBtcp(vathrowBtcp);
-                }
+            if (shopId != 14 || shopId != 15) {
+                VathrowBtcp vathrowBtcp = new VathrowBtcp();
+                vathrowBtcp.setOrderStatus(1);
+                vathrowBtcp.setOrderCode(orderCode);
+                vathrowBtcp.setZid(zid);
+                //初始化
+                rows = vathrowBtcpMapper.insertVathrowBtcp(vathrowBtcp);
             }
 
         } catch (Exception e) {
@@ -196,7 +190,7 @@ public class VatInvoiceServiceImpl implements VatInvoiceService {
 
                     if (!resCode.equals("") && resCode.equals("200")) {
                         //抛送成功
-                        int rows = vathrowBtcpMapper.updateByOrderCode(vathrowBtcp.getOrderCode(), 3, resCode);
+                        int rows = vathrowBtcpMapper.updateByOrderCode(vathrowBtcp.getOrderCode(), 2, resCode);
                         if (rows > 0) {
                             //增票抛单成功通知订单
                             Invoice invoice = new Invoice();

@@ -39,11 +39,13 @@ public interface InvoiceApiService {
 
     RemoteResult<List<VatInvoice>> queryVatInvoiceInfo(List<String> listZid);
 
-    RemoteResult<Boolean> throwVatInvoice2BTCP(String zids);
+    RemoteResult<Boolean> throwVatInvoice2BTCP(String zid,String orderCodes);
 
     String getType(String faid,String faType);
 
     List<VathrowBtcp> getThrowBtcpList();
+    //获取某个增票下订单列表
+    PageModel2<VathrowBtcp> getOrderListByZidPage(PageQuery pageQuery, Map map);
 
     PageModel2<VatInvoice> getNotThrowBtcpVatInvoicePage(PageQuery pageQuery, Map map);
 
@@ -52,7 +54,7 @@ public interface InvoiceApiService {
     long updateZid(List<Long> listZids, String zid);
 
     //补单
-    long makeUpVatInvocie(String zids);
+    long makeUpVatInvocie(String orderCode);
 
     int updateThrowingStatus(String orderCode,  int status);
     //修改单条增票
@@ -69,7 +71,6 @@ public interface InvoiceApiService {
     RemoteResult<List<FaInvoiceResult>> getInvoiceTypes(GetInvoiceTypeParam getInvoiceTypeParam);
 
     RemoteResult<List<FaInvoiceResult>> getInvoiceTypes(GetInvoiceTypeParam getInvoiceTypeParam,Tenant tenant);
-
 
     RemoteResult<ConfigurationInformation> getConfigurationInformation(GetCiParam getCiParam,Tenant tenant);
 
