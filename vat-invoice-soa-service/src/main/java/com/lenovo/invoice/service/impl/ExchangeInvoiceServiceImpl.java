@@ -1,6 +1,8 @@
 package com.lenovo.invoice.service.impl;
 
+import com.lenovo.invoice.api.CommonInvoiceService;
 import com.lenovo.invoice.api.ExchangeInvoiceService;
+import com.lenovo.invoice.api.InvoiceApiService;
 import com.lenovo.invoice.common.utils.*;
 import com.lenovo.invoice.dao.ExchangeInvoiceRecordMapper;
 import com.lenovo.invoice.dao.VathrowBtcpMapper;
@@ -52,6 +54,12 @@ public class ExchangeInvoiceServiceImpl extends BaseService implements ExchangeI
 
     @Autowired
     private AreaAddressService areaAddressService;
+
+    @Autowired
+    private CommonInvoiceService commonInvoiceService;
+
+    @Autowired
+    private InvoiceApiService invoiceApiService;
 
     private static final Integer commonInvoiceType = 3;//普票类型是3
     private static final Integer vatInvoiceType = 2;//增票类型是2
@@ -111,7 +119,6 @@ public class ExchangeInvoiceServiceImpl extends BaseService implements ExchangeI
                 tenant.setShopId(invoiceChangeApi.getShopId());
 
                 //还未发货，客户换票，首先添加新得普票
-                CommonInvoiceServiceImpl commonInvoiceService = new CommonInvoiceServiceImpl();
                 RemoteResult<CommonInvoice> remoteResult1 = commonInvoiceService.addCommonInvoice(invoiceChangeApi.getLenovoId(), newInvoiceTitle, invoiceChangeApi.getShopId(),itCode,type);
                 if (!remoteResult1.isSuccess()){
                     //添加失败
@@ -336,7 +343,6 @@ public class ExchangeInvoiceServiceImpl extends BaseService implements ExchangeI
                 Tenant tenant = new Tenant();
                 tenant.setShopId(invoiceChangeApi.getShopId());
                 //添加增票
-                InvoiceApiServiceImpl invoiceApiServiceImpl = new InvoiceApiServiceImpl();
                 AddVatInvoiceInfoParam param = new AddVatInvoiceInfoParam();
                 param.setLenovoId(invoiceChangeApi.getLenovoId());
                 param.setShopId(invoiceChangeApi.getShopId());
@@ -348,7 +354,7 @@ public class ExchangeInvoiceServiceImpl extends BaseService implements ExchangeI
                 param.setPhoneNo(newPhone);
                 param.setFaid(invoiceChangeApi.getFaid());
                 param.setFaType(invoiceChangeApi.getFaType()+"");
-                RemoteResult<AddVatInvoiceInfoResult> remoteResult1 = invoiceApiServiceImpl.addVatInvoiceInfoForChange(param, tenant);
+                RemoteResult<AddVatInvoiceInfoResult> remoteResult1 = invoiceApiService.addVatInvoiceInfoForChange(param, tenant);
                 if (!remoteResult1.isSuccess()) {
                     //添加失败
                     remoteResult.setResultCode(InvoiceResultCode.ADDVATINVOICEFAIL);
