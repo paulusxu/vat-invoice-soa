@@ -76,6 +76,7 @@ public class CommonInvoiceServiceImpl extends BaseService implements CommonInvoi
             commonInvoiceMapping.setCommonInvoiceId(commonInvoice.getId());
             commonInvoiceMapping.setCreatetime(date);
             commonInvoiceMapping.setCreateBy(createBy);
+            commonInvoiceMapping.setType(type);
 
             int j = commonInvoiceMappingMapper.addCommonInvoiceMapping(commonInvoiceMapping);
             if (j==0){
