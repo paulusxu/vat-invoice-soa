@@ -117,14 +117,14 @@
         </if>
 
         <if test="isshared != null and isshared!=''">
-            AND vat.IsShared = ${isshared}
+            AND vat.IsShared = #{isshared}
         </if>
 
         <if test="shopid != null and shopid!=''">
-            AND vat.ShopId = ${shopid}
+            AND vat.ShopId = #{shopid}
         </if>
         <if test="ischeck != null and ischeck!=''">
-            AND vat.isCheck = ${ischeck}
+            AND vat.isCheck = #{ischeck}
         </if>
     </sql>
 
@@ -193,7 +193,7 @@
     RegisterAddress=#{address},
     RegisterPhone=#{phoneNo},
     ThrowingStatus =0
-    WHERE zid = ${ids}
+    WHERE zid = #{ids}
   </update>
 
     <insert id="insertVathrowBtcp" parameterType="com.lenovo.invoice.domain.VathrowBtcp">

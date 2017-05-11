@@ -101,7 +101,7 @@
       from vatinvoice WHERE id <![CDATA[<>]]> ${vid} and isvalid=1
 
       <if test="type != null" >
-        and type = ${type}
+        and type = #{type}
       </if>
       <if test="faid != null" >
         and faid = #{faid}
@@ -127,7 +127,7 @@
         and TaxNo = #{taxNo,jdbcType=VARCHAR}
       </if>
       <if test="type!=null">
-        and type = ${type}
+        and type = #{type}
       </if>
     </where>
      and isCheck in (1,2) and IsShared = 1
@@ -138,7 +138,7 @@
     select
     <include refid="Base_Column_List" />
     from vatinvoice WHERE
-    type = ${type} and ((CustomerName = #{customerName,jdbcType=VARCHAR} and TaxNo <![CDATA[<>]]> #{taxNo,jdbcType=VARCHAR}) or (CustomerName <![CDATA[<>]]> #{customerName,jdbcType=VARCHAR} and TaxNo = #{taxNo,jdbcType=VARCHAR})) and isCheck in (1,2)
+    type = #{type} and ((CustomerName = #{customerName,jdbcType=VARCHAR} and TaxNo <![CDATA[<>]]> #{taxNo,jdbcType=VARCHAR}) or (CustomerName <![CDATA[<>]]> #{customerName,jdbcType=VARCHAR} and TaxNo = #{taxNo,jdbcType=VARCHAR})) and isCheck in (1,2)
     ORDER BY CreateTime DESC LIMIT 1
   </select>
 
@@ -189,7 +189,7 @@
     #{address,jdbcType=VARCHAR}, #{phoneno,jdbcType=VARCHAR},now(),
     #{createby,jdbcType=VARCHAR},
     #{isshared,jdbcType=INTEGER},#{isNeedMerge,jdbcType=INTEGER},
-    ${shopid},#{shardedby},#{shardedtime},#{faid},#{storesid},${type}
+    #{shopid},#{shardedby},#{shardedtime},#{faid},#{storesid},#{type}
     )
   </insert>
 
@@ -227,7 +227,7 @@
     UpdateTime=now(),
     UpdateBy=#{itcode},
     isCheck=1
-    WHERE id = ${ids}
+    WHERE id = #{ids}
   </update>
 
   <update id="insertVatInvoiceLogBatch" parameterType="com.lenovo.invoice.domain.param.UpdateVatInvoiceBatchParam">
@@ -272,7 +272,7 @@
 
   <sql id="queryVatInvoice" >
     <if test="ischeck != null and ischeck!=''" >
-      AND  isCheck=${ischeck}
+      AND  isCheck=#{ischeck}
     </if>
     <if test="taxno != null and taxno!=''" >
       AND  TaxNo=#{taxno}
@@ -285,11 +285,11 @@
     </if>
 
     <if test="isshared != null and isshared!=''" >
-      AND  IsShared = ${isshared}
+      AND  IsShared = #{isshared}
     </if>
 
     <if test="shopid != null and shopid!=''" >
-      AND  ShopId = ${shopid}
+      AND  ShopId = #{shopid}
     </if>
 
     <if test="ids != null and ids!=''" >
@@ -339,7 +339,7 @@
     <include refid="Base_Column_List" />
     from vatinvoice WHERE CustomerName = #{customername,jdbcType=VARCHAR}
     and TaxNo = #{taxno,jdbcType=VARCHAR} and AccountNo is null
-    and ShopId = ${shopid} LIMIT 1
+    and ShopId = #{shopid} LIMIT 1
   </select>
 
 

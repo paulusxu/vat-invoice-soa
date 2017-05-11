@@ -25,9 +25,9 @@
     select
     <include refid="Base_Column_List" />
     from membervatinvoice
-    where LenovoID = #{lenovoId,jdbcType=VARCHAR} and type=${type}
+    where LenovoID = #{lenovoId,jdbcType=VARCHAR} and type=#{type}
     <if test="storesid!=null and storesid!=''">
-      and  storesid=${storesid}
+      and  storesid=#{storesid}
     </if>
     <if test="storesid==null or storesid==''">
       and storesid is NULL
@@ -73,17 +73,17 @@
     insert into membervatinvoice (InvoiceInfoId, LenovoID,ShopId,
       CreateTime,type,faid,storesid)
     values (#{invoiceinfoid,jdbcType=BIGINT}, #{lenovoid,jdbcType=VARCHAR},#{shopid},
-      now(),${type},#{faid},#{storesid})
+      now(),#{type},#{faid},#{storesid})
   </insert>
 
 
   <update id="updateVatInvoice">
-      UPDATE vatinvoice set storesid=${storesid} WHERE id=${id} and storesid is null;
-      UPDATE membervatinvoice set storesid=${storesid} WHERE InvoiceInfoId=${id} and LenovoID=#{lenovoId} and storesid is null
+      UPDATE vatinvoice set storesid=#{storesid} WHERE id=#{id} and storesid is null;
+      UPDATE membervatinvoice set storesid=#{storesid} WHERE InvoiceInfoId=#{id} and LenovoID=#{lenovoId} and storesid is null
   </update>
 
   <update id="delVatInvoice">
-    DELETE FROM vatinvoice  WHERE id=${id};
-    DELETE FROM  membervatinvoice  WHERE InvoiceInfoId=${id}
+    DELETE FROM vatinvoice  WHERE id=#{id};
+    DELETE FROM  membervatinvoice  WHERE InvoiceInfoId=#{id}
   </update>
 </mapper>
