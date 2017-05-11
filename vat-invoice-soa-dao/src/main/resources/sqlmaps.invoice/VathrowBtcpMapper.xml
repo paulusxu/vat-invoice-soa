@@ -66,11 +66,18 @@
     ShardedBy, ShardedTime,faid,storesid,type,isvalid
   </sql>
 
-    <select id="getVatInvoice2BtcpList" resultMap="BaseResultMap" parameterType="java.lang.String">
+    <select id="getVatInvoice2BtcpListByZid" resultMap="BaseResultMap" parameterType="java.lang.String">
         select
         <include refid="Base_Column_List"/>
         from vathrowbtcp
         where zid=#{zid} and OrderStatus=3 and ThrowingStatus in(0,4)
+    </select>
+
+    <select id="getVatInvoice2BtcpListByOrderCode" resultMap="BaseResultMap" parameterType="java.lang.String">
+        select
+        <include refid="Base_Column_List"/>
+        from vathrowbtcp
+        where OrderCode in ${orderCodes} and OrderStatus=3 and ThrowingStatus in(0,4)
     </select>
 
     <select id="getNotThrowBtcpVatInvoicePage" resultMap="BaseVatInvoiceResultMap" parameterType="java.util.Map">
@@ -89,13 +96,13 @@
     </select>
 
     <select id="getOrderListByZidPageCount" resultType="java.lang.Integer" parameterType="java.util.Map">
-        SELECT COUNT(1) FROM vathrowbtcp WHERE OrderStatus=3 AND zid=#{zid}  ORDER BY ThrowingStatus
+        SELECT COUNT(1) FROM vathrowbtcp WHERE OrderStatus=3 AND zid=#{zid} AND ThrowingStatus IN (0,2,4) ORDER BY ThrowingStatus
     </select>
 
     <select id="getOrderListByZidPage" resultMap="BaseResultMap" parameterType="java.util.Map">
         SELECT
         <include refid="Base_Column_List"/>
-        FROM vathrowbtcp WHERE OrderStatus=3 AND zid=#{zid}  ORDER BY ThrowingStatus limit ${pageIndex},${pageSize}
+        FROM vathrowbtcp WHERE OrderStatus=3 AND zid=#{zid} AND ThrowingStatus IN (0,2,4) ORDER BY ThrowingStatus limit ${pageIndex},${pageSize}
     </select>
 
     <sql id="queryVatInvoice">

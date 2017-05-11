@@ -18,7 +18,10 @@ public interface VathrowBtcpMapper {
 
     VathrowBtcp selectByPrimaryKey(Integer id);
 
-    List<VathrowBtcp> getVatInvoice2BtcpList(String zid);
+    //根据批量增票zid获取 准备抛送btcp的列表
+    List<VathrowBtcp> getVatInvoice2BtcpListByZid(@Param("zid") String zid);
+    //根据批量orderid获取 准备抛送btcp的列表
+    List<VathrowBtcp> getVatInvoice2BtcpListByOrderCode(@Param("orderCodes") String orderCodes);
 
     int updateOrderStatus(@Param("orderCode") String orderCode, @Param("status") int status);
 
