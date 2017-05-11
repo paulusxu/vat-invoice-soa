@@ -77,7 +77,7 @@
         select
         <include refid="Base_Column_List"/>
         from vathrowbtcp
-        where OrderCode in ${orderCodes} and OrderStatus=3 and ThrowingStatus in(0,4)
+        where OrderCode in (#{orderCodes}) and OrderStatus=3 and ThrowingStatus in(0,4)
     </select>
 
     <select id="getNotThrowBtcpVatInvoicePage" resultMap="BaseVatInvoiceResultMap" parameterType="java.util.Map">
