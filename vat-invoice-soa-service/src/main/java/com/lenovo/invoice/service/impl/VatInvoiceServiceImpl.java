@@ -121,7 +121,7 @@ public class VatInvoiceServiceImpl implements VatInvoiceService {
         long rows = 0;
         LOGGER_PAID.info("InitVathrowBtcp:orderCode:{},zid:{},shopId:{}",orderCode,zid,shopId);
         try {
-            if (shopId != 14 || shopId != 15) {
+            if (shopId != 14 && shopId != 15) {
                 VathrowBtcp vathrowBtcp = new VathrowBtcp();
                 vathrowBtcp.setOrderStatus(1);
                 vathrowBtcp.setOrderCode(orderCode);
