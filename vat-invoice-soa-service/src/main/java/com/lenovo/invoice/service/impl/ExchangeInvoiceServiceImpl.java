@@ -365,7 +365,7 @@ public class ExchangeInvoiceServiceImpl extends BaseService implements ExchangeI
 
                 //根据省份获取省编号
                 RemoteResult<String> remoteResult5 = areaAddressService.getProvinceNo(tenant, new ProvinceParam(province));
-                if (remoteResult5.isSuccess()){
+                if (!remoteResult5.isSuccess()){
                     //获取省份编号失败
                     remoteResult.setResultCode(InvoiceResultCode.GETPROVINCENOFAIL);
                     remoteResult.setResultMsg("获取省份编号失败");
