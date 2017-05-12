@@ -24,6 +24,8 @@
         <property name="url" value="${increase.url}"/>
         <property name="openO2O" value="${openO2O}"/>
         <property name="openZy" value="${openZy}"/>
+        <property name="exchangeinvoiceurl" value="${exchangeinvoiceurl}"/>
+        <property name="exchangeinvoicekey" value="${exchangeinvoicekey}"/>
     </bean>
 
 </beans>

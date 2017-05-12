@@ -13,7 +13,7 @@ public class CommonInvoiceMapping implements Serializable{
     private String lenovoId;//用户id
     private Integer commonInvoiceId;//外键，指向普通发票的主键
     private Integer shopid;//商城
-    private Integer type;//开票方式，1公司，2个人
+    private Integer type;//开票方式，1公司，0个人
     private Date createtime;//创建时间
     private String createBy;//创建人
 
