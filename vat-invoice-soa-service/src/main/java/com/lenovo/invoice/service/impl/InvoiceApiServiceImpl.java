@@ -195,7 +195,7 @@ public class InvoiceApiServiceImpl extends BaseService implements InvoiceApiServ
                     Invoice invoice = remoteResultInvoice.getT();//发票类型1:电子票2:增票3:普票
                     if (invoice != null && invoice.getType() == 2) {
                         LOGGER.info("makeUpVatInvocie invoice:", JacksonUtil.toJson(invoice));
-                        vathrowBtcp.setOrderStatus(3);
+                        vathrowBtcp.setOrderStatus(2);
                         vathrowBtcp.setOrderCode(orderCode);
                         vathrowBtcp.setZid(invoice.getZid());
                         //初始化
