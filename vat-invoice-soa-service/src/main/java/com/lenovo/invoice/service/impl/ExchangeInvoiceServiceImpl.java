@@ -881,8 +881,6 @@ public class ExchangeInvoiceServiceImpl extends BaseService implements ExchangeI
             param.setFaid(invoiceChangeApi.getFaid());
             param.setFaType(invoiceChangeApi.getFaType() + "");
             param.setTaxNo(taxNO);
-
-            InvoiceApiServiceImpl invoiceApiService = new InvoiceApiServiceImpl();
             remoteResult = invoiceApiService.getVatInvoiceInfo(param, new Tenant());
         }catch (Exception e){
             remoteResult.setResultCode(InvoiceResultCode.FAIL);
