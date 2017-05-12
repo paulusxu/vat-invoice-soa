@@ -46,7 +46,7 @@ public interface InvoiceApiService {
     String getType(String faid,String faType);
 
     List<VathrowBtcp> getThrowBtcpList();
-    //获取某个增票下订单列表
+    //admin后台获取某个增票下订单列表
     PageModel2<VathrowBtcp> getOrderListByZidPage(PageQuery pageQuery, Map map);
 
     PageModel2<VatInvoice> getNotThrowBtcpVatInvoicePage(PageQuery pageQuery, Map map);
