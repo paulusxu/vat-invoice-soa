@@ -125,14 +125,14 @@
         </if>
 
         <if test="isshared != null and isshared!=''">
-            AND vat.IsShared = ${isshared}
+            AND vat.IsShared = #{isshared}
         </if>
 
         <if test="shopid != null and shopid!=''">
-            AND vat.ShopId = ${shopid}
+            AND vat.ShopId = #{shopid}
         </if>
         <if test="ischeck != null and ischeck!=''">
-            AND vat.isCheck = ${ischeck}
+            AND vat.isCheck = #{ischeck}
         </if>
     </sql>
 
@@ -152,6 +152,34 @@
     <update id="updateByOrderCode">
     update vathrowbtcp
     set ThrowingStatus = #{status},ThrowResult=#{msg} WHERE OrderCode=#{orderCode}
+  </update>
+
+    <update id="updateConsignee" parameterType="com.lenovo.invoice.domain.Consignee">
+        update vathrowbtcp
+        <set>
+            <if test="name != null">
+                Name = #{name,jdbcType=VARCHAR},
+            </if>
+            <if test="provinceid != null">
+                ProvinceId = #{provinceid,jdbcType=VARCHAR},
+            </if>
+            <if test="city != null">
+                City = #{city,jdbcType=VARCHAR},
+            </if>
+            <if test="county != null">
+                County = #{county,jdbcType=VARCHAR},
+            </if>
+            <if test="address != null">
+                Address = #{address,jdbcType=VARCHAR},
+            </if>
+            <if test="phone != null">
+                Phone = #{phone,jdbcType=VARCHAR},
+            </if>
+            <if test="zip != null">
+                Zip = #{zip,jdbcType=VARCHAR},
+            </if>
+        </set>
+        WHERE OrderCode = #{orderCode}
   </update>
 
     <update id="updateZid" parameterType="map">
@@ -254,7 +282,7 @@
     RegisterAddress=#{address},
     RegisterPhone=#{phoneNo},
     ThrowingStatus =0
-    WHERE zid = ${ids}
+    WHERE zid = #{ids}
   </update>
 
     <insert id="insertVathrowBtcp" parameterType="com.lenovo.invoice.domain.VathrowBtcp">

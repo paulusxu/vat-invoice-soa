@@ -1,5 +1,6 @@
 package com.lenovo.invoice.dao;
 
+import com.lenovo.invoice.domain.Consignee;
 import com.lenovo.invoice.domain.VatInvoice;
 import com.lenovo.invoice.domain.VathrowBtcp;
 import com.lenovo.invoice.domain.param.UpdateVatInvoiceBatchParam;
@@ -12,11 +13,10 @@ public interface VathrowBtcpMapper {
 
     int updateByOrderCode(@Param("orderCode") String orderCode, @Param("status") int status, @Param("msg") String msg);
 
-    int deleteByPrimaryKey(Integer id);
+    int updateConsignee(Consignee consignee);
 
     int insertVathrowBtcp(VathrowBtcp record);
 
-    VathrowBtcp selectByPrimaryKey(Integer id);
 
     //根据批量增票zid获取 准备抛送btcp的列表
     List<VathrowBtcp> getVatInvoice2BtcpListByZid(String zid);
