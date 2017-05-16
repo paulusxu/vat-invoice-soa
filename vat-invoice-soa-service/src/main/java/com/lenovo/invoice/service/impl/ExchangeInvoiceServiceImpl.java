@@ -152,6 +152,7 @@ public class ExchangeInvoiceServiceImpl extends BaseService implements ExchangeI
                     //订单未抛单-已支付，直接修改订单
                     InvoiceChangeApi invoiceChangeApi1 = new InvoiceChangeApi();
                     invoiceChangeApi1.setOrderId(Long.parseLong(orderCode));
+                    invoiceChangeApi1.setOrderStatus(0);
                     invoiceChangeApi1.setType(commonInvoiceType);
                     invoiceChangeApi1.setTitle(newInvoiceTitle);
                     invoiceChangeApi1.setUnits(type);
@@ -467,6 +468,7 @@ public class ExchangeInvoiceServiceImpl extends BaseService implements ExchangeI
                     //修改增票成功，再修改订单
                     InvoiceChangeApi invoiceChangeApi1 = new InvoiceChangeApi();
                     invoiceChangeApi1.setOrderId(Long.parseLong(orderCode));
+                    invoiceChangeApi1.setOrderStatus(0);
                     invoiceChangeApi1.setTitle(newInvoiceTitle);
                     invoiceChangeApi1.setTaxpayerIdentity(newTaxNo);
                     invoiceChangeApi1.setDepositBank(newBankName);
@@ -842,6 +844,7 @@ public class ExchangeInvoiceServiceImpl extends BaseService implements ExchangeI
                     //修改成功，调用订单修改接口
                     InvoiceChangeApi invoiceChangeApi = new InvoiceChangeApi();
                     invoiceChangeApi.setOrderId(Long.parseLong(record.getOrderCode()));
+                    invoiceChangeApi.setOrderStatus(1);
                     invoiceChangeApi.setTitle(record.getNewInvoiceTitle());
                     invoiceChangeApi.setTaxpayerIdentity(record.getNewTaxNo());
                     invoiceChangeApi.setDepositBank(record.getNewBankName());
