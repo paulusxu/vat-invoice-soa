@@ -128,9 +128,9 @@ public class ExchangeInvoiceServiceImpl extends BaseService implements ExchangeI
                 }
 
                 //添加成功，再次判断订单状态
-                LOGGER.info("修改订单==参数=="+orderCode);
+                LOGGER.info("获取订单信息==参数=="+orderCode);
                 RemoteResult<InvoiceChangeApi> invoiceChangeApiByOrderId2 = vatApiOrderCenter.getInvoiceChangeApiByOrderId(orderCode);
-                LOGGER.info("修改订单==返回值==" + JacksonUtil.toJson(invoiceChangeApiByOrderId2));
+                LOGGER.info("获取订单信息==返回值==" + JacksonUtil.toJson(invoiceChangeApiByOrderId2));
                 InvoiceChangeApi invoiceChangeApi2 = invoiceChangeApiByOrderId2.getT();
                 if (invoiceChangeApi2==null){
                     //获取订单信息失败
@@ -159,6 +159,7 @@ public class ExchangeInvoiceServiceImpl extends BaseService implements ExchangeI
                     invoiceChangeApi1.setChangeType(changeType);
                     invoiceChangeApi1.setOperator(itCode);
                     invoiceChangeApi1.setIsNeedMerge(0);
+                    invoiceChangeApi1.setShopId(invoiceChangeApi2.getShopId());
 
                     LOGGER.info("修改订单==参数=="+JacksonUtil.toJson(invoiceChangeApi1));
                     RemoteResult remoteResult2 = vatApiOrderCenter.updateInvoice(invoiceChangeApi1);
