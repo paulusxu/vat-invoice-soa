@@ -206,26 +206,26 @@ public class ExchangeInvoiceServiceImpl extends BaseService implements ExchangeI
                                 LOGGER.info("添加换票记录成功！=="+i);
                             }
                         }catch (Exception e){
-                            ERRORLOGGER.error("添加换票记录出现异常==参数==" + JacksonUtil.toJson(record) + e.getMessage(), e);
+                            ERRORLOGGER.error("添加换票记录出现异常==参数==" + JacksonUtil.toJson(record)+"==" + e.getMessage(), e);
+                        }
+                        try {
+                            if (changeType==2){
+                                //增换普，将增票和订单的映射记录删除
+                                VathrowBtcp vathrowBtcp = vathrowBtcpMapper.getVatInvoiceByOrderCode(orderCode);
+
+                                int i = vathrowBtcpMapper.deleteByOrderCode(orderCode);
+                                if (i<=0){
+                                    ERRORLOGGER.error("增换普，换票成功，增票和订单映射删除失败！=="+i+"=="+orderCode);
+                                }else {
+                                    LOGGER.info("增换普，换票成功，增票和订单映射删除成功！=="+i+"=="+JacksonUtil.toJson(vathrowBtcp));
+                                }
+                            }
+                        }catch (Exception e){
+                            ERRORLOGGER.error("增换普，换票成功，增票和订单映射删除出现异常！"+orderCode+"=="+e.getMessage(),e);
                         }
                     }else {
                         remoteResult.setResultCode(InvoiceResultCode.UPDATEORDERFAIL);
                         remoteResult.setResultMsg("换票失败，修改订单失败");
-                    }
-                    try {
-                        if (changeType==2){
-                            //增换普，将增票和订单的映射记录删除
-                            VathrowBtcp vathrowBtcp = vathrowBtcpMapper.getVatInvoiceByOrderCode(orderCode);
-
-                            int i = vathrowBtcpMapper.deleteByOrderCode(orderCode);
-                            if (i<=0){
-                                ERRORLOGGER.error("增换普，换票成功，增票和订单映射删除失败！=="+i+"=="+orderCode);
-                            }else {
-                                LOGGER.info("增换普，换票成功，增票和订单映射删除成功！=="+i+"=="+JacksonUtil.toJson(vathrowBtcp));
-                            }
-                        }
-                    }catch (Exception e){
-                        ERRORLOGGER.error("增换普，换票成功，增票和订单映射删除出现异常！"+orderCode,e);
                     }
                 }else if (orderStatus2==1){
                     //订单已抛单-未发货，修改BTCP
@@ -299,7 +299,7 @@ public class ExchangeInvoiceServiceImpl extends BaseService implements ExchangeI
                                 LOGGER.info("添加换票记录成功！=="+i);
                             }
                         }catch (Exception e){
-                            ERRORLOGGER.error("添加换票记录出现异常==参数=="+JacksonUtil.toJson(record)+e.getMessage(),e);
+                            ERRORLOGGER.error("添加换票记录出现异常==参数=="+JacksonUtil.toJson(record)+"=="+e.getMessage(),e);
                         }
                     }else {
                         remoteResult.setResultCode(InvoiceResultCode.THROWBTCPFAIL);
@@ -565,7 +565,7 @@ public class ExchangeInvoiceServiceImpl extends BaseService implements ExchangeI
                                 LOGGER.info("添加换票记录成功!=="+i);
                             }
                         } catch (Exception e) {
-                            ERRORLOGGER.error("添加换票记录出现异常==参数==" + JacksonUtil.toJson(record) + e.getMessage(), e);
+                            ERRORLOGGER.error("添加换票记录出现异常==参数==" + JacksonUtil.toJson(record)+"==" + e.getMessage(), e);
                         }
                     } else {
                         //修改订单失败，修改增票要回滚
@@ -678,7 +678,7 @@ public class ExchangeInvoiceServiceImpl extends BaseService implements ExchangeI
                                 LOGGER.info("添加换票记录成功！=="+i);
                             }
                         } catch (Exception e) {
-                            ERRORLOGGER.error("添加换票记录出现异常==参数==" + JacksonUtil.toJson(record) + e.getMessage(), e);
+                            ERRORLOGGER.error("添加换票记录出现异常==参数==" + JacksonUtil.toJson(record)+"==" + e.getMessage(), e);
                         }
                     } else {
                         remoteResult.setResultCode(InvoiceResultCode.THROWBTCPFAIL);
@@ -901,7 +901,7 @@ public class ExchangeInvoiceServiceImpl extends BaseService implements ExchangeI
                         ERRORLOGGER.error("BTCP通知=修改订单失败！applyId=" + applyId + "==" + JacksonUtil.toJson(invoiceChangeApi));
                     }
                 }catch (Exception e){
-                    ERRORLOGGER.error("BTCP通知==修改订单出现异常！" + applyId + e.getMessage(), e);
+                    ERRORLOGGER.error("BTCP通知==修改订单出现异常！==" + applyId+"==" + e.getMessage(), e);
                 }
                 try {
                     //修改增票
@@ -970,7 +970,7 @@ public class ExchangeInvoiceServiceImpl extends BaseService implements ExchangeI
                         }
                     }
                 }catch (Exception e){
-                    ERRORLOGGER.error("BTCP回调===修改增票信息出现异常" + record.getOrderCode()+applyId);
+                    ERRORLOGGER.error("BTCP回调===修改增票信息出现异常==" + record.getOrderCode()+"=="+applyId+"=="+e.getMessage(),e);
                 }
             }else {
                 //换票失败
