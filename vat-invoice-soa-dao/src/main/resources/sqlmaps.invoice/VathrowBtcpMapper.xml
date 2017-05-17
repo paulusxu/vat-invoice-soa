@@ -290,6 +290,17 @@
     values (now(),#{orderCode},#{orderStatus},#{zid})
   </insert>
 
+    <!--添加一条完成的增票和订单的映射-->
+    <insert id="addVathrowBtcp" parameterType="com.lenovo.invoice.domain.VathrowBtcp">
+        INSERT INTO vathrowbatcp
+          (Title, TaxpayerIdentity, DepositBank, BankNo, RegisterAddress, RegisterPhone,
+          OutId, MemberCode, Name, ProvinceId, City, County, Address, Phone, Zip, IsNeedMerge,
+          ThrowingStatus,zid,OrderCode,OrderStatus,CreateTime)
+        VALUES (#{title},#{taxpayeridentity},#{depositbank},#{bankno},#{registeraddress},#{registerphone},
+          #{outid},#{membercode},#{name},#{provinceid},#{city},#{county},#{address},#{phone},#{zip},#{isneedmerge},
+          #{throwingStatus},#{zid},#{orderCode},#{orderStatus},now())
+    </insert>
+
     <update id="updateVathrowbtcp" parameterType="map">
         update vathrowbtcp
         <set>
@@ -356,5 +367,10 @@
         </set>
         WHERE OrderCode = #{record.orderCode}
     </update>
+
+    <!--根据orderCode删除增票和订单的映射关系记录-->
+    <delete id="deleteByOrderCode" parameterType="java.lang.String">
+        DELETE FROM vathrowbtcp WHERE OrderCode = #{orderCode}
+    </delete>
 
 </mapper>

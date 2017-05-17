@@ -49,4 +49,10 @@ public interface VathrowBtcpMapper {
     //根据orderCode和orderStatus修改增票信息
     public int updateVatBTCP(VathrowBtcp vathrowBtcp);
 
+    //根据orderCode删除增票和订单的映射关系记录
+    public int deleteByOrderCode(String orderCode);
+
+    //添加一条完成的增票和订单的映射
+    public int addVathrowBtcp(VathrowBtcp vathrowBtcp);
+
 }

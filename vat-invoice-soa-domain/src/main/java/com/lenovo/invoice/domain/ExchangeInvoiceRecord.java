@@ -18,6 +18,7 @@ public class ExchangeInvoiceRecord implements Serializable {
     private Date exchangeTime;//换票的时间
     private Date updateTime;//最近一次修改时间
     private Integer exchangeType;//换票类型，1电换普，2增换普、3普换普，4电换增、5增换增、6普换增
+    private String lenovoId;
 
     //老发票信息
     private Integer oldType;//开票方式，1公司，0个人
@@ -54,6 +55,14 @@ public class ExchangeInvoiceRecord implements Serializable {
     //分页查询，换票开始时间，结束时间
     private Date beginTime;
     private Date endTime;
+
+    public String getLenovoId() {
+        return lenovoId;
+    }
+
+    public void setLenovoId(String lenovoId) {
+        this.lenovoId = lenovoId;
+    }
 
     public String getName() {
         return name;
