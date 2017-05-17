@@ -158,6 +158,7 @@ public class ExchangeInvoiceServiceImpl extends BaseService implements ExchangeI
                     invoiceChangeApi1.setUnits(type);
                     invoiceChangeApi1.setChangeType(changeType);
                     invoiceChangeApi1.setOperator(itCode);
+                    invoiceChangeApi1.setIsNeedMerge(0);
 
                     LOGGER.info("修改订单==参数=="+JacksonUtil.toJson(invoiceChangeApi1));
                     RemoteResult remoteResult2 = vatApiOrderCenter.updateInvoice(invoiceChangeApi1);
@@ -321,7 +322,7 @@ public class ExchangeInvoiceServiceImpl extends BaseService implements ExchangeI
                                       String newTaxNo,String newBankName,String newBankNo,String newAddress,String newPhone,
                                       String name,String province,String city,String county,String address2,String phone2,String zip) {
         LOGGER.info("exchangeToVat参数==orderCode=" + orderCode + ";oldInvoiceType=" + oldInvoiceType + ";itCode=" + itCode + ";exchangeType=" + exchangeType
-                + ";newInvoiceTitle=" + newInvoiceTitle + ";newTaxNo=" + newTaxNo + ";newBankName=" + newBankName + ";newBankNo=" + newBankNo + ";newAddress=" + newAddress + ";newPhone=" + newPhone,
+                + ";newInvoiceTitle=" + newInvoiceTitle + ";newTaxNo=" + newTaxNo + ";newBankName=" + newBankName + ";newBankNo=" + newBankNo + ";newAddress=" + newAddress + ";newPhone=" + newPhone+
                 ";name="+name+";province="+province+";city="+city+";county="+county+";address2="+address2+";phone2="+phone2+";zip="+zip);
 
         RemoteResult remoteResult = new RemoteResult();
@@ -412,6 +413,7 @@ public class ExchangeInvoiceServiceImpl extends BaseService implements ExchangeI
                 param1.setZip(zip);
                 param1.setIsdefault(0);//不设置为默认地址
 
+                LOGGER.info("添加收票地址参数=="+JacksonUtil.toJson(param1));
                 RemoteResult<String> remoteResult3 = consigneeAddressService.saveConsignee(tenant, param1);
                 if (!remoteResult3.isSuccess()) {
                     //添加收票地址失败
@@ -503,6 +505,7 @@ public class ExchangeInvoiceServiceImpl extends BaseService implements ExchangeI
                     invoiceChangeApi1.setShopId(invoiceChangeApi2.getShopId());
                     invoiceChangeApi1.setChangeType(changeType);
                     invoiceChangeApi1.setOperator(itCode);
+                    invoiceChangeApi1.setIsNeedMerge(0);
 
                     LOGGER.info("修改订单==参数==" + JacksonUtil.toJson(invoiceChangeApi1));
                     RemoteResult remoteResult2 = vatApiOrderCenter.updateInvoice(invoiceChangeApi1);
@@ -889,6 +892,7 @@ public class ExchangeInvoiceServiceImpl extends BaseService implements ExchangeI
                     invoiceChangeApi.setChangeType(record.getExchangeType());
                     invoiceChangeApi.setOperator(record.getItCode());
                     invoiceChangeApi.setShopId(record.getShopid());
+                    invoiceChangeApi.setIsNeedMerge(0);
 
                     LOGGER.info("BTCP通知=修改订单参数==" + JacksonUtil.toJson(invoiceChangeApi));
                     RemoteResult remoteResult1 = vatApiOrderCenter.updateInvoice(invoiceChangeApi);
