@@ -418,7 +418,7 @@ public class ExchangeInvoiceServiceImpl extends BaseService implements ExchangeI
                 if (!remoteResult3.isSuccess()) {
                     //添加收票地址失败
                     remoteResult.setResultCode(InvoiceResultCode.ADDSPADDRESSFAIL);
-                    remoteResult.setResultMsg("添加收票地址失败");
+                    remoteResult.setResultMsg("添加收票地址失败，"+remoteResult3.getResultMsg());
                     LOGGER.info("exchangeToVat返回值==添加收票地址失败==" + JacksonUtil.toJson(remoteResult3));
                     return remoteResult;
                 }
