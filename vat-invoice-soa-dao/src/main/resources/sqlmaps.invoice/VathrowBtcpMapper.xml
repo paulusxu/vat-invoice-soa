@@ -292,7 +292,7 @@
 
     <!--添加一条完成的增票和订单的映射-->
     <insert id="addVathrowBtcp" parameterType="com.lenovo.invoice.domain.VathrowBtcp">
-        INSERT INTO vathrowbatcp
+        INSERT INTO vathrowbtcp
           (Title, TaxpayerIdentity, DepositBank, BankNo, RegisterAddress, RegisterPhone,
           OutId, MemberCode, Name, ProvinceId, City, County, Address, Phone, Zip, IsNeedMerge,
           ThrowingStatus,zid,OrderCode,OrderStatus,CreateTime)

@@ -424,9 +424,9 @@ public class ExchangeInvoiceServiceImpl extends BaseService implements ExchangeI
                 }
 
                 //添加成功，再次判断订单状态
-                LOGGER.info("vatApiOrderCenter-getInvoiceChangeApiByOrderId参数==" + orderCode);
+                LOGGER.info("获取订单信息==参数==" + orderCode);
                 RemoteResult<InvoiceChangeApi> invoiceChangeApiByOrderId2 = vatApiOrderCenter.getInvoiceChangeApiByOrderId(orderCode);
-                LOGGER.info("vatApiOrderCenter-getInvoiceChangeApiByOrderId返回值==" + JacksonUtil.toJson(invoiceChangeApiByOrderId2));
+                LOGGER.info("获取订单信息==返回值==" + JacksonUtil.toJson(invoiceChangeApiByOrderId2));
                 InvoiceChangeApi invoiceChangeApi2 = invoiceChangeApiByOrderId2.getT();
                 if (invoiceChangeApi2==null){
                     //获取订单信息失败
