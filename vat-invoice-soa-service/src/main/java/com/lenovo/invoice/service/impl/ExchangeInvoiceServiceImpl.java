@@ -307,7 +307,7 @@ public class ExchangeInvoiceServiceImpl extends BaseService implements ExchangeI
                         }
                     }else {
                         remoteResult.setResultCode(InvoiceResultCode.THROWBTCPFAIL);
-                        remoteResult.setResultMsg("换票失败，抛BTCP失败"+message);
+                        remoteResult.setResultMsg("换票失败，抛BTCP失败");
                     }
                 }
             }
@@ -686,7 +686,7 @@ public class ExchangeInvoiceServiceImpl extends BaseService implements ExchangeI
                         }
                     } else {
                         remoteResult.setResultCode(InvoiceResultCode.THROWBTCPFAIL);
-                        remoteResult.setResultMsg("换票失败，抛BTCP失败"+message);
+                        remoteResult.setResultMsg("换票失败，抛BTCP失败");
                     }
                 }
             }
