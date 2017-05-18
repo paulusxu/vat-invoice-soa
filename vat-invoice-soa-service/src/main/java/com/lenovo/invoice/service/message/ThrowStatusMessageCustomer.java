@@ -21,6 +21,7 @@ public class ThrowStatusMessageCustomer {
     public ThrowStatusMessageCustomer(KafkaConsumer kafkaConsumer, VatInvoiceService vatInvoiceService) {
         this.kafkaConsumer = kafkaConsumer;
         this.vatInvoiceService = vatInvoiceService;
+        this.kafkaConsumer.start(new ConsumerHandler());
     }
 
     private class ConsumerHandler implements BaseConsumerHandler {
