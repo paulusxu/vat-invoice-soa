@@ -224,6 +224,9 @@ public class ExchangeInvoiceServiceImpl extends BaseService implements ExchangeI
                         }catch (Exception e){
                             ERRORLOGGER.error("增换普，换票成功，增票和订单映射删除出现异常！"+orderCode+"=="+e.getMessage(),e);
                         }
+                    }else if ("9003".equals(remoteResult2.getResultCode())){
+                        remoteResult.setResultCode(InvoiceResultCode.UPDATEORDERFAIL);
+                        remoteResult.setResultMsg("该订单正在抛单，请五分钟后再试！");
                     }else {
                         remoteResult.setResultCode(InvoiceResultCode.UPDATEORDERFAIL);
                         remoteResult.setResultMsg("换票失败，修改订单失败");
