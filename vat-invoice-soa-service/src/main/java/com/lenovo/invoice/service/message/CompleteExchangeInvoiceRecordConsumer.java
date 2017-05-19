@@ -1,5 +1,6 @@
 package com.lenovo.invoice.service.message;
 
+import com.lenovo.invoice.common.utils.JacksonUtil;
 import com.lenovo.invoice.dao.ExchangeInvoiceRecordMapper;
 import com.lenovo.invoice.domain.ExchangeInvoiceRecord;
 import com.lenovo.kafka.api.core.consumer.KafkaConsumer;
@@ -36,7 +37,9 @@ public class CompleteExchangeInvoiceRecordConsumer {
             LOGGER.info("订单抛单后消息=="+orderCode);
             try {
                 //获取老发票信息和订单信息
+                LOGGER.info("获取订单信息==参数=="+orderCode);
                 RemoteResult<InvoiceChangeApi> invoiceChangeApiByOrderId = vatApiOrderCenter.getInvoiceChangeApiByOrderId(orderCode);
+                LOGGER.info("获取订单信息==返回值=="+ JacksonUtil.toJson(invoiceChangeApiByOrderId));
                 InvoiceChangeApi invoiceChangeApi = invoiceChangeApiByOrderId.getT();
                 if (invoiceChangeApi==null){
                     //获取老发票信息和订单信息失败
@@ -46,7 +49,8 @@ public class CompleteExchangeInvoiceRecordConsumer {
                 ExchangeInvoiceRecord record = new ExchangeInvoiceRecord();
                 record.setOrderCode(orderCode);
                 record.setBTCPOrderCode(invoiceChangeApi.getOutId());
-                exchangeInvoiceRecordMapper.updateRecordBTCPCode(record);
+                int i = exchangeInvoiceRecordMapper.updateRecordBTCPCode(record);
+                LOGGER.info("补全换票记录结果=="+i+"=="+orderCode);
             }catch (Exception e){
                 LOGGER.error("完善修改发票记录的BTCP号"+e.getMessage(),e);
             }
