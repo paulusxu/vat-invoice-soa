@@ -475,6 +475,18 @@ public class ExchangeInvoiceServiceImpl extends BaseService implements ExchangeI
                         }
                     }else {
                         //普换增和电换增，需要新加一条映射，只增加zid和orderCode
+                        VathrowBtcp vatInvoiceByOrderCode = vathrowBtcpMapper.getVatInvoiceByOrderCode(orderCode);
+                        if (vatInvoiceByOrderCode!=null){
+                            ERRORLOGGER.info("增票映射有错误记录=="+JacksonUtil.toJson(vatInvoiceByOrderCode));
+                            //不为空，有错误记录，将错误记录置为无效
+                            int i = vathrowBtcpMapper.deleteByOrderCode(orderCode);
+                            if (i<=0){
+                                //修改增票回滚失败
+                                ERRORLOGGER.info("增票映射错误记录设置无效失败=="+orderCode);
+                            }else {
+                                LOGGER.info("增票映射错误记录设置无效成功=="+orderCode);
+                            }
+                        }
                         long l = vatInvoiceService.initVathrowBtcp(orderCode, remoteResult1.getT().getVatInvoiceId() + "", invoiceChangeApi2.getShopId());
                         if (l<=0){
                             //添加失败
@@ -873,12 +885,13 @@ public class ExchangeInvoiceServiceImpl extends BaseService implements ExchangeI
                 }
                 //换票类型，1电换普，2增换普、3普换普，4电换增、5增换增、6普换增
                 Integer exchangeType = record.getExchangeType();
+                String orderCode = record.getOrderCode();
                 Tenant tenant = new Tenant();
                 tenant.setShopId(record.getShopid());
                 try {
                     //修改成功，调用订单修改接口
                     InvoiceChangeApi invoiceChangeApi = new InvoiceChangeApi();
-                    invoiceChangeApi.setOrderId(Long.parseLong(record.getOrderCode()));
+                    invoiceChangeApi.setOrderId(Long.parseLong(orderCode));
                     invoiceChangeApi.setOrderStatus(1);
                     invoiceChangeApi.setTitle(record.getNewInvoiceTitle());
                     invoiceChangeApi.setTaxpayerIdentity(record.getNewTaxNo());
@@ -916,13 +929,13 @@ public class ExchangeInvoiceServiceImpl extends BaseService implements ExchangeI
                 try {
                     //修改增票
                     VathrowBtcp vathrowBtcp = new VathrowBtcp();
-                    vathrowBtcp.setOrderCode(record.getOrderCode());
+                    vathrowBtcp.setOrderCode(orderCode);
+                    VathrowBtcp vathrowBtcp1 = vathrowBtcpMapper.getVatInvoiceByOrderCode(orderCode);
                     //如果是增换普，将增票和订单的映射记录删除
                     if (exchangeType==2){
-                        VathrowBtcp vathrowBtcp1 = vathrowBtcpMapper.getVatInvoiceByOrderCode(record.getOrderCode());
-                        int i = vathrowBtcpMapper.deleteByOrderCode(record.getOrderCode());
+                        int i = vathrowBtcpMapper.deleteByOrderCode(orderCode);
                         if (i<=0){
-                            ERRORLOGGER.error("增换普，换票成功，增票和订单映射删除失败！=="+i+"=="+record.getOrderCode());
+                            ERRORLOGGER.error("增换普，换票成功，增票和订单映射删除失败！=="+i+"=="+orderCode);
                         }else {
                             LOGGER.info("增换普，换票成功，增票和订单映射删除成功！=="+i+"=="+JacksonUtil.toJson(vathrowBtcp1));
                         }
@@ -944,12 +957,23 @@ public class ExchangeInvoiceServiceImpl extends BaseService implements ExchangeI
                         vathrowBtcp.setZip(record.getZip());
                         int i = vathrowBtcpMapper.updateVatBTCP(vathrowBtcp);
                         if (i<=0){
-                            ERRORLOGGER.error("BTCP回调==增换增==修改增票信息失败"+record.getOrderCode()+"=="+applyId);
+                            ERRORLOGGER.error("BTCP回调==增换增==修改增票信息失败"+orderCode+"=="+applyId);
                         }else {
-                            LOGGER.info("BTCP回调==增换增==修改增票信息成功！=="+i+"=="+record.getOrderCode()+"=="+applyId);
+                            LOGGER.info("BTCP回调==增换增==修改增票信息成功！=="+i+"=="+orderCode+"=="+applyId);
                         }
                     }else if (exchangeType==4 || exchangeType==6){
                         //如果是普换增，电换增，需要增加一条新的映射
+                        if (vathrowBtcp1!=null){
+                            ERRORLOGGER.info("增票映射有错误记录=="+JacksonUtil.toJson(vathrowBtcp1));
+                            //不为空，有错误记录，将错误记录置为无效
+                            int i = vathrowBtcpMapper.deleteByOrderCode(orderCode);
+                            if (i<=0){
+                                //修改增票回滚失败
+                                ERRORLOGGER.info("增票映射错误记录设置无效失败=="+orderCode);
+                            }else {
+                                LOGGER.info("增票映射错误记录设置无效成功=="+orderCode);
+                            }
+                        }
                         vathrowBtcp.setTitle(record.getNewInvoiceTitle());
                         vathrowBtcp.setTaxpayeridentity(record.getNewTaxNo());
                         vathrowBtcp.setDepositbank(record.getNewBankName());
@@ -975,11 +999,11 @@ public class ExchangeInvoiceServiceImpl extends BaseService implements ExchangeI
                         if (i<=0){
                             ERRORLOGGER.error("BTCP回调==普换增，电换增==新加映射失败=="+i+"=="+applyId+"=="+JacksonUtil.toJson(vathrowBtcp));
                         }else {
-                            LOGGER.info("BTCP回调==普换增，电换增==新加映射成功=="+i+"=="+applyId+"=="+record.getOrderCode());
+                            LOGGER.info("BTCP回调==普换增，电换增==新加映射成功=="+i+"=="+applyId+"=="+orderCode);
                         }
                     }
                 }catch (Exception e){
-                    ERRORLOGGER.error("BTCP回调===修改增票信息出现异常==" + record.getOrderCode()+"=="+applyId+"=="+e.getMessage(),e);
+                    ERRORLOGGER.error("BTCP回调===修改增票信息出现异常==" + orderCode+"=="+applyId+"=="+e.getMessage(),e);
                 }
             }else {
                 //换票失败

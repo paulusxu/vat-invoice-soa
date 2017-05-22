@@ -91,19 +91,4 @@
     ORDER BY updateTime DESC
   </select>
 
-  <insert id="addErrorUpdateOrder" parameterType="com.lenovo.invoice.domain.UpdateInvoiceInOrderParams">
-    INSERT INTO error_updateorder_invoice
-      (orderCode,invoiceType,invoiceTitle,taxNo,bankName,bankNo,address,phone,createTime)
-    VALUES
-      (#{orderCode},#{invoiceType},#{invoiceTitle},#{taxNo},#{bankName},#{bankNo},#{address},#{phone},#{createTime})
-  </insert>
-
-  <select id="getErrorUpdateOrder" resultType="com.lenovo.invoice.domain.UpdateInvoiceInOrderParams">
-    SELECT * FROM error_updateorder_invoice
-  </select>
-
-  <delete id="deleteErrorUpdateOrder" parameterType="java.lang.Integer">
-    DELETE FROM error_updateorder_invoice WHERE id=#{id}
-  </delete>
-
 </mapper>
