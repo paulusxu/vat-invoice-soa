@@ -370,8 +370,8 @@
     </update>
 
     <!--根据orderCode删除增票和订单的映射关系记录-->
-    <delete id="deleteByOrderCode" parameterType="java.lang.String">
-        DELETE FROM vathrowbtcp WHERE OrderCode = #{orderCode}
-    </delete>
+    <update id="deleteByOrderCode" parameterType="java.lang.String">
+        UPDATE vathrowbtcp SET IsUsable=0 WHERE OrderCode = #{orderCode} AND IsUsable=1
+    </update>
 
 </mapper>
