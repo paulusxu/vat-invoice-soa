@@ -27,6 +27,7 @@ public class VathrowBtcp implements Serializable{
     private String zid;
     private int orderStatus;
     private String throwResult;
+    private int isUsable;
 
     public Integer getId() {
         return id;
@@ -210,5 +211,13 @@ public class VathrowBtcp implements Serializable{
 
     public void setThrowResult(String throwResult) {
         this.throwResult = throwResult;
+    }
+
+    public int getIsUsable() {
+        return isUsable;
+    }
+
+    public void setIsUsable(int isUsable) {
+        this.isUsable = isUsable;
     }
 }
