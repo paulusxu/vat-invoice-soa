@@ -553,6 +553,7 @@ public class InvoiceApiServiceImpl extends BaseService implements InvoiceApiServ
             if (matcher.matches()) {
                 taxNo = taxNo.toUpperCase();
             } else {
+                remoteResult.setResultMsg("税号格式错误");
                 return remoteResult;
             }
 
