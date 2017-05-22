@@ -311,10 +311,10 @@
         INSERT INTO vathrowbtcp
           (Title, TaxpayerIdentity, DepositBank, BankNo, RegisterAddress, RegisterPhone,
           OutId, MemberCode, Name, ProvinceId, City, County, Address, Phone, Zip, IsNeedMerge,
-          ThrowingStatus,zid,OrderCode,OrderStatus,CreateTime)
+          ThrowingStatus,zid,OrderCode,OrderStatus,CreateTime,PaidTime)
         VALUES (#{title},#{taxpayeridentity},#{depositbank},#{bankno},#{registeraddress},#{registerphone},
           #{outid},#{membercode},#{name},#{provinceid},#{city},#{county},#{address},#{phone},#{zip},#{isneedmerge},
-          #{throwingStatus},#{zid},#{orderCode},#{orderStatus},now())
+          #{throwingStatus},#{zid},#{orderCode},#{orderStatus},now(),#{paidTime})
     </insert>
 
     <update id="updateVathrowbtcp" parameterType="map">

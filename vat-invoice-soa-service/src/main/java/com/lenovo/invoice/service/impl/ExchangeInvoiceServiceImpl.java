@@ -182,6 +182,7 @@ public class ExchangeInvoiceServiceImpl extends BaseService implements ExchangeI
                             record.setUpdateTime(date);
                             record.setExchangeType(changeType);
                             record.setLenovoId(invoiceChangeApi2.getLenovoId());
+                            record.setPaidTime(invoiceChangeApi2.getPaidTime());
 
                             //老发票信息
                             record.setOldType(invoiceChangeApi2.getUnits());
@@ -278,6 +279,7 @@ public class ExchangeInvoiceServiceImpl extends BaseService implements ExchangeI
                             record.setUpdateTime(date);
                             record.setExchangeType(changeType);
                             record.setLenovoId(invoiceChangeApi2.getLenovoId());
+                            record.setPaidTime(invoiceChangeApi2.getPaidTime());
 
                             //老发票信息
                             record.setOldType(invoiceChangeApi2.getUnits());
@@ -545,6 +547,7 @@ public class ExchangeInvoiceServiceImpl extends BaseService implements ExchangeI
                             record.setUpdateTime(date);
                             record.setExchangeType(changeType);
                             record.setLenovoId(invoiceChangeApi2.getLenovoId());
+                            record.setPaidTime(invoiceChangeApi2.getPaidTime());
                             //老发票信息
                             record.setOldType(invoiceChangeApi2.getUnits());
                             record.setOldInvoiceId(1);//没有，初始化为1
@@ -663,6 +666,7 @@ public class ExchangeInvoiceServiceImpl extends BaseService implements ExchangeI
                             record.setUpdateTime(date);
                             record.setExchangeType(changeType);
                             record.setLenovoId(invoiceChangeApi2.getLenovoId());
+                            record.setPaidTime(invoiceChangeApi2.getPaidTime());
                             //老发票信息
                             record.setOldType(invoiceChangeApi2.getUnits());
                             record.setOldInvoiceId(1);//没有，初始化为1
@@ -997,6 +1001,7 @@ public class ExchangeInvoiceServiceImpl extends BaseService implements ExchangeI
                         vathrowBtcp.setThrowingStatus(0);
                         vathrowBtcp.setZid(record.getNewInvoiceId() + "");
                         vathrowBtcp.setOrderStatus(2);
+                        vathrowBtcp.setPaidTime(record.getPaidTime());
 
                         LOGGER.info("添加新映射"+JacksonUtil.toJson(vathrowBtcp));
                         int i = vathrowBtcpMapper.addVathrowBtcp(vathrowBtcp);
