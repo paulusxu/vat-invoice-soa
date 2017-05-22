@@ -608,8 +608,13 @@ public class ExchangeInvoiceServiceImpl extends BaseService implements ExchangeI
                                 LOGGER.info("普换增和电换增，删除新加的映射成功！=="+i+"=="+orderCode);
                             }
                         }
-                        remoteResult.setResultCode(InvoiceResultCode.UPDATEORDERFAIL);
-                        remoteResult.setResultMsg("换票失败，修改订单失败");
+                        if ("9003".equals(remoteResult2.getResultCode())){
+                            remoteResult.setResultCode(InvoiceResultCode.UPDATEORDERFAIL);
+                            remoteResult.setResultMsg("该订单正在抛单，请五分钟后再试！");
+                        }else {
+                            remoteResult.setResultCode(InvoiceResultCode.UPDATEORDERFAIL);
+                            remoteResult.setResultMsg("换票失败，修改订单失败");
+                        }
                     }
                 } else if (orderStatus2==1) {
                     //订单已抛单-未发货，修改BTCP
@@ -840,7 +845,6 @@ public class ExchangeInvoiceServiceImpl extends BaseService implements ExchangeI
             }
             remoteResult.setResultMsg("该订单FA不符合换票条件");
             remoteResult.setResultCode(InvoiceResultCode.FAIDNOTALLOWEXCHANGE);
-            LOGGER.info("ifExchangeVatInvoice返回值==" + JacksonUtil.toJson(remoteResult));
         }catch (Exception e){
             remoteResult.setResultCode(InvoiceResultCode.FAIL);
             remoteResult.setResultMsg("系统异常");
