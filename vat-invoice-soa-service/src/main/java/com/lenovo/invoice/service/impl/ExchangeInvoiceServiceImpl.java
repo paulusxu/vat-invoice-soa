@@ -91,9 +91,9 @@ public class ExchangeInvoiceServiceImpl extends BaseService implements ExchangeI
             }
 
             //获取订单信息
-            LOGGER.info("vatApiOrderCenter-getInvoiceChangeApiByOrderId参数=="+orderCode);
+            LOGGER.info("获取订单信息==参数=="+orderCode);
             RemoteResult<InvoiceChangeApi> invoiceChangeApiByOrderId = vatApiOrderCenter.getInvoiceChangeApiByOrderId(orderCode);
-            LOGGER.info("vatApiOrderCenter-getInvoiceChangeApiByOrderId返回值=="+JacksonUtil.toJson(invoiceChangeApiByOrderId));
+            LOGGER.info("获取订单信息==返回值=="+JacksonUtil.toJson(invoiceChangeApiByOrderId));
             InvoiceChangeApi invoiceChangeApi = invoiceChangeApiByOrderId.getT();
             if (invoiceChangeApi==null){
                 //获取订单信息失败
@@ -128,9 +128,9 @@ public class ExchangeInvoiceServiceImpl extends BaseService implements ExchangeI
                 }
 
                 //添加成功，再次判断订单状态
-                LOGGER.info("vatApiOrderCenter-getInvoiceChangeApiByOrderId参数=="+orderCode);
+                LOGGER.info("获取订单信息==参数=="+orderCode);
                 RemoteResult<InvoiceChangeApi> invoiceChangeApiByOrderId2 = vatApiOrderCenter.getInvoiceChangeApiByOrderId(orderCode);
-                LOGGER.info("vatApiOrderCenter-getInvoiceChangeApiByOrderId返回值==" + JacksonUtil.toJson(invoiceChangeApiByOrderId2));
+                LOGGER.info("获取订单信息==返回值==" + JacksonUtil.toJson(invoiceChangeApiByOrderId2));
                 InvoiceChangeApi invoiceChangeApi2 = invoiceChangeApiByOrderId2.getT();
                 if (invoiceChangeApi2==null){
                     //获取订单信息失败
@@ -158,10 +158,12 @@ public class ExchangeInvoiceServiceImpl extends BaseService implements ExchangeI
                     invoiceChangeApi1.setUnits(type);
                     invoiceChangeApi1.setChangeType(changeType);
                     invoiceChangeApi1.setOperator(itCode);
+                    invoiceChangeApi1.setIsNeedMerge(0);
+                    invoiceChangeApi1.setShopId(invoiceChangeApi2.getShopId());
 
-                    LOGGER.info("vatApiOrderCenter-updateInvoice参数=="+JacksonUtil.toJson(invoiceChangeApi1));
+                    LOGGER.info("修改订单==参数=="+JacksonUtil.toJson(invoiceChangeApi1));
                     RemoteResult remoteResult2 = vatApiOrderCenter.updateInvoice(invoiceChangeApi1);
-                    LOGGER.info("vatApiOrderCenter-updateInvoice返回值=="+JacksonUtil.toJson(remoteResult2));
+                    LOGGER.info("修改订单==返回值=="+JacksonUtil.toJson(remoteResult2));
                     if (remoteResult2.isSuccess()){
                         remoteResult.setResultCode(InvoiceResultCode.SUCCESS);
                         remoteResult.setResultMsg("换票成功！");
@@ -199,23 +201,35 @@ public class ExchangeInvoiceServiceImpl extends BaseService implements ExchangeI
                             record.setNewInvoiceType(commonInvoiceType);
 
                             int i = exchangeInvoiceRecordMapper.addExchangeInvoiceRecord(record);
-                            if (i==0){
-                                ERRORLOGGER.error("添加换票记录失败==参数==" + JacksonUtil.toJson(record));
+                            if (i<=0){
+                                ERRORLOGGER.error("添加换票记录失败==参数=="+i+"=="+ JacksonUtil.toJson(record));
+                            }else {
+                                LOGGER.info("添加换票记录成功！=="+i);
                             }
                         }catch (Exception e){
-                            ERRORLOGGER.error("添加换票记录失败==参数==" + JacksonUtil.toJson(record) + e.getMessage(), e);
+                            ERRORLOGGER.error("添加换票记录出现异常==参数==" + JacksonUtil.toJson(record)+"==" + e.getMessage(), e);
                         }
+                        try {
+                            if (changeType==2){
+                                //增换普，将增票和订单的映射记录删除
+                                VathrowBtcp vathrowBtcp = vathrowBtcpMapper.getVatInvoiceByOrderCode(orderCode);
+
+                                int i = vathrowBtcpMapper.deleteByOrderCode(orderCode);
+                                if (i<=0){
+                                    ERRORLOGGER.error("增换普，换票成功，增票和订单映射删除失败！=="+i+"=="+orderCode);
+                                }else {
+                                    LOGGER.info("增换普，换票成功，增票和订单映射删除成功！=="+i+"=="+JacksonUtil.toJson(vathrowBtcp));
+                                }
+                            }
+                        }catch (Exception e){
+                            ERRORLOGGER.error("增换普，换票成功，增票和订单映射删除出现异常！"+orderCode+"=="+e.getMessage(),e);
+                        }
+                    }else if ("9003".equals(remoteResult2.getResultCode())){
+                        remoteResult.setResultCode(InvoiceResultCode.UPDATEORDERFAIL);
+                        remoteResult.setResultMsg("该订单正在抛单，请五分钟后再试！");
                     }else {
                         remoteResult.setResultCode(InvoiceResultCode.UPDATEORDERFAIL);
                         remoteResult.setResultMsg("换票失败，修改订单失败");
-                    }
-                    try {
-                        int i = vathrowBtcpMapper.deleteByOrderCode(orderCode);
-                        if (i==0){
-                            ERRORLOGGER.error("增换普，换票成功，增票和订单映射删除失败！"+orderCode);
-                        }
-                    }catch (Exception e){
-                        ERRORLOGGER.error("增换普，换票成功，增票和订单映射删除失败！"+orderCode);
                     }
                 }else if (orderStatus2==1){
                     //订单已抛单-未发货，修改BTCP
@@ -283,15 +297,17 @@ public class ExchangeInvoiceServiceImpl extends BaseService implements ExchangeI
                             record.setNewInvoiceType(commonInvoiceType);
 
                             int i = exchangeInvoiceRecordMapper.addExchangeInvoiceRecord(record);
-                            if (i==0){
-                                ERRORLOGGER.error("添加换票记录失败==参数=="+JacksonUtil.toJson(record));
+                            if (i<=0){
+                                ERRORLOGGER.error("添加换票记录失败==参数=="+i+"=="+JacksonUtil.toJson(record));
+                            }else {
+                                LOGGER.info("添加换票记录成功！=="+i);
                             }
                         }catch (Exception e){
-                            ERRORLOGGER.error("添加换票记录失败==参数=="+JacksonUtil.toJson(record)+e.getMessage(),e);
+                            ERRORLOGGER.error("添加换票记录出现异常==参数=="+JacksonUtil.toJson(record)+"=="+e.getMessage(),e);
                         }
                     }else {
                         remoteResult.setResultCode(InvoiceResultCode.THROWBTCPFAIL);
-                        remoteResult.setResultMsg("换票失败，抛BTCP失败"+message);
+                        remoteResult.setResultMsg("换票失败，抛BTCP失败");
                     }
                 }
             }
@@ -310,7 +326,7 @@ public class ExchangeInvoiceServiceImpl extends BaseService implements ExchangeI
                                       String newTaxNo,String newBankName,String newBankNo,String newAddress,String newPhone,
                                       String name,String province,String city,String county,String address2,String phone2,String zip) {
         LOGGER.info("exchangeToVat参数==orderCode=" + orderCode + ";oldInvoiceType=" + oldInvoiceType + ";itCode=" + itCode + ";exchangeType=" + exchangeType
-                + ";newInvoiceTitle=" + newInvoiceTitle + ";newTaxNo=" + newTaxNo + ";newBankName=" + newBankName + ";newBankNo=" + newBankNo + ";newAddress=" + newAddress + ";newPhone=" + newPhone,
+                + ";newInvoiceTitle=" + newInvoiceTitle + ";newTaxNo=" + newTaxNo + ";newBankName=" + newBankName + ";newBankNo=" + newBankNo + ";newAddress=" + newAddress + ";newPhone=" + newPhone+
                 ";name="+name+";province="+province+";city="+city+";county="+county+";address2="+address2+";phone2="+phone2+";zip="+zip);
 
         RemoteResult remoteResult = new RemoteResult();
@@ -331,9 +347,9 @@ public class ExchangeInvoiceServiceImpl extends BaseService implements ExchangeI
             }
 
             //获取订单信息
-            LOGGER.info("vatApiOrderCenter-getInvoiceChangeApiByOrderId参数=="+orderCode);
+            LOGGER.info("获取订单信息==参数=="+orderCode);
             RemoteResult<InvoiceChangeApi> invoiceChangeApiByOrderId = vatApiOrderCenter.getInvoiceChangeApiByOrderId(orderCode);
-            LOGGER.info("vatApiOrderCenter-getInvoiceChangeApiByOrderId返回值=="+JacksonUtil.toJson(invoiceChangeApiByOrderId));
+            LOGGER.info("获取订单信息==返回值=="+JacksonUtil.toJson(invoiceChangeApiByOrderId));
             InvoiceChangeApi invoiceChangeApi = invoiceChangeApiByOrderId.getT();
             if (invoiceChangeApi==null){
                 //获取订单信息失败
@@ -401,19 +417,20 @@ public class ExchangeInvoiceServiceImpl extends BaseService implements ExchangeI
                 param1.setZip(zip);
                 param1.setIsdefault(0);//不设置为默认地址
 
+                LOGGER.info("添加收票地址参数=="+JacksonUtil.toJson(param1));
                 RemoteResult<String> remoteResult3 = consigneeAddressService.saveConsignee(tenant, param1);
                 if (!remoteResult3.isSuccess()) {
                     //添加收票地址失败
                     remoteResult.setResultCode(InvoiceResultCode.ADDSPADDRESSFAIL);
-                    remoteResult.setResultMsg("添加收票地址失败");
+                    remoteResult.setResultMsg("添加收票地址失败，"+remoteResult3.getResultMsg());
                     LOGGER.info("exchangeToVat返回值==添加收票地址失败==" + JacksonUtil.toJson(remoteResult3));
                     return remoteResult;
                 }
 
                 //添加成功，再次判断订单状态
-                LOGGER.info("vatApiOrderCenter-getInvoiceChangeApiByOrderId参数==" + orderCode);
+                LOGGER.info("获取订单信息==参数==" + orderCode);
                 RemoteResult<InvoiceChangeApi> invoiceChangeApiByOrderId2 = vatApiOrderCenter.getInvoiceChangeApiByOrderId(orderCode);
-                LOGGER.info("vatApiOrderCenter-getInvoiceChangeApiByOrderId返回值==" + JacksonUtil.toJson(invoiceChangeApiByOrderId2));
+                LOGGER.info("获取订单信息==返回值==" + JacksonUtil.toJson(invoiceChangeApiByOrderId2));
                 InvoiceChangeApi invoiceChangeApi2 = invoiceChangeApiByOrderId2.getT();
                 if (invoiceChangeApi2==null){
                     //获取订单信息失败
@@ -447,22 +464,26 @@ public class ExchangeInvoiceServiceImpl extends BaseService implements ExchangeI
                         vathrowBtcp1.setZid(remoteResult1.getT().getVatInvoiceId() + "");
                         vathrowBtcp1.setOrderCode(orderCode);
                         int j = vathrowBtcpMapper.updateVatBTCP(vathrowBtcp1);
-                        if (j==0){
+                        if (j<=0){
                             //修改失败
                             remoteResult.setResultCode(InvoiceResultCode.UPDATEVATINVOICEFAIL);
                             remoteResult.setResultMsg("修改增票信息失败！");
-                            LOGGER.info("exchangeToVat返回值==" + JacksonUtil.toJson(remoteResult));
+                            LOGGER.info("exchangeToVat返回值=="+j+"=="+ JacksonUtil.toJson(remoteResult));
                             return remoteResult;
+                        }else {
+                            LOGGER.info("增换增，只修改zid成功=="+j+"=="+orderCode);
                         }
                     }else {
                         //普换增和电换增，需要新加一条映射，只增加zid和orderCode
                         long l = vatInvoiceService.initVathrowBtcp(orderCode, remoteResult1.getT().getVatInvoiceId() + "", invoiceChangeApi2.getShopId());
-                        if (l==0){
+                        if (l<=0){
                             //添加失败
                             remoteResult.setResultCode(InvoiceResultCode.UPDATEVATINVOICEFAIL);
                             remoteResult.setResultMsg("添加新得增票和订单映射失败！");
-                            LOGGER.info("exchangeToVat返回值==" + JacksonUtil.toJson(remoteResult));
+                            LOGGER.info("exchangeToVat返回值=="+l+"=="+ JacksonUtil.toJson(remoteResult));
                             return remoteResult;
+                        }else {
+                            LOGGER.info("普换增和电换增，新加一条映射成功=="+l+"=="+orderCode);
                         }
                     }
                     //修改增票成功，再修改订单
@@ -488,10 +509,11 @@ public class ExchangeInvoiceServiceImpl extends BaseService implements ExchangeI
                     invoiceChangeApi1.setShopId(invoiceChangeApi2.getShopId());
                     invoiceChangeApi1.setChangeType(changeType);
                     invoiceChangeApi1.setOperator(itCode);
+                    invoiceChangeApi1.setIsNeedMerge(0);
 
-                    LOGGER.info("vatApiOrderCenter-updateInvoice参数==" + JacksonUtil.toJson(invoiceChangeApi1));
+                    LOGGER.info("修改订单==参数==" + JacksonUtil.toJson(invoiceChangeApi1));
                     RemoteResult remoteResult2 = vatApiOrderCenter.updateInvoice(invoiceChangeApi1);
-                    LOGGER.info("vatApiOrderCenter-updateInvoice返回值==" + JacksonUtil.toJson(remoteResult2));
+                    LOGGER.info("修改订单==返回值==" + JacksonUtil.toJson(remoteResult2));
                     if (remoteResult2.isSuccess()) {
                         remoteResult.setResultCode(InvoiceResultCode.SUCCESS);
                         remoteResult.setResultMsg("换票成功！");
@@ -541,11 +563,13 @@ public class ExchangeInvoiceServiceImpl extends BaseService implements ExchangeI
                             record.setZip(zip);
 
                             int i = exchangeInvoiceRecordMapper.addExchangeInvoiceRecord(record);
-                            if (i == 0) {
-                                ERRORLOGGER.error("添加换票记录失败==参数==" + JacksonUtil.toJson(record));
+                            if (i <= 0) {
+                                ERRORLOGGER.error("添加换票记录失败==参数=="+i+"=="+ JacksonUtil.toJson(record));
+                            }else {
+                                LOGGER.info("添加换票记录成功!=="+i);
                             }
                         } catch (Exception e) {
-                            ERRORLOGGER.error("添加换票记录失败==参数==" + JacksonUtil.toJson(record) + e.getMessage(), e);
+                            ERRORLOGGER.error("添加换票记录出现异常==参数==" + JacksonUtil.toJson(record)+"==" + e.getMessage(), e);
                         }
                     } else {
                         //修改订单失败，修改增票要回滚
@@ -555,16 +579,20 @@ public class ExchangeInvoiceServiceImpl extends BaseService implements ExchangeI
                             vathrowBtcp1.setZid(vathrowBtcp.getZid());
                             vathrowBtcp1.setOrderCode(orderCode);
                             int j = vathrowBtcpMapper.updateVatBTCP(vathrowBtcp1);
-                            if (j==0){
+                            if (j<=0){
                                 //修改增票回滚失败
-                                ERRORLOGGER.info("增换增，修改增票回滚失败==参数=="+JacksonUtil.toJson(vathrowBtcp1));
+                                ERRORLOGGER.info("增换增，修改增票回滚失败==参数=="+j+"=="+JacksonUtil.toJson(vathrowBtcp1));
+                            }else {
+                                LOGGER.info("增换增，将修改的zid回滚成功！=="+j+"=="+JacksonUtil.toJson(vathrowBtcp1));
                             }
                         }else {
                             //普换增和电换增，需要删除新加的映射
                             int i = vathrowBtcpMapper.deleteByOrderCode(orderCode);
-                            if (i==0){
+                            if (i<=0){
                                 //修改增票回滚失败
-                                ERRORLOGGER.info("普换增，电换增，修改增票回滚失败==参数=="+orderCode);
+                                ERRORLOGGER.info("普换增，电换增，修改增票回滚失败==参数=="+i+"=="+orderCode);
+                            }else {
+                                LOGGER.info("普换增和电换增，删除新加的映射成功！=="+i+"=="+orderCode);
                             }
                         }
                         remoteResult.setResultCode(InvoiceResultCode.UPDATEORDERFAIL);
@@ -648,15 +676,17 @@ public class ExchangeInvoiceServiceImpl extends BaseService implements ExchangeI
                             record.setZip(zip);
 
                             int i = exchangeInvoiceRecordMapper.addExchangeInvoiceRecord(record);
-                            if (i == 0) {
-                                ERRORLOGGER.error("添加换票记录失败==参数==" + JacksonUtil.toJson(record));
+                            if (i <= 0) {
+                                ERRORLOGGER.error("添加换票记录失败==参数=="+i+"=="+ JacksonUtil.toJson(record));
+                            }else {
+                                LOGGER.info("添加换票记录成功！=="+i);
                             }
                         } catch (Exception e) {
-                            ERRORLOGGER.error("添加换票记录失败==参数==" + JacksonUtil.toJson(record) + e.getMessage(), e);
+                            ERRORLOGGER.error("添加换票记录出现异常==参数==" + JacksonUtil.toJson(record)+"==" + e.getMessage(), e);
                         }
                     } else {
                         remoteResult.setResultCode(InvoiceResultCode.THROWBTCPFAIL);
-                        remoteResult.setResultMsg("换票失败，抛BTCP失败"+message);
+                        remoteResult.setResultMsg("换票失败，抛BTCP失败");
                     }
                 }
             }
@@ -767,9 +797,9 @@ public class ExchangeInvoiceServiceImpl extends BaseService implements ExchangeI
             }
 
             //获取订单信息
-            LOGGER.info("vatApiOrderCenter-getInvoiceChangeApiByOrderId参数=="+orderCode);
+            LOGGER.info("获取订单信息==参数=="+orderCode);
             RemoteResult<InvoiceChangeApi> invoiceChangeApiByOrderId = vatApiOrderCenter.getInvoiceChangeApiByOrderId(orderCode);
-            LOGGER.info("vatApiOrderCenter-getInvoiceChangeApiByOrderId返回值=="+JacksonUtil.toJson(invoiceChangeApiByOrderId));
+            LOGGER.info("获取订单信息==返回值=="+JacksonUtil.toJson(invoiceChangeApiByOrderId));
             InvoiceChangeApi invoiceChangeApi = invoiceChangeApiByOrderId.getT();
             if (invoiceChangeApi==null){
                 //获取订单信息失败
@@ -831,11 +861,13 @@ public class ExchangeInvoiceServiceImpl extends BaseService implements ExchangeI
                     record.setState(2);
                     record.setUpdateTime(date);
                     int i = exchangeInvoiceRecordMapper.updateExchangeInvoiceRecord(record);
-                    if (i==0){
-                        ERRORLOGGER.error("换票成功，换票记录状态修改失败！" + JacksonUtil.toJson(record));
+                    if (i<=0){
+                        ERRORLOGGER.error("换票成功，换票记录状态修改失败！=="+i+"=="+ JacksonUtil.toJson(record));
+                    }else {
+                        LOGGER.info("换票成功，换票记录状态修改成功！=="+i+"=="+applyId);
                     }
                 }catch (Exception e){
-                    ERRORLOGGER.error("换票成功，换票记录状态修改失败！"+JacksonUtil.toJson(record),e);
+                    ERRORLOGGER.error("换票成功，换票记录状态修改出现异常！"+JacksonUtil.toJson(record),e);
                 }
 
                 Tenant tenant = new Tenant();
@@ -864,6 +896,7 @@ public class ExchangeInvoiceServiceImpl extends BaseService implements ExchangeI
                     invoiceChangeApi.setChangeType(record.getExchangeType());
                     invoiceChangeApi.setOperator(record.getItCode());
                     invoiceChangeApi.setShopId(record.getShopid());
+                    invoiceChangeApi.setIsNeedMerge(0);
 
                     LOGGER.info("BTCP通知=修改订单参数==" + JacksonUtil.toJson(invoiceChangeApi));
                     RemoteResult remoteResult1 = vatApiOrderCenter.updateInvoice(invoiceChangeApi);
@@ -872,7 +905,7 @@ public class ExchangeInvoiceServiceImpl extends BaseService implements ExchangeI
                         ERRORLOGGER.error("BTCP通知=修改订单失败！applyId=" + applyId + "==" + JacksonUtil.toJson(invoiceChangeApi));
                     }
                 }catch (Exception e){
-                    ERRORLOGGER.error("BTCP通知==修改订单出现异常！" + applyId + e.getMessage(), e);
+                    ERRORLOGGER.error("BTCP通知==修改订单出现异常！==" + applyId+"==" + e.getMessage(), e);
                 }
                 try {
                     //修改增票
@@ -884,8 +917,10 @@ public class ExchangeInvoiceServiceImpl extends BaseService implements ExchangeI
                     if (exchangeType==2){
                         vathrowBtcp.setThrowingStatus(1);//1为不允许抛单
                         int i = vathrowBtcpMapper.updateVatBTCP(vathrowBtcp);
-                        if (i==0){
-                            ERRORLOGGER.error("BTCP回调==增换普==修改增票抛单状态失败" + record.getOrderCode());
+                        if (i<=0){
+                            ERRORLOGGER.error("BTCP回调==增换普==修改增票抛单状态失败=="+i+"==" + record.getOrderCode());
+                        }else {
+                            LOGGER.info("BTCP回调==增换普==修改增票抛单状态成功=="+i+"=="+record.getOrderCode());
                         }
                     } else if (exchangeType==5){
                         //如果是增换增，修改原来的映射记录
@@ -904,8 +939,10 @@ public class ExchangeInvoiceServiceImpl extends BaseService implements ExchangeI
                         vathrowBtcp.setPhone(record.getPhone());
                         vathrowBtcp.setZip(record.getZip());
                         int i = vathrowBtcpMapper.updateVatBTCP(vathrowBtcp);
-                        if (i==0){
-                            ERRORLOGGER.error("BTCP回调==增换增==修改增票信息失败"+record.getOrderCode()+applyId);
+                        if (i<=0){
+                            ERRORLOGGER.error("BTCP回调==增换增==修改增票信息失败"+record.getOrderCode()+"=="+applyId);
+                        }else {
+                            LOGGER.info("BTCP回调==增换增==修改增票信息成功！=="+i+"=="+record.getOrderCode()+"=="+applyId);
                         }
                     }else if (exchangeType==4 || exchangeType==6){
                         //如果是普换增，电换增，需要增加一条新的映射
@@ -930,12 +967,14 @@ public class ExchangeInvoiceServiceImpl extends BaseService implements ExchangeI
                         vathrowBtcp.setOrderStatus(2);
 
                         int i = vathrowBtcpMapper.addVathrowBtcp(vathrowBtcp);
-                        if (i==0){
-                            ERRORLOGGER.error("BTCP回调==普换增，电换增==修改增票信息失败"+record.getOrderCode()+applyId);
+                        if (i<=0){
+                            ERRORLOGGER.error("BTCP回调==普换增，电换增==新加映射失败=="+i+"=="+applyId+"=="+JacksonUtil.toJson(vathrowBtcp));
+                        }else {
+                            LOGGER.info("BTCP回调==普换增，电换增==新加映射成功=="+i+"=="+applyId+"=="+record.getOrderCode());
                         }
                     }
                 }catch (Exception e){
-                    ERRORLOGGER.error("BTCP回调===修改增票信息出现异常" + record.getOrderCode()+applyId);
+                    ERRORLOGGER.error("BTCP回调===修改增票信息出现异常==" + record.getOrderCode()+"=="+applyId+"=="+e.getMessage(),e);
                 }
             }else {
                 //换票失败
@@ -944,11 +983,13 @@ public class ExchangeInvoiceServiceImpl extends BaseService implements ExchangeI
                     record.setState(3);
                     record.setUpdateTime(date);
                     int i = exchangeInvoiceRecordMapper.updateExchangeInvoiceRecord(record);
-                    if (i==0){
-                        ERRORLOGGER.error("换票失败，换票记录状态修改失败！" + JacksonUtil.toJson(record));
+                    if (i<=0){
+                        ERRORLOGGER.error("换票失败，换票记录状态修改失败！=="+i+"==" + JacksonUtil.toJson(record));
+                    }else {
+                        LOGGER.info("换票失败，换票记录状态修改成功！=="+i);
                     }
                 }catch (Exception e){
-                    ERRORLOGGER.error("换票失败，换票记录状态修改失败！"+JacksonUtil.toJson(record),e);
+                    ERRORLOGGER.error("换票失败，换票记录状态修改出现异常！"+JacksonUtil.toJson(record),e);
                 }
             }
         }catch (Exception e){
@@ -975,9 +1016,9 @@ public class ExchangeInvoiceServiceImpl extends BaseService implements ExchangeI
             }
 
             //获取订单信息
-            LOGGER.info("vatApiOrderCenter-getInvoiceChangeApiByOrderId参数=="+orderCode);
+            LOGGER.info("获取订单信息==参数=="+orderCode);
             RemoteResult<InvoiceChangeApi> invoiceChangeApiByOrderId = vatApiOrderCenter.getInvoiceChangeApiByOrderId(orderCode);
-            LOGGER.info("vatApiOrderCenter-getInvoiceChangeApiByOrderId返回值=="+JacksonUtil.toJson(invoiceChangeApiByOrderId));
+            LOGGER.info("获取订单信息==返回值=="+JacksonUtil.toJson(invoiceChangeApiByOrderId));
             InvoiceChangeApi invoiceChangeApi = invoiceChangeApiByOrderId.getT();
             if (invoiceChangeApi==null){
                 //获取订单信息失败
