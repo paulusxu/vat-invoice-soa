@@ -326,10 +326,10 @@ public class ExchangeInvoiceServiceImpl extends BaseService implements ExchangeI
     @Override
     public RemoteResult exchangeToVat(String orderCode,String itCode,Integer oldInvoiceType,Integer exchangeType,String newInvoiceTitle,
                                       String newTaxNo,String newBankName,String newBankNo,String newAddress,String newPhone,
-                                      String name,String province,String city,String county,String address2,String phone2,String zip) {
+                                      String name,String province,String city,String county,String address2,String phone2,String zip,String tel) {
         LOGGER.info("exchangeToVat参数==orderCode=" + orderCode + ";oldInvoiceType=" + oldInvoiceType + ";itCode=" + itCode + ";exchangeType=" + exchangeType
                 + ";newInvoiceTitle=" + newInvoiceTitle + ";newTaxNo=" + newTaxNo + ";newBankName=" + newBankName + ";newBankNo=" + newBankNo + ";newAddress=" + newAddress + ";newPhone=" + newPhone+
-                ";name="+name+";province="+province+";city="+city+";county="+county+";address2="+address2+";phone2="+phone2+";zip="+zip);
+                ";name="+name+";province="+province+";city="+city+";county="+county+";address2="+address2+";phone2="+phone2+";zip="+zip+";tel="+tel);
 
         RemoteResult remoteResult = new RemoteResult();
         try {
@@ -418,6 +418,7 @@ public class ExchangeInvoiceServiceImpl extends BaseService implements ExchangeI
                 param1.setType("SP");//地址类型为收票地址
                 param1.setZip(zip);
                 param1.setIsdefault(0);//不设置为默认地址
+                param1.setTel(tel);
 
                 LOGGER.info("添加收票地址参数=="+JacksonUtil.toJson(param1));
                 RemoteResult<String> remoteResult3 = consigneeAddressService.saveConsignee(tenant, param1);
