@@ -58,6 +58,7 @@ public class VatInvoiceServiceImpl implements VatInvoiceService {
             long orderId = Long.parseLong(orderCode);
             //查询主单信息  获取发票类型
             remoteResultInvoice = orderDetailService.getInvoiceByOrderId(orderId);
+            LOGGER_THROW.info("remoteResultInvoice:", JacksonUtil.toJson(remoteResultInvoice));
             if (remoteResultInvoice.isSuccess()) {
                 Invoice invoice = remoteResultInvoice.getT();//发票类型1:电子票2:增票3:普票
                 if (invoice != null && invoice.getType() == 2) {
