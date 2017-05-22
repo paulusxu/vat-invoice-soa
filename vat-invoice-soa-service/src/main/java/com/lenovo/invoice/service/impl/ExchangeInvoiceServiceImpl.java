@@ -211,7 +211,7 @@ public class ExchangeInvoiceServiceImpl extends BaseService implements ExchangeI
                         }
                         try {
                             if (changeType==2){
-                                //增换普，将增票和订单的映射记录删除
+                                //增换普，将增票和订单的映射记录删除 TODO 改为伪删除
                                 VathrowBtcp vathrowBtcp = vathrowBtcpMapper.getVatInvoiceByOrderCode(orderCode);
 
                                 int i = vathrowBtcpMapper.deleteByOrderCode(orderCode);
@@ -474,7 +474,7 @@ public class ExchangeInvoiceServiceImpl extends BaseService implements ExchangeI
                             LOGGER.info("增换增，只修改zid成功=="+j+"=="+orderCode);
                         }
                     }else {
-                        //普换增和电换增，需要新加一条映射，只增加zid和orderCode
+                        //普换增和电换增，需要新加一条映射，只增加zid和orderCode TODO 新加之前判断是否只有一条有效记录
                         long l = vatInvoiceService.initVathrowBtcp(orderCode, remoteResult1.getT().getVatInvoiceId() + "", invoiceChangeApi2.getShopId());
                         if (l<=0){
                             //添加失败
@@ -587,7 +587,7 @@ public class ExchangeInvoiceServiceImpl extends BaseService implements ExchangeI
                                 LOGGER.info("增换增，将修改的zid回滚成功！=="+j+"=="+JacksonUtil.toJson(vathrowBtcp1));
                             }
                         }else {
-                            //普换增和电换增，需要删除新加的映射
+                            //普换增和电换增，需要删除新加的映射  TODO 改为伪删除
                             int i = vathrowBtcpMapper.deleteByOrderCode(orderCode);
                             if (i<=0){
                                 //修改增票回滚失败
@@ -917,7 +917,7 @@ public class ExchangeInvoiceServiceImpl extends BaseService implements ExchangeI
                     //修改增票
                     VathrowBtcp vathrowBtcp = new VathrowBtcp();
                     vathrowBtcp.setOrderCode(record.getOrderCode());
-                    //如果是增换普，将增票和订单的映射记录删除
+                    //如果是增换普，将增票和订单的映射记录删除  TODO 改为伪删除
                     if (exchangeType==2){
                         VathrowBtcp vathrowBtcp1 = vathrowBtcpMapper.getVatInvoiceByOrderCode(record.getOrderCode());
                         int i = vathrowBtcpMapper.deleteByOrderCode(record.getOrderCode());
@@ -949,7 +949,7 @@ public class ExchangeInvoiceServiceImpl extends BaseService implements ExchangeI
                             LOGGER.info("BTCP回调==增换增==修改增票信息成功！=="+i+"=="+record.getOrderCode()+"=="+applyId);
                         }
                     }else if (exchangeType==4 || exchangeType==6){
-                        //如果是普换增，电换增，需要增加一条新的映射
+                        //如果是普换增，电换增，需要增加一条新的映射  TODO 修改之前判断是否只有一条有效记录
                         vathrowBtcp.setTitle(record.getNewInvoiceTitle());
                         vathrowBtcp.setTaxpayeridentity(record.getNewTaxNo());
                         vathrowBtcp.setDepositbank(record.getNewBankName());
