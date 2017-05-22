@@ -93,6 +93,7 @@ public class VatInvoiceServiceImpl implements VatInvoiceService {
                         String zid = invoice.getZid();
                         vathrowBtcp.setZid(zid);
                         vathrowBtcp.setOrderStatus(2);
+                        vathrowBtcp.setPaidTime(main.getPaidTime());
 
                         VatInvoice vatInvoice = getVatInvoiceByZid(zid, shopid);
                         if (vatInvoice != null) {

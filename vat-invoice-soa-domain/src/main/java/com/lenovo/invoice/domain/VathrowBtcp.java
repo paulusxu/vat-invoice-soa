@@ -23,6 +23,7 @@ public class VathrowBtcp implements Serializable{
     private int isneedmerge;
     private int throwingStatus;
     private Date createtime;
+    private Date paidTime;
     private String orderCode;
     private String zid;
     private int orderStatus;
@@ -219,5 +220,13 @@ public class VathrowBtcp implements Serializable{
 
     public void setIsUsable(int isUsable) {
         this.isUsable = isUsable;
+    }
+
+    public Date getPaidTime() {
+        return paidTime;
+    }
+
+    public void setPaidTime(Date paidTime) {
+        this.paidTime = paidTime;
     }
 }

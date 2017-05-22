@@ -26,6 +26,7 @@
         <result column="OrderStatus" property="orderStatus" jdbcType="BIT"/>
         <result column="IsUsable" property="isUsable" jdbcType="BIT"/>
         <result column="CreateTime" property="createtime" jdbcType="TIMESTAMP"/>
+        <result column="PaidTime" property="paidTime" jdbcType="TIMESTAMP"/>
     </resultMap>
 
     <resultMap id="BaseVatInvoiceResultMap" type="com.lenovo.invoice.domain.VatInvoice">
@@ -58,7 +59,7 @@
     <sql id="Base_Column_List">
     ID, Title, TaxpayerIdentity, DepositBank, BankNo, RegisterAddress, RegisterPhone,
     OutId, MemberCode, Name, ProvinceId, City, County, Address, Phone, Zip, IsNeedMerge,
-    ThrowingStatus,zid,OrderCode,OrderStatus,ThrowResult
+    ThrowingStatus,zid,OrderCode,OrderStatus,ThrowResult,PaidTime
   </sql>
 
     <sql id="Base_VatInvoice_Column_List">
@@ -378,6 +379,9 @@
             </if>
             <if test="record.orderStatus != null">
                 OrderStatus = #{record.orderStatus,jdbcType=BIT},
+            </if>
+            <if test="record.paidTime != null">
+                PaidTime = #{record.paidTime},
             </if>
         </set>
         WHERE OrderCode = #{record.orderCode} AND IsUsable=1
