@@ -94,14 +94,27 @@
         select
         vat.*
         FROM vathrowbtcp btcp, vatinvoice vat WHERE btcp.Zid=vat.Id AND btcp.OrderStatus=3 AND btcp.ThrowingStatus
-        IN(0,4) AND IsUsable=1 <include refid="queryVatInvoice" />  group by vat.taxNo
-        ORDER BY vat.CreateTime DESC limit ${pageIndex},${pageSize}
+        IN(0,4) AND IsUsable=1
+        <if test="orderCode != null and orderCode!=''">
+            AND OrderCode=#{orderCode}
+        </if>
+        <if test="btcpSo != null and btcpSo!=''">
+            AND OutId=#{btcpSo}
+        </if>
+        <include refid="queryVatInvoice" />group by vat.taxNo
+         ORDER BY vat.CreateTime DESC limit ${pageIndex},${pageSize}
     </select>
 
     <select id="getNotThrowBtcpVatInvoiceCount" resultType="java.lang.Integer" parameterType="java.util.Map">
         SELECT COUNT(1) FROM
         (SELECT vat.* FROM vathrowbtcp btcp, vatinvoice vat WHERE btcp.Zid=vat.Id AND btcp.OrderStatus=3 AND btcp.ThrowingStatus IN(0,4)  AND IsUsable=1
-        <include refid="queryVatInvoice" />
+        <if test="orderCode != null and orderCode!=''">
+            AND OrderCode=#{orderCode}
+        </if>
+        <if test="btcpSo != null and btcpSo!=''">
+            AND OutId=#{btcpSo}
+        </if>
+         <include refid="queryVatInvoice" />
         GROUP BY vat.taxNo ORDER BY vat.CreateTime DESC) a
     </select>
 
