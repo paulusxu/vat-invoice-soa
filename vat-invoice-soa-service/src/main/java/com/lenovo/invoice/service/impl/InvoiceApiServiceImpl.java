@@ -720,6 +720,7 @@ public class InvoiceApiServiceImpl extends BaseService implements InvoiceApiServ
                 }
             } else {
                 vatInvoice.setIsNeedMerge(isNeedMerge ? 1 : 0);
+                vatInvoiceMapper.updateVatInvoice(vatInvoice);
                 if (isShard) {
                     Integer isSharded = vatInvoice.getIsshared();
                     id = vatInvoice.getId();
