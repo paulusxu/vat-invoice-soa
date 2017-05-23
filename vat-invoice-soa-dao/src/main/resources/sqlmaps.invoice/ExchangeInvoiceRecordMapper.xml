@@ -6,7 +6,7 @@
     id,itCode,orderCode,BTCPOrderCode,shopid,exchangeTime,updateTime,state,exchangeType,
     oldType,oldInvoiceId,oldInvoiceTitle,oldInvoiceType,oldTaxNo,oldBankName,oldBankNo,oldAddress,oldPhone,
     newType,newInvoiceId,newInvoiceTitle,newInvoiceType,newTaxNo,newBankName,newBankNo,newAddress,newPhone,
-    name,provinceId,province,city,county,address,phone,zip,lenovoId
+    name,provinceId,province,city,county,address,phone,zip,lenovoId,paidTime
   </sql>
   
   <insert id="addExchangeInvoiceRecord" parameterType="com.lenovo.invoice.domain.ExchangeInvoiceRecord">
@@ -14,12 +14,12 @@
       (id,itCode,orderCode,BTCPOrderCode,shopid,exchangeTime,updateTime,state,exchangeType,
       oldType,oldInvoiceId,oldInvoiceTitle,oldInvoiceType,oldTaxNo,oldBankName,oldBankNo,oldAddress,oldPhone,
       newType,newInvoiceId,newInvoiceTitle,newInvoiceType,newTaxNo,newBankName,newBankNo,newAddress,newPhone,
-      name,provinceId,province,city,county,address,phone,zip,lenovoId)
+      name,provinceId,province,city,county,address,phone,zip,lenovoId,paidTime)
     values
       (#{id},#{itCode},#{orderCode},#{BTCPOrderCode},#{shopid},#{exchangeTime},#{updateTime},#{state},#{exchangeType},
       #{oldType},#{oldInvoiceId},#{oldInvoiceTitle},#{oldInvoiceType},#{oldTaxNo},#{oldBankName},#{oldBankNo},#{oldAddress},#{oldPhone},
       #{newType},#{newInvoiceId},#{newInvoiceTitle},#{newInvoiceType},#{newTaxNo},#{newBankName},#{newBankNo},#{newAddress},#{newPhone},
-      #{name},#{provinceId},#{province},#{city},#{county},#{address},#{phone},#{zip},#{lenovoId})
+      #{name},#{provinceId},#{province},#{city},#{county},#{address},#{phone},#{zip},#{lenovoId},#{paidTime})
   </insert>
 
   <select id="getExchangeInvoiceRecord" parameterType="java.lang.String" resultType="com.lenovo.invoice.domain.ExchangeInvoiceRecord">
