@@ -719,8 +719,10 @@ public class InvoiceApiServiceImpl extends BaseService implements InvoiceApiServ
                     remoteResult.setResultMsg("系统异常错误");
                 }
             } else {
+                //用户临时决定是否需要合并
                 vatInvoice.setIsNeedMerge(isNeedMerge ? 1 : 0);
                 vatInvoiceMapper.updateVatInvoice(vatInvoice);
+                //之前未共享 再来可以共享，反之否
                 if (isShard) {
                     Integer isSharded = vatInvoice.getIsshared();
                     id = vatInvoice.getId();
