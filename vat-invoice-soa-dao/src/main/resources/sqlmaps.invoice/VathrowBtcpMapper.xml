@@ -223,7 +223,7 @@
                 zid= #{record.id},
             </if>
         </set>
-        WHERE zid IN (${record.faid}) AND ThrowingStatus=0  AND IsUsable=1
+        WHERE zid IN (${record.faid})  AND IsUsable=1
     </update>
 
     <!--根据orderCode和orderStatus修改增票信息-->
