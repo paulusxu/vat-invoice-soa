@@ -32,6 +32,7 @@ import com.lenovo.m2.ordercenter.soa.domain.forward.Invoice;
 import com.lenovo.m2.ordercenter.soa.domain.forward.Main;
 import com.lenovo.m2.stock.soa.api.service.StoreInfoApiService;
 import com.lenovo.m2.stock.soa.domain.param.GetStoreInfoIdParam;
+import com.lenovo.my.common.utils.ErrorUtil;
 import org.apache.commons.beanutils.BeanUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -418,6 +419,7 @@ public class InvoiceApiServiceImpl extends BaseService implements InvoiceApiServ
                 remoteResult.setResultCode(ErrorUtils.INVOICE_SUCCESS);
                 remoteResult.setT(parseGetVatInvoiceInfoResult(vatInvoice, lenovoId));
             }else {
+                remoteResult.setResultCode(ErrorUtils.ERR_CODE_VATINVOICE_NOT_EXIST);
                 remoteResult.setResultMsg("增票信息不存在");
             }
 
