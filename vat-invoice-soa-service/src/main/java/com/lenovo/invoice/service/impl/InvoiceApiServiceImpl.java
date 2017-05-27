@@ -417,6 +417,8 @@ public class InvoiceApiServiceImpl extends BaseService implements InvoiceApiServ
                 remoteResult.setSuccess(true);
                 remoteResult.setResultCode(ErrorUtils.INVOICE_SUCCESS);
                 remoteResult.setT(parseGetVatInvoiceInfoResult(vatInvoice, lenovoId));
+            }else {
+                remoteResult.setResultMsg("增票信息不存在");
             }
 
         } catch (Exception e) {
