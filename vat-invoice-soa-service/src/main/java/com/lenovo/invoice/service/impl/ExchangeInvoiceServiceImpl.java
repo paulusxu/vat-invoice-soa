@@ -247,7 +247,7 @@ public class ExchangeInvoiceServiceImpl extends BaseService implements ExchangeI
                     //String data_digest = MD5.sign(xml, "abc123", "utf-8");
                     Map<String, String> paramMap = new HashMap<String, String>();
                     paramMap.put("xml", xml);
-                    paramMap.put("cid", "officialportal");
+                    paramMap.put("cid", "GM");
                     paramMap.put("data_digest", data_digest);
 
                     NetWorkWrapperUtil net = new NetWorkWrapperUtil();
