@@ -8,6 +8,7 @@ import com.lenovo.m2.arch.framework.domain.RemoteResult;
 import java.util.List;
 
 /**
+ * 17增票
  * Created by xuweihua on 2016/7/27.
  */
 public interface InvoiceShopApiService {
