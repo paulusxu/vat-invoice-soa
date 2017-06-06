@@ -26,6 +26,7 @@
         <property name="openZy" value="${openZy}"/>
         <property name="exchangeinvoiceurl" value="${exchangeinvoiceurl}"/>
         <property name="exchangeinvoicekey" value="${exchangeinvoicekey}"/>
+        <property name="downLoadInvoiceUrl" value="${url.btcp.downLoadInvoice}"/>
     </bean>
 
 </beans>

@@ -13,6 +13,8 @@ public class PropertiesUtil {
     private String exchangeinvoiceurl;
     private String exchangeinvoicekey;
 
+    private String downLoadInvoiceUrl;
+
 
     public String getOpenO2O() {
         return openO2O;
@@ -62,5 +64,11 @@ public class PropertiesUtil {
         this.key = key;
     }
 
+    public String getDownLoadInvoiceUrl() {
+        return downLoadInvoiceUrl;
+    }
 
+    public void setDownLoadInvoiceUrl(String downLoadInvoiceUrl) {
+        this.downLoadInvoiceUrl = downLoadInvoiceUrl;
+    }
 }

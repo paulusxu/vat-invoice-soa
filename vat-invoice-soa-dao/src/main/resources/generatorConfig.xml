@@ -18,9 +18,9 @@
         </commentGenerator>
 
         <jdbcConnection driverClass="com.mysql.jdbc.Driver"
-                        connectionURL="jdbc:mysql://10.120.26.115:3306/vat-invoice?useUnicode=true&amp;characterEncoding=UTF-8&amp;zeroDateTimeBehavior=convertToNull"
-                        userId="sys_temp"
-                        password="lenovo2015">
+                        connectionURL="jdbc:mysql://g.coupons.mysql.dtc.uat:3306/vat-invoice?useUnicode=true&amp;characterEncoding=UTF-8&amp;zeroDateTimeBehavior=convertToNull"
+                        userId="dev_coupons"
+                        password="Fmjc2BlIRs">
         </jdbcConnection>
 
         <javaTypeResolver >
@@ -37,7 +37,7 @@
             <property name="enableSubPckages" value="true" />
         </javaClientGenerator>
 
-        <table tableName="vathrowbtcp" domainObjectName="VathrowBtcp" enableSelectByExample="true" enableDeleteByExample="true"
+        <table tableName="orderinvoice" domainObjectName="OrderInvoice" enableSelectByExample="true" enableDeleteByExample="true"
                enableCountByExample="true" enableUpdateByExample="true">
         </table>
 
