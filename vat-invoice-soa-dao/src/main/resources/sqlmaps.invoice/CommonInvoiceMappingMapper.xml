@@ -2,25 +2,25 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
 <mapper namespace="com.lenovo.invoice.dao.CommonInvoiceMappingMapper" >
 
-  <select id="getCommonInvoiceMapping" parameterType="com.lenovo.invoice.domain.CommonInvoiceMapping" resultMap="CommonInvoiceMappingResultMap" >
+  <select id="getCommonInvoiceMapping" parameterType="com.lenovo.invoice.domain.CommonInvoice" resultMap="CommonInvoiceMappingResultMap" >
     select id,lenovoId,common_invoice_id,shopid,createtime,createBy,type
     from common_invoice_mapping
-    where lenovoId=#{lenovoId} AND shopid=#{shopid} AND type=#{type}
+    where lenovoId=#{lenovoId} AND type=#{type} AND shopid=#{shopid}
     ORDER BY createtime DESC limit 1;
   </select>
 
-  <resultMap id="CommonInvoiceMappingResultMap" type="com.lenovo.invoice.domain.CommonInvoiceMapping">
-    <id column="id" property="id"/>
+  <resultMap id="CommonInvoiceMappingResultMap" type="com.lenovo.invoice.domain.CommonInvoice">
+    <id column="id" property="mappingId"/>
     <result column="lenovoId" property="lenovoId"/>
-    <result column="common_invoice_id" property="commonInvoiceId"/>
+    <result column="common_invoice_id" property="id"/>
     <result column="shopid" property="shopid"/>
     <result column="createtime" property="createtime"/>
     <result column="createBy" property="createBy"/>
     <result column="type" property="type"/>
   </resultMap>
   
-  <insert id="addCommonInvoiceMapping" parameterType="com.lenovo.invoice.domain.CommonInvoiceMapping">
-    insert into common_invoice_mapping (lenovoId,common_invoice_id,shopid,createtime,createBy,type) values (#{lenovoId},#{commonInvoiceId},#{shopid},#{createtime},#{createBy},#{type})
+  <insert id="addCommonInvoiceMapping" parameterType="com.lenovo.invoice.domain.CommonInvoice">
+    insert into common_invoice_mapping (lenovoId,common_invoice_id,shopid,createtime,createBy,type) values (#{lenovoId},#{id},#{shopid},now(),#{createBy},#{type})
   </insert>
 
 </mapper>
