@@ -2,10 +2,10 @@ package com.lenovo.invoice.service.impl;
 
 import com.lenovo.invoice.api.EInvoiceApiService;
 import com.lenovo.invoice.common.utils.HttpUtil;
+import com.lenovo.invoice.common.utils.PropertiesUtil;
 import com.lenovo.m2.arch.framework.domain.RemoteResult;
 import com.lenovo.m2.arch.tool.util.StringUtils;
 import com.lenovo.m2.ordercenter.soa.api.constant.ResultCode;
-import com.lenovo.m2.ordercenter.soa.common.util.PropertiesUtil;
 import com.lenovo.m2.ordercenter.soa.domain.BaseInfo;
 import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
@@ -18,6 +18,8 @@ import org.dom4j.Element;
 import org.dom4j.io.SAXReader;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import java.io.ByteArrayInputStream;
 import java.security.MessageDigest;
@@ -27,15 +29,21 @@ import java.util.List;
 /**
  * Created by mayan3 on 2017/4/25.
  */
+@Service("eInvoiceApiService")
 public class EInvoiceApiServiceImpl implements EInvoiceApiService {
     private static final Logger LOGGER = LoggerFactory.getLogger(EInvoiceApiServiceImpl.class);
+    public static final String CID = "mobilemall";
+    public static final String DATA_DIGEST = "mobile56rm49";
+
+    @Autowired
+    private PropertiesUtil propertiesUtil;
 
     @Override
     public RemoteResult<BaseInfo> downLoadInvoice(String btcpCode, String itCode) {
         RemoteResult remoteResult = new RemoteResult(false);
         LOGGER.info("下载电子票开始 btcpCode[" + btcpCode + "]itCode[" + itCode + "]");
 
-        String URL = PropertiesUtil.getProperty("url.btcp.downLoadInvoice");
+        String URL = propertiesUtil.getDownLoadInvoiceUrl();
 //        String URL = "http://10.96.89.146:8080/btcpws/QueryEInvoice";
         if (URL != null) {
             StringBuffer buffer = new StringBuffer();
