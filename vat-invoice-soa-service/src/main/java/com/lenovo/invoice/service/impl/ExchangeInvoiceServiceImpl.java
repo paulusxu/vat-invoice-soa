@@ -5,9 +5,11 @@ import com.lenovo.invoice.api.ExchangeInvoiceService;
 import com.lenovo.invoice.api.InvoiceApiService;
 import com.lenovo.invoice.common.utils.*;
 import com.lenovo.invoice.dao.ExchangeInvoiceRecordMapper;
+import com.lenovo.invoice.dao.OrderInvoiceMapper;
 import com.lenovo.invoice.dao.VathrowBtcpMapper;
 import com.lenovo.invoice.domain.CommonInvoice;
 import com.lenovo.invoice.domain.ExchangeInvoiceRecord;
+import com.lenovo.invoice.domain.OrderInvoice;
 import com.lenovo.invoice.domain.VathrowBtcp;
 import com.lenovo.invoice.domain.param.AddVatInvoiceInfoParam;
 import com.lenovo.invoice.domain.param.GetVatInvoiceInfoParam;
@@ -63,6 +65,9 @@ public class ExchangeInvoiceServiceImpl extends BaseService implements ExchangeI
 
     @Autowired
     private VatInvoiceService vatInvoiceService;
+
+    @Autowired
+    private OrderInvoiceMapper orderInvoiceMapper;
 
     private static final Integer commonInvoiceType = 3;//普票类型是3
     private static final Integer vatInvoiceType = 2;//增票类型是2
@@ -239,6 +244,27 @@ public class ExchangeInvoiceServiceImpl extends BaseService implements ExchangeI
                             }
                         }catch (Exception e){
                             ERRORLOGGER.error("增换普，换票成功，增票和订单映射删除出现异常！"+orderCode+"=="+e.getMessage(),e);
+                        }
+                        try {
+                            //修改orderInvoice
+                            OrderInvoice orderInvoice = new OrderInvoice();
+                            orderInvoice.setOrderid(Long.parseLong(orderCode));
+                            orderInvoice.setType(1);//0：电子票 1：普票 2：增票
+                            orderInvoice.setTitle(newInvoiceTitle);
+                            orderInvoice.setUnits(type + "");
+                            orderInvoice.setTaxpayeridentity(taxNo);
+                            orderInvoice.setZid(remoteResult1.getT().getId()+"");
+                            orderInvoice.setUpdatetime(date);
+                            orderInvoice.setFlag(1);//0:不可修改 1：可修改
+
+                            int i = orderInvoiceMapper.updateByOrderId(orderInvoice);
+                            if (i<=0){
+                                ERRORLOGGER.error("换普票成功，修改orderInvoice失败！=="+i+"=="+orderCode);
+                            }else {
+                                LOGGER.info("换普票成功，修改orderInvoice成功！=="+i+"=="+orderCode);
+                            }
+                        }catch (Exception e){
+                            ERRORLOGGER.error("换普票，修改orderInvoice出现异常！"+orderCode+"=="+e.getMessage(),e);
                         }
                     }else if ("9003".equals(remoteResult2.getResultCode())){
                         remoteResult.setResultCode(InvoiceResultCode.UPDATEORDERFAIL);
@@ -608,6 +634,31 @@ public class ExchangeInvoiceServiceImpl extends BaseService implements ExchangeI
                             }
                         } catch (Exception e) {
                             ERRORLOGGER.error("添加换票记录出现异常==参数==" + JacksonUtil.toJson(record)+"==" + e.getMessage(), e);
+                        }
+                        try {
+                            //修改orderInvoice
+                            OrderInvoice orderInvoice = new OrderInvoice();
+                            orderInvoice.setOrderid(Long.parseLong(orderCode));
+                            orderInvoice.setType(2);//0：电子票 1：普票 2：增票
+                            orderInvoice.setTitle(newInvoiceTitle);
+                            orderInvoice.setUnits("1");
+                            orderInvoice.setTaxpayeridentity(newTaxNo);
+                            orderInvoice.setRegisteraddress(newAddress);
+                            orderInvoice.setRegisterphone(newPhone);
+                            orderInvoice.setDepositbank(newBankName);
+                            orderInvoice.setBankno(newBankNo);
+                            orderInvoice.setZid(remoteResult1.getT().getVatInvoiceId()+"");
+                            orderInvoice.setUpdatetime(date);
+                            orderInvoice.setFlag(1);//0:不可修改 1：可修改
+
+                            int i = orderInvoiceMapper.updateByOrderId(orderInvoice);
+                            if (i<=0){
+                                ERRORLOGGER.error("换普票成功，修改orderInvoice失败！=="+i+"=="+orderCode);
+                            }else {
+                                LOGGER.info("换普票成功，修改orderInvoice成功！=="+i+"=="+orderCode);
+                            }
+                        }catch (Exception e){
+                            ERRORLOGGER.error("换增票，修改orderInvoice出现异常！"+orderCode+"=="+e.getMessage(),e);
                         }
                     } else {
                         //修改订单失败，修改增票要回滚
@@ -1036,6 +1087,35 @@ public class ExchangeInvoiceServiceImpl extends BaseService implements ExchangeI
                     }
                 }catch (Exception e){
                     ERRORLOGGER.error("BTCP回调===修改增票信息出现异常==" + orderCode+"=="+applyId+"=="+e.getMessage(),e);
+                }
+                try {
+                    //修改orderInvoice
+                    OrderInvoice orderInvoice = new OrderInvoice();
+                    orderInvoice.setOrderid(Long.parseLong(orderCode));
+                    if (record.getNewInvoiceType()==3){
+                        orderInvoice.setType(1);//0：电子票 1：普票 2：增票
+                    }else if (record.getNewInvoiceType()==2){
+                        orderInvoice.setType(2);
+                    }
+                    orderInvoice.setTitle(record.getNewInvoiceTitle());
+                    orderInvoice.setUnits(record.getNewType()+"");
+                    orderInvoice.setTaxpayeridentity(record.getNewTaxNo());
+                    orderInvoice.setRegisteraddress(record.getNewAddress());
+                    orderInvoice.setRegisterphone(record.getNewPhone());
+                    orderInvoice.setDepositbank(record.getNewBankName());
+                    orderInvoice.setBankno(record.getNewBankNo());
+                    orderInvoice.setZid(record.getNewInvoiceId()+"");
+                    orderInvoice.setUpdatetime(date);
+                    orderInvoice.setFlag(1);//0:不可修改 1：可修改
+
+                    int i = orderInvoiceMapper.updateByOrderId(orderInvoice);
+                    if (i<=0){
+                        ERRORLOGGER.error("换普票成功，修改orderInvoice失败！=="+i+"=="+orderCode);
+                    }else {
+                        LOGGER.info("换普票成功，修改orderInvoice成功！=="+i+"=="+orderCode);
+                    }
+                }catch (Exception e){
+                    ERRORLOGGER.error("换普票，修改orderInvoice出现异常！"+orderCode+"=="+e.getMessage(),e);
                 }
             }else {
                 //换票失败
