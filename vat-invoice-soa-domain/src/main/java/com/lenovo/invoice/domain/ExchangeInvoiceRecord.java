@@ -51,11 +51,20 @@ public class ExchangeInvoiceRecord implements Serializable {
     private String county;//区县
     private String address;//详细地址
     private String phone;//收票人电话
+    private String tel;//收票人固定电话
     private String zip;//邮编
 
     //分页查询，换票开始时间，结束时间
     private Date beginTime;
     private Date endTime;
+
+    public String getTel() {
+        return tel;
+    }
+
+    public void setTel(String tel) {
+        this.tel = tel;
+    }
 
     public Date getPaidTime() {
         return paidTime;

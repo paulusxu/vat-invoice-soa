@@ -113,12 +113,12 @@ public class CommonInvoiceServiceImpl extends BaseService implements CommonInvoi
             }
 
             Integer id = commonInvoice1.getId();
-            CommonInvoice commonInvoiceById = commonInvoiceMapper.getCommonInvoiceById(id);
+            commonInvoice = commonInvoiceMapper.getCommonInvoiceById(id);
 
             remoteResult.setSuccess(true);
             remoteResult.setResultMsg("查询成功");
             remoteResult.setResultCode(InvoiceResultCode.SUCCESS);
-            remoteResult.setT(commonInvoiceById);
+            remoteResult.setT(commonInvoice);
         }catch (Exception e){
             remoteResult.setResultMsg("系统异常");
             remoteResult.setResultCode(InvoiceResultCode.FAIL);

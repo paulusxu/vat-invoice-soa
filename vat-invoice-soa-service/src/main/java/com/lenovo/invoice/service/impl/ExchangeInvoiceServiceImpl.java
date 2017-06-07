@@ -69,12 +69,18 @@ public class ExchangeInvoiceServiceImpl extends BaseService implements ExchangeI
 
     //换普票
     @Override
-    public RemoteResult exchangeToCommon(String orderCode,String itCode,Integer oldInvoiceType,Integer exchangeType,Integer type,String newInvoiceTitle) {
-        LOGGER.info("exchangeToCommon参数==orderCode="+orderCode+";oldInvoiceType="+oldInvoiceType+";itCode="+itCode+";exchangeType="+exchangeType+";type="+type+";newInvoiceTitle="+newInvoiceTitle);
+    public RemoteResult exchangeToCommon(String orderCode,String itCode,Integer oldInvoiceType,Integer type,String newInvoiceTitle,String taxNo) {
+        LOGGER.info("exchangeToCommon参数==orderCode="+orderCode+";oldInvoiceType="+oldInvoiceType+";itCode="+itCode+";taxNo="+taxNo+";type="+type+";newInvoiceTitle="+newInvoiceTitle);
 
         RemoteResult remoteResult = new RemoteResult();
-
         try {
+            if (isNull(orderCode,itCode,oldInvoiceType,type,newInvoiceTitle) || (type==1 && isNull(taxNo))){
+                remoteResult.setResultCode(InvoiceResultCode.PARAMSFAIL);
+                remoteResult.setResultMsg("必填参数错误");
+                LOGGER.info("exchangeToCommon返回值==" + JacksonUtil.toJson(remoteResult));
+                return remoteResult;
+            }
+
             //判断换票类型
             int changeType;
             if (oldInvoiceType==1){
@@ -117,8 +123,16 @@ public class ExchangeInvoiceServiceImpl extends BaseService implements ExchangeI
                 Tenant tenant = new Tenant();
                 tenant.setShopId(invoiceChangeApi.getShopId());
 
+                //填充新的普票信息
+                CommonInvoice commonInvoice = new CommonInvoice();
+                commonInvoice.setInvoiceTitle(newInvoiceTitle);
+                commonInvoice.setShopid(invoiceChangeApi.getShopId());
+                commonInvoice.setType(type);
+                commonInvoice.setTaxNo(taxNo);
+                commonInvoice.setCreateBy(itCode);
+                commonInvoice.setLenovoId(invoiceChangeApi.getLenovoId());
                 //还未发货，客户换票，首先添加新得普票
-                RemoteResult<CommonInvoice> remoteResult1 = commonInvoiceService.addCommonInvoice(invoiceChangeApi.getLenovoId(), newInvoiceTitle, invoiceChangeApi.getShopId(),itCode,type);
+                RemoteResult<CommonInvoice> remoteResult1 = commonInvoiceService.addCommonInvoice(commonInvoice);
                 if (!remoteResult1.isSuccess()){
                     //添加失败
                     remoteResult.setResultCode(InvoiceResultCode.ADDCOMMONINVOICEFAIL);
@@ -160,6 +174,7 @@ public class ExchangeInvoiceServiceImpl extends BaseService implements ExchangeI
                     invoiceChangeApi1.setOperator(itCode);
                     invoiceChangeApi1.setIsNeedMerge(0);
                     invoiceChangeApi1.setShopId(invoiceChangeApi2.getShopId());
+                    invoiceChangeApi1.setTaxpayerIdentity(taxNo);
 
                     LOGGER.info("修改订单==参数=="+JacksonUtil.toJson(invoiceChangeApi1));
                     RemoteResult remoteResult2 = vatApiOrderCenter.updateInvoice(invoiceChangeApi1);
@@ -200,6 +215,7 @@ public class ExchangeInvoiceServiceImpl extends BaseService implements ExchangeI
                             record.setNewInvoiceId(remoteResult1.getT().getId());
                             record.setNewInvoiceTitle(newInvoiceTitle);
                             record.setNewInvoiceType(commonInvoiceType);
+                            record.setNewTaxNo(taxNo);
 
                             int i = exchangeInvoiceRecordMapper.addExchangeInvoiceRecord(record);
                             if (i<=0){
@@ -214,7 +230,6 @@ public class ExchangeInvoiceServiceImpl extends BaseService implements ExchangeI
                             if (changeType==2){
                                 //增换普，将增票和订单的映射记录删除
                                 VathrowBtcp vathrowBtcp = vathrowBtcpMapper.getVatInvoiceByOrderCode(orderCode);
-
                                 int i = vathrowBtcpMapper.deleteByOrderCode(orderCode);
                                 if (i<=0){
                                     ERRORLOGGER.error("增换普，换票成功，增票和订单映射删除失败！=="+i+"=="+orderCode);
@@ -241,10 +256,15 @@ public class ExchangeInvoiceServiceImpl extends BaseService implements ExchangeI
                     xml += "<InvoiceType>P</InvoiceType>"; //普票P，增票Z，电子票D
                     xml += "<invoiceTitle>"+newInvoiceTitle+"</invoiceTitle>";
                     xml += "<UpdatedBy>"+itCode+"</UpdatedBy>";
+                    if (type==0){
+                        xml += "<CustType>i</CustType>";
+                    }else if (type==1){
+                        xml += "<CustType>c</CustType>";
+                        xml += "<TaxNo>"+taxNo+"</TaxNo>";
+                    }
                     xml += "</InvoiceEditUnit>";
 
                     String data_digest = MD5.sign(xml, propertiesUtil.getExchangeinvoicekey(), "utf-8");
-                    //String data_digest = MD5.sign(xml, "abc123", "utf-8");
                     Map<String, String> paramMap = new HashMap<String, String>();
                     paramMap.put("xml", xml);
                     paramMap.put("cid", "GM");
@@ -255,11 +275,10 @@ public class ExchangeInvoiceServiceImpl extends BaseService implements ExchangeI
                     LOGGER.info("调用BTCP参数=="+JacksonUtil.toJson(paramMap));
                     String resposeData = net.requestData(propertiesUtil.getExchangeinvoiceurl(), paramMap);
                     LOGGER.info("调用BTCP返回值=="+resposeData);
-                    //String resposeData = net.requestData("http://10.120.23.236:8080/btcpws/ChangeInvoiceTypeTitle", paramMap);
                     Map<String, String> map = new HashMap<String, String>();
                     map = XMLUtil.parseXml(resposeData);
                     String resCode = map.get("Code");
-                    String message = map.get("Message");
+                    //String message = map.get("Message");
 
                     if (resCode!=null && "200".equals(resCode)){
                         remoteResult.setResultCode(InvoiceResultCode.SUCCESS);
@@ -297,6 +316,7 @@ public class ExchangeInvoiceServiceImpl extends BaseService implements ExchangeI
                             record.setNewInvoiceId(remoteResult1.getT().getId());
                             record.setNewInvoiceTitle(newInvoiceTitle);
                             record.setNewInvoiceType(commonInvoiceType);
+                            record.setNewTaxNo(taxNo);
 
                             int i = exchangeInvoiceRecordMapper.addExchangeInvoiceRecord(record);
                             if (i<=0){
@@ -578,6 +598,7 @@ public class ExchangeInvoiceServiceImpl extends BaseService implements ExchangeI
                             record.setAddress(address2);
                             record.setPhone(phone2);
                             record.setZip(zip);
+                            record.setTel(tel);
 
                             int i = exchangeInvoiceRecordMapper.addExchangeInvoiceRecord(record);
                             if (i <= 0) {
@@ -629,10 +650,11 @@ public class ExchangeInvoiceServiceImpl extends BaseService implements ExchangeI
                     xml += "<InvoiceType>Z</InvoiceType>"; //普票P，增票Z，电子票D
                     xml += "<invoiceTitle>" + newInvoiceTitle + "</invoiceTitle>";
                     xml += "<UpdatedBy>" + itCode + "</UpdatedBy>";
+                    xml += "<CustType>c</CustType>";
+                    xml += "<TaxNo>"+newTaxNo+"</TaxNo>";
                     xml += "</InvoiceEditUnit>";
 
                     String data_digest = MD5.sign(xml, propertiesUtil.getExchangeinvoicekey(), "utf-8");
-                    //String data_digest = MD5.sign(xml, "abc123", "utf-8");
                     Map<String, String> paramMap = new HashMap<String, String>();
                     paramMap.put("xml", xml);
                     paramMap.put("cid", "GM");
@@ -643,7 +665,6 @@ public class ExchangeInvoiceServiceImpl extends BaseService implements ExchangeI
                     LOGGER.info("调用BTCP参数==" + JacksonUtil.toJson(paramMap));
                     String resposeData = net.requestData(propertiesUtil.getExchangeinvoiceurl(), paramMap);
                     LOGGER.info("调用BTCP返回值==" + resposeData);
-                    //String resposeData = net.requestData("http://10.120.23.236:8080/btcpws/ChangeInvoiceTypeTitle", paramMap);
                     Map<String, String> map = new HashMap<String, String>();
                     map = XMLUtil.parseXml(resposeData);
                     String resCode = map.get("Code");
@@ -697,6 +718,7 @@ public class ExchangeInvoiceServiceImpl extends BaseService implements ExchangeI
                             record.setAddress(address2);
                             record.setPhone(phone2);
                             record.setZip(zip);
+                            record.setTel(tel);
 
                             int i = exchangeInvoiceRecordMapper.addExchangeInvoiceRecord(record);
                             if (i <= 0) {
@@ -917,6 +939,7 @@ public class ExchangeInvoiceServiceImpl extends BaseService implements ExchangeI
                     invoiceChangeApi.setCounty(record.getCounty());
                     invoiceChangeApi.setAddress(record.getAddress());
                     invoiceChangeApi.setMobile(record.getPhone());
+                    invoiceChangeApi.setPhone(record.getTel());
                     invoiceChangeApi.setZip(record.getZip());
                     invoiceChangeApi.setChangeType(record.getExchangeType());
                     invoiceChangeApi.setOperator(record.getItCode());
@@ -925,7 +948,6 @@ public class ExchangeInvoiceServiceImpl extends BaseService implements ExchangeI
                     if (exchangeType==4 || exchangeType==5 || exchangeType==6){
                         invoiceChangeApi.setZid(record.getNewInvoiceId()+"");
                     }
-
                     LOGGER.info("BTCP通知=修改订单参数==" + JacksonUtil.toJson(invoiceChangeApi));
                     RemoteResult remoteResult1 = vatApiOrderCenter.updateInvoice(invoiceChangeApi);
                     LOGGER.info("BTCP通知=修改订单返回值=="+JacksonUtil.toJson(remoteResult1));
