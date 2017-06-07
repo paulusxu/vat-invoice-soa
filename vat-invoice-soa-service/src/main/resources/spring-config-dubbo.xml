@@ -35,6 +35,8 @@
     <dubbo:service interface="com.lenovo.invoice.api.ContractApiService" ref="contractApiService"/>
     <!--收票地址管理-->
     <dubbo:service interface="com.lenovo.invoice.api.ConsigneeApiService" ref="consigneeApiService"/>
+    <!--订单 票-->
+    <dubbo:service interface="com.lenovo.invoice.api.OrderInvoiceApiService" ref="orderInvoiceApiService"/>
 
     <!-- 门店-->
     <dubbo:reference interface="com.lenovo.m2.stock.soa.api.service.StoreInfoApiService" id="storeInfoApiService"/>
