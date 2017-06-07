@@ -10,7 +10,7 @@ public interface CommonInvoiceService {
 
     public RemoteResult addCommonInvoice(CommonInvoice commonInvoice) throws Exception;
 
-    public RemoteResult<CommonInvoice> getCommonInvoice(CommonInvoice commonInvoice) throws Exception;
+    public RemoteResult<CommonInvoice> getCommonInvoice(CommonInvoice commonInvoice);
 
     //public RemoteResult updateCommonInvoice(Integer id,String invoiceTitle);
 

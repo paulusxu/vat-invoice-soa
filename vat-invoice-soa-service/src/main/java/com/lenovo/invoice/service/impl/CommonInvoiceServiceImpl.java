@@ -95,8 +95,7 @@ public class CommonInvoiceServiceImpl extends BaseService implements CommonInvoi
             String lenovoId = commonInvoice.getLenovoId();
             Integer shopid = commonInvoice.getShopid();
             Integer type = commonInvoice.getType();
-            String taxNo = commonInvoice.getTaxNo();
-            if (isNull(lenovoId,shopid,type) || (type==1 && isNull(taxNo))){
+            if (isNull(lenovoId,shopid,type)){
                 remoteResult.setResultCode(InvoiceResultCode.PARAMSFAIL);
                 remoteResult.setResultMsg("必填参数错误");
                 LOGGER.info("getCommonInvoice返回值==" + JacksonUtil.toJson(remoteResult));
