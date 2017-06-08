@@ -27,21 +27,18 @@ import com.lenovo.m2.buy.order.middleware.api.OrderInvoiceService;
 import com.lenovo.m2.buy.order.middleware.domain.btcp.IncreaseOrderRequest;
 import com.lenovo.m2.buy.order.middleware.domain.param.InvoiceReviewParam;
 import com.lenovo.m2.ordercenter.soa.api.query.order.OrderDetailService;
-import com.lenovo.m2.ordercenter.soa.api.vat.VatApiOrderCenter;
 import com.lenovo.m2.ordercenter.soa.domain.forward.DeliveryAddress;
 import com.lenovo.m2.ordercenter.soa.domain.forward.Invoice;
 import com.lenovo.m2.ordercenter.soa.domain.forward.Main;
 import com.lenovo.m2.stock.soa.api.service.StoreInfoApiService;
 import com.lenovo.m2.stock.soa.domain.param.GetStoreInfoIdParam;
+import com.lenovo.my.common.utils.ErrorUtil;
 import org.apache.commons.beanutils.BeanUtils;
-import org.apache.ibatis.annotations.Param;
-import org.apache.xmlbeans.impl.xb.xsdschema.Public;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.lang.reflect.InvocationTargetException;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -195,7 +192,7 @@ public class InvoiceApiServiceImpl extends BaseService implements InvoiceApiServ
                     Invoice invoice = remoteResultInvoice.getT();//发票类型1:电子票2:增票3:普票
                     if (invoice != null && invoice.getType() == 2) {
                         LOGGER.info("makeUpVatInvocie invoice:", JacksonUtil.toJson(invoice));
-                        vathrowBtcp.setOrderStatus(3);
+                        vathrowBtcp.setOrderStatus(2);
                         vathrowBtcp.setOrderCode(orderCode);
                         vathrowBtcp.setZid(invoice.getZid());
                         //初始化
@@ -295,23 +292,26 @@ public class InvoiceApiServiceImpl extends BaseService implements InvoiceApiServ
 
             long orderId = 0;
 
-            updateThrowingStatus(orderId + "", status == 1 ? 3 : 4);
-            RemoteResult<Invoice> remoteResultInvoice = orderDetailService.getInvoiceByOrderId(orderId);
-            LOGGER_BTCP.info("btcpSyncVatInvoice:remoteResultInvoice{}", JacksonUtil.toJson(remoteResultInvoice));
-
-            if (remoteResultInvoice.isSuccess()) {
-                Invoice invoice = remoteResultInvoice.getT();
-                changeVatInvoiceState(invoice.getZid(), status == 1 ? true : false, null);
-            }
             RemoteResult<Main> remoteResult = orderInvoiceService.getOrderInvoiceDetail(increaseOrderRequest.getBtcpSO());
             LOGGER_BTCP.info("btcpSyncVatInvoice:{}", JacksonUtil.toJson(remoteResult));
             if (remoteResult.isSuccess()) {
                 Main main = remoteResult.getT();
+                orderId=main.getId();
+
                 InvoiceReviewParam invoiceReviewParam = new InvoiceReviewParam();
-                invoiceReviewParam.setOrderId(main.getId());
+                invoiceReviewParam.setOrderId(orderId);
                 invoiceReviewParam.setReviewStatus(status);
                 invoiceReviewParam.setFailureReason(increaseOrderRequest.getReason());
                 orderInvoiceService.updateInvoiceReviewStatus(invoiceReviewParam);
+
+                updateThrowingStatus(orderId + "", status == 1 ? 3 : 4);
+                RemoteResult<Invoice> remoteResultInvoice = orderDetailService.getInvoiceByOrderId(orderId);
+                LOGGER_BTCP.info("btcpSyncVatInvoice:remoteResultInvoice{}", JacksonUtil.toJson(remoteResultInvoice));
+
+                if (remoteResultInvoice.isSuccess()) {
+                    Invoice invoice = remoteResultInvoice.getT();
+                    changeVatInvoiceState(invoice.getZid(), status == 1 ? true : false, null);
+                }
 
             }
 
@@ -418,6 +418,9 @@ public class InvoiceApiServiceImpl extends BaseService implements InvoiceApiServ
                 remoteResult.setSuccess(true);
                 remoteResult.setResultCode(ErrorUtils.INVOICE_SUCCESS);
                 remoteResult.setT(parseGetVatInvoiceInfoResult(vatInvoice, lenovoId));
+            }else {
+                remoteResult.setResultCode(ErrorUtils.ERR_CODE_VATINVOICE_NOT_EXIST);
+                remoteResult.setResultMsg("增票信息不存在");
             }
 
         } catch (Exception e) {
@@ -554,6 +557,7 @@ public class InvoiceApiServiceImpl extends BaseService implements InvoiceApiServ
             if (matcher.matches()) {
                 taxNo = taxNo.toUpperCase();
             } else {
+                remoteResult.setResultMsg("税号格式错误");
                 return remoteResult;
             }
 
@@ -719,7 +723,10 @@ public class InvoiceApiServiceImpl extends BaseService implements InvoiceApiServ
                     remoteResult.setResultMsg("系统异常错误");
                 }
             } else {
+                //用户临时决定是否需要合并
                 vatInvoice.setIsNeedMerge(isNeedMerge ? 1 : 0);
+                vatInvoiceMapper.updateVatInvoice(vatInvoice);
+                //之前未共享 再来可以共享，反之否
                 if (isShard) {
                     Integer isSharded = vatInvoice.getIsshared();
                     id = vatInvoice.getId();
@@ -891,16 +898,22 @@ public class InvoiceApiServiceImpl extends BaseService implements InvoiceApiServ
     }
 
     @Override
-    public RemoteResult<Boolean> throwVatInvoice2BTCP(String zid,String orderCodes) {
+    public RemoteResult<Boolean> throwVatInvoice2BTCP(String zids,String orderCodes) {
         RemoteResult<Boolean> remoteResult = new RemoteResult<Boolean>(false);
-        LOGGER_BTCP.info("ThrowVatInvoice2BTCP zid:{},orderCodes", zid,orderCodes);
+        LOGGER_BTCP.info("ThrowVatInvoice2BTCP zid:{},orderCodes", zids,orderCodes);
         try {
             if (!Strings.isNullOrEmpty(orderCodes)) {
-                String[] ids = orderCodes.split(",");
+                List<VathrowBtcp> btcpList = vathrowBtcpMapper.getVatInvoice2BtcpListByOrderCode(orderCodes);
+                if (CollectionUtils.isNotEmpty(btcpList)) {
+                    vatInvoiceService.throwBTCP(btcpList);
+                }
+            }
+            if(!Strings.isNullOrEmpty(zids)){
+                String[] ids = zids.split(",");
                 for (int i = 0; i < ids.length; i++) {
-                    String sa = ids[i];
+                    String zid = ids[i];
                     //获取可抛送订单列表
-                    List<VathrowBtcp> btcpList = vathrowBtcpMapper.getVatInvoice2BtcpList(zid);
+                    List<VathrowBtcp> btcpList = vathrowBtcpMapper.getVatInvoice2BtcpListByZid(zid);
                     if (CollectionUtils.isNotEmpty(btcpList)) {
                         vatInvoiceService.throwBTCP(btcpList);
                     }

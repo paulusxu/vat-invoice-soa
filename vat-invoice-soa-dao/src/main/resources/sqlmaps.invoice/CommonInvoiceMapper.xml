@@ -3,7 +3,7 @@
 <mapper namespace="com.lenovo.invoice.dao.CommonInvoiceMapper" >
 
   <select id="getCommonInvoiceById" parameterType="java.lang.Integer" resultMap="CommonInvoiceResultMap" >
-    select id,invoice_title,shopid,createtime,createBy,type
+    select id,invoice_title,shopid,createtime,createBy,type,taxNo
     from common_invoice
     where id=#{id}
   </select>
@@ -13,9 +13,9 @@
   </delete>
 
   <select id="getCommonInvoiceByTitle" parameterType="com.lenovo.invoice.domain.CommonInvoice" resultMap="CommonInvoiceResultMap">
-    select id,invoice_title,shopid,createtime,createBy,type
+    select id,invoice_title,shopid,createtime,createBy,type,taxNo
     from common_invoice
-    where invoice_title=#{invoiceTitle} AND shopid=#{shopid} AND type=#{type}
+    where invoice_title=#{invoiceTitle} AND type=#{type} AND taxNo=#{taxNo}
   </select>
 
   <resultMap id="CommonInvoiceResultMap" type="com.lenovo.invoice.domain.CommonInvoice">
@@ -25,6 +25,7 @@
     <result column="createtime" property="createtime"/>
     <result column="createBy" property="createBy"/>
     <result column="type" property="type"/>
+    <result column="taxNo" property="taxNo"/>
   </resultMap>
   
   <insert id="addCommonInvoice" parameterType="com.lenovo.invoice.domain.CommonInvoice">
@@ -33,7 +34,7 @@
       SELECT @@IDENTITY
     </selectKey>
 
-    insert into common_invoice (invoice_title,shopid,createtime,createBy,type) values (#{invoiceTitle}, #{shopid},#{createtime},#{createBy},#{type})
+    insert into common_invoice (invoice_title,shopid,createtime,createBy,type,taxNO) values (#{invoiceTitle}, #{shopid},now(),#{createBy},#{type},#{taxNo})
   </insert>
 
 

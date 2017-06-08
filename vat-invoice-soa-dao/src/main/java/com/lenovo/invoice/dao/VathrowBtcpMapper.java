@@ -1,5 +1,6 @@
 package com.lenovo.invoice.dao;
 
+import com.lenovo.invoice.domain.Consignee;
 import com.lenovo.invoice.domain.VatInvoice;
 import com.lenovo.invoice.domain.VathrowBtcp;
 import com.lenovo.invoice.domain.param.UpdateVatInvoiceBatchParam;
@@ -12,13 +13,15 @@ public interface VathrowBtcpMapper {
 
     int updateByOrderCode(@Param("orderCode") String orderCode, @Param("status") int status, @Param("msg") String msg);
 
-    int deleteByPrimaryKey(Integer id);
+    int updateConsignee(Consignee consignee);
 
     int insertVathrowBtcp(VathrowBtcp record);
 
-    VathrowBtcp selectByPrimaryKey(Integer id);
 
-    List<VathrowBtcp> getVatInvoice2BtcpList(String zid);
+    //根据批量增票zid获取 准备抛送btcp的列表
+    List<VathrowBtcp> getVatInvoice2BtcpListByZid(String zid);
+    //根据批量orderid获取 准备抛送btcp的列表
+    List<VathrowBtcp> getVatInvoice2BtcpListByOrderCode(String orderCodes);
 
     int updateOrderStatus(@Param("orderCode") String orderCode, @Param("status") int status);
 
@@ -45,5 +48,11 @@ public interface VathrowBtcpMapper {
 
     //根据orderCode和orderStatus修改增票信息
     public int updateVatBTCP(VathrowBtcp vathrowBtcp);
+
+    //根据orderCode删除增票和订单的映射关系记录
+    public int deleteByOrderCode(String orderCode);
+
+    //添加一条完成的增票和订单的映射
+    public int addVathrowBtcp(VathrowBtcp vathrowBtcp);
 
 }

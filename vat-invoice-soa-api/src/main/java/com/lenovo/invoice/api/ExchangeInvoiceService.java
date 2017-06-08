@@ -21,12 +21,12 @@ public interface ExchangeInvoiceService {
 
     //换普票
     public RemoteResult exchangeToCommon(String orderCode,String itCode,Integer oldInvoiceType,
-                                         Integer exchangeType,Integer type,String newInvoiceTitle);
+                                         Integer type,String newInvoiceTitle,String taxNo);
 
     //换增票
     public RemoteResult exchangeToVat(String orderCode,String itCode, Integer oldInvoiceType,Integer exchangeType,String newInvoiceTitle,
                                       String newTaxNo,String newBankName,String newBankNo,String newAddress,String newPhone,
-                                      String name,String province,String city,String county,String address2,String phone2,String zip);
+                                      String name,String province,String city,String county,String address2,String phone2,String zip,String tel);
 
     //获取换票记录，加分页
     public RemoteResult<PageModel2<ExchangeInvoiceRecord>> getExchangeInvoiceRecordByPage(PageQuery pageQuery, ExchangeInvoiceRecord exchangeInvoiceRecord);

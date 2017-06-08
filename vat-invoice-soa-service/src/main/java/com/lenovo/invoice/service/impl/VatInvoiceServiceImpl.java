@@ -58,6 +58,7 @@ public class VatInvoiceServiceImpl implements VatInvoiceService {
             long orderId = Long.parseLong(orderCode);
             //查询主单信息  获取发票类型
             remoteResultInvoice = orderDetailService.getInvoiceByOrderId(orderId);
+            LOGGER_THROW.info("remoteResultInvoice:", JacksonUtil.toJson(remoteResultInvoice));
             if (remoteResultInvoice.isSuccess()) {
                 Invoice invoice = remoteResultInvoice.getT();//发票类型1:电子票2:增票3:普票
                 if (invoice != null && invoice.getType() == 2) {
@@ -92,6 +93,7 @@ public class VatInvoiceServiceImpl implements VatInvoiceService {
                         String zid = invoice.getZid();
                         vathrowBtcp.setZid(zid);
                         vathrowBtcp.setOrderStatus(2);
+                        vathrowBtcp.setPaidTime(main.getPaidTime());
 
                         VatInvoice vatInvoice = getVatInvoiceByZid(zid, shopid);
                         if (vatInvoice != null) {
@@ -121,7 +123,7 @@ public class VatInvoiceServiceImpl implements VatInvoiceService {
         long rows = 0;
         LOGGER_PAID.info("InitVathrowBtcp:orderCode:{},zid:{},shopId:{}",orderCode,zid,shopId);
         try {
-            if (shopId != 14 || shopId != 15) {
+            if (shopId != 8 && shopId != 14 && shopId != 15) {
                 VathrowBtcp vathrowBtcp = new VathrowBtcp();
                 vathrowBtcp.setOrderStatus(1);
                 vathrowBtcp.setOrderCode(orderCode);
@@ -209,7 +211,8 @@ public class VatInvoiceServiceImpl implements VatInvoiceService {
                             vatApiOrderCenter.updateInvoice(invoice);
                         }
                     } else {
-                        if (null != message && !message.equals("只有审批被拒绝的情况下才可二次抛送")) {
+                        //<Result><Code>213_700_020</Code><Message>213_700_020:只有审批被拒绝的情况下才可二次抛送</Message></Result>
+                        if (!resCode.equals("213_700_020")) {
                             int rows = vathrowBtcpMapper.updateByOrderCode(vathrowBtcp.getOrderCode(), 4, message);
                         }
                     }

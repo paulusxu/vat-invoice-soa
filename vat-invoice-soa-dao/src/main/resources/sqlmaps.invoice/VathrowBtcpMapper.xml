@@ -24,7 +24,9 @@
         <result column="IsNeedMerge" property="isneedmerge" jdbcType="BIT"/>
         <result column="ThrowingStatus" property="throwingStatus" jdbcType="BIT"/>
         <result column="OrderStatus" property="orderStatus" jdbcType="BIT"/>
+        <result column="IsUsable" property="isUsable" jdbcType="BIT"/>
         <result column="CreateTime" property="createtime" jdbcType="TIMESTAMP"/>
+        <result column="PaidTime" property="paidTime" jdbcType="TIMESTAMP"/>
     </resultMap>
 
     <resultMap id="BaseVatInvoiceResultMap" type="com.lenovo.invoice.domain.VatInvoice">
@@ -57,7 +59,7 @@
     <sql id="Base_Column_List">
     ID, Title, TaxpayerIdentity, DepositBank, BankNo, RegisterAddress, RegisterPhone,
     OutId, MemberCode, Name, ProvinceId, City, County, Address, Phone, Zip, IsNeedMerge,
-    ThrowingStatus,zid,OrderCode,OrderStatus,ThrowResult
+    ThrowingStatus,zid,OrderCode,OrderStatus,ThrowResult,PaidTime
   </sql>
 
     <sql id="Base_VatInvoice_Column_List">
@@ -71,41 +73,73 @@
         SELECT
         <include refid="Base_Column_List"/>
         FROM vathrowbtcp
-        WHERE OrderCode=#{orderCode}
+        WHERE OrderCode=#{orderCode} AND IsUsable=1
     </select>
 
-    <select id="getVatInvoice2BtcpList" resultMap="BaseResultMap" parameterType="java.lang.String">
+    <select id="getVatInvoice2BtcpListByZid" resultMap="BaseResultMap" parameterType="java.lang.String">
         select
         <include refid="Base_Column_List"/>
         from vathrowbtcp
-        where zid=#{zid} and OrderStatus=3 and ThrowingStatus in(0,4)
+        where zid=#{zid} and OrderStatus=3 and ThrowingStatus in(0,4)  AND IsUsable=1
+    </select>
+
+    <select id="getVatInvoice2BtcpListByOrderCode" resultMap="BaseResultMap" parameterType="java.lang.String">
+        select
+        <include refid="Base_Column_List"/>
+        from vathrowbtcp
+        where OrderCode in (#{orderCodes}) and OrderStatus=3 and ThrowingStatus in(0,4) AND IsUsable=1
     </select>
 
     <select id="getNotThrowBtcpVatInvoicePage" resultMap="BaseVatInvoiceResultMap" parameterType="java.util.Map">
         select
         vat.*
         FROM vathrowbtcp btcp, vatinvoice vat WHERE btcp.Zid=vat.Id AND btcp.OrderStatus=3 AND btcp.ThrowingStatus
-        IN(0,4)
-        <include refid="queryVatInvoice"/>
-        group by vat.taxNo
-        ORDER BY vat.CreateTime DESC limit ${pageIndex},${pageSize}
+        IN(0,2,4) AND IsUsable=1
+        <if test="orderCode != null and orderCode!=''">
+            AND btcp.OrderCode=#{orderCode}
+        </if>
+        <if test="btcpSo != null and btcpSo!=''">
+            AND btcp.OutId=#{btcpSo}
+        </if>
+        <include refid="queryVatInvoice" /> group by vat.taxNo
+         ORDER BY vat.CreateTime DESC limit ${pageIndex},${pageSize}
     </select>
 
     <select id="getNotThrowBtcpVatInvoiceCount" resultType="java.lang.Integer" parameterType="java.util.Map">
         SELECT COUNT(1) FROM
-        (SELECT vat.* FROM vathrowbtcp btcp, vatinvoice vat WHERE btcp.Zid=vat.Id AND btcp.OrderStatus=3 AND btcp.ThrowingStatus IN(0,4)
+        (SELECT vat.* FROM vathrowbtcp btcp, vatinvoice vat WHERE btcp.Zid=vat.Id AND btcp.OrderStatus=3 AND btcp.ThrowingStatus IN(0,2,4)  AND IsUsable=1
+        <if test="orderCode != null and orderCode!=''">
+            AND btcp.OrderCode=#{orderCode}
+        </if>
+        <if test="btcpSo != null and btcpSo!=''">
+            AND btcp.OutId=#{btcpSo}
+        </if>
          <include refid="queryVatInvoice" />
-         GROUP BY vat.taxNo ORDER BY vat.CreateTime DESC) a
+        GROUP BY vat.taxNo ORDER BY vat.CreateTime DESC) a
     </select>
 
     <select id="getOrderListByZidPageCount" resultType="java.lang.Integer" parameterType="java.util.Map">
-        SELECT COUNT(1) FROM vathrowbtcp WHERE OrderStatus=3 AND zid=#{zid}  ORDER BY ThrowingStatus
+        SELECT COUNT(1) FROM vathrowbtcp WHERE OrderStatus=3 AND zid=#{zid} AND ThrowingStatus IN (0,2,4)  AND IsUsable=1
+        <if test="orderCode != null and orderCode!=''">
+            AND OrderCode=#{orderCode}
+        </if>
+        <if test="btcpSo != null and btcpSo!=''">
+            AND OutId=#{btcpSo}
+        </if>
+        ORDER BY ThrowingStatus
     </select>
 
     <select id="getOrderListByZidPage" resultMap="BaseResultMap" parameterType="java.util.Map">
         SELECT
         <include refid="Base_Column_List"/>
-        FROM vathrowbtcp WHERE OrderStatus=3 AND zid=#{zid}  ORDER BY ThrowingStatus limit ${pageIndex},${pageSize}
+        FROM vathrowbtcp WHERE OrderStatus=3 AND zid=#{zid} AND ThrowingStatus IN (0,2,4)  AND IsUsable=1
+        <if test="orderCode != null and orderCode!=''">
+            AND OrderCode=#{orderCode}
+        </if>
+        <if test="btcpSo != null and btcpSo!=''">
+            AND OutId=#{btcpSo}
+        </if>
+        ORDER BY ThrowingStatus limit ${pageIndex},${pageSize}
     </select>
 
     <sql id="queryVatInvoice">
@@ -120,14 +154,14 @@
         </if>
 
         <if test="isshared != null and isshared!=''">
-            AND vat.IsShared = ${isshared}
+            AND vat.IsShared = #{isshared}
         </if>
 
         <if test="shopid != null and shopid!=''">
-            AND vat.ShopId = ${shopid}
+            AND vat.ShopId = #{shopid}
         </if>
         <if test="ischeck != null and ischeck!=''">
-            AND vat.isCheck = ${ischeck}
+            AND vat.isCheck = #{ischeck}
         </if>
     </sql>
 
@@ -135,7 +169,7 @@
     <select id="getThrowBtcpList" resultMap="BaseResultMap">
     select
     btcp.*
-    FROM vathrowbtcp btcp, vatinvoice vat WHERE vat.isCheck in(1,2) AND btcp.Zid=vat.Id AND btcp.OrderStatus=3 AND btcp.ThrowingStatus =0
+    FROM vathrowbtcp btcp, vatinvoice vat WHERE vat.isCheck in(1,2) AND btcp.Zid=vat.Id AND btcp.OrderStatus=3 AND btcp.ThrowingStatus =0  AND IsUsable=1
   </select>
 
     <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
@@ -146,7 +180,35 @@
 
     <update id="updateByOrderCode">
     update vathrowbtcp
-    set ThrowingStatus = #{status},ThrowResult=#{msg} WHERE OrderCode=#{orderCode}
+    set ThrowingStatus = #{status},ThrowResult=#{msg} WHERE OrderCode=#{orderCode}  AND IsUsable=1
+  </update>
+
+    <update id="updateConsignee" parameterType="com.lenovo.invoice.domain.Consignee">
+        update vathrowbtcp
+        <set>
+            <if test="name != null">
+                Name = #{name,jdbcType=VARCHAR},
+            </if>
+            <if test="provinceid != null">
+                ProvinceId = #{provinceid,jdbcType=VARCHAR},
+            </if>
+            <if test="city != null">
+                City = #{city,jdbcType=VARCHAR},
+            </if>
+            <if test="county != null">
+                County = #{county,jdbcType=VARCHAR},
+            </if>
+            <if test="address != null">
+                Address = #{address,jdbcType=VARCHAR},
+            </if>
+            <if test="phone != null">
+                Phone = #{phone,jdbcType=VARCHAR},
+            </if>
+            <if test="zip != null">
+                Zip = #{zip,jdbcType=VARCHAR},
+            </if>
+        </set>
+        WHERE OrderCode = #{orderCode}  AND IsUsable=1
   </update>
 
     <update id="updateZid" parameterType="map">
@@ -174,7 +236,7 @@
                 zid= #{record.id},
             </if>
         </set>
-        WHERE zid IN (${record.faid}) AND ThrowingStatus=0
+        WHERE zid IN (${record.faid})  AND IsUsable=1
     </update>
 
     <!--根据orderCode和orderStatus修改增票信息-->
@@ -227,17 +289,17 @@
                 ThrowingStatus = #{throwingStatus},
             </if>
         </set>
-        WHERE OrderCode=#{orderCode} AND OrderStatus IN (1,2)
+        WHERE OrderCode=#{orderCode} AND OrderStatus IN (1,2)  AND IsUsable=1
     </update>
 
     <update id="updateOrderStatus">
     update vathrowbtcp
-    set OrderStatus = #{status} WHERE OrderCode=#{orderCode}
+    set OrderStatus = #{status} WHERE OrderCode=#{orderCode}  AND IsUsable=1
   </update>
 
     <update id="updateThrowingStatus">
     update vathrowbtcp
-    set ThrowingStatus = #{status} WHERE OrderCode=#{orderCode}
+    set ThrowingStatus = #{status} WHERE OrderCode=#{orderCode}  AND IsUsable=1
   </update>
 
     <update id="updateVatInvoice" parameterType="com.lenovo.invoice.domain.param.UpdateVatInvoiceBatchParam">
@@ -249,13 +311,24 @@
     RegisterAddress=#{address},
     RegisterPhone=#{phoneNo},
     ThrowingStatus =0
-    WHERE zid = ${ids}
+    WHERE zid = #{ids}
   </update>
 
     <insert id="insertVathrowBtcp" parameterType="com.lenovo.invoice.domain.VathrowBtcp">
     insert into vathrowbtcp (CreateTime,OrderCode,OrderStatus,zid)
     values (now(),#{orderCode},#{orderStatus},#{zid})
   </insert>
+
+    <!--添加一条完成的增票和订单的映射-->
+    <insert id="addVathrowBtcp" parameterType="com.lenovo.invoice.domain.VathrowBtcp">
+        INSERT INTO vathrowbtcp
+          (Title, TaxpayerIdentity, DepositBank, BankNo, RegisterAddress, RegisterPhone,
+          OutId, MemberCode, Name, ProvinceId, City, County, Address, Phone, Zip, IsNeedMerge,
+          ThrowingStatus,zid,OrderCode,OrderStatus,CreateTime,PaidTime)
+        VALUES (#{title},#{taxpayeridentity},#{depositbank},#{bankno},#{registeraddress},#{registerphone},
+          #{outid},#{membercode},#{name},#{provinceid},#{city},#{county},#{address},#{phone},#{zip},#{isneedmerge},
+          #{throwingStatus},#{zid},#{orderCode},#{orderStatus},now(),#{paidTime})
+    </insert>
 
     <update id="updateVathrowbtcp" parameterType="map">
         update vathrowbtcp
@@ -320,8 +393,16 @@
             <if test="record.orderStatus != null">
                 OrderStatus = #{record.orderStatus,jdbcType=BIT},
             </if>
+            <if test="record.paidTime != null">
+                PaidTime = #{record.paidTime},
+            </if>
         </set>
-        WHERE OrderCode = #{record.orderCode}
+        WHERE OrderCode = #{record.orderCode} AND IsUsable=1
+    </update>
+
+    <!--根据orderCode删除增票和订单的映射关系记录-->
+    <update id="deleteByOrderCode" parameterType="java.lang.String">
+        UPDATE vathrowbtcp SET IsUsable=0 WHERE OrderCode = #{orderCode} AND IsUsable=1
     </update>
 
 </mapper>

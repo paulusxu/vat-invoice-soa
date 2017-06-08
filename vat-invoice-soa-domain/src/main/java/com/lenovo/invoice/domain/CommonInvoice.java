@@ -13,8 +13,36 @@ public class CommonInvoice implements Serializable{
     private String invoiceTitle;//发票抬头
     private Integer shopid;//商城
     private Integer type;//开票方式，1是公司，2是个人
+    private String taxNo;//公司税号
     private Date createtime;//创建时间
     private String createBy;//创建人
+
+    private String lenovoId;//用户id
+    private Integer mappingId;//映射表id
+
+    public String getLenovoId() {
+        return lenovoId;
+    }
+
+    public void setLenovoId(String lenovoId) {
+        this.lenovoId = lenovoId;
+    }
+
+    public Integer getMappingId() {
+        return mappingId;
+    }
+
+    public void setMappingId(Integer mappingId) {
+        this.mappingId = mappingId;
+    }
+
+    public String getTaxNo() {
+        return taxNo;
+    }
+
+    public void setTaxNo(String taxNo) {
+        this.taxNo = taxNo;
+    }
 
     public Integer getType() {
         return type;

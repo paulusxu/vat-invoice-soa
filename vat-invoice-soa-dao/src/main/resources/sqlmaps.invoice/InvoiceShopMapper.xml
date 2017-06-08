@@ -118,7 +118,7 @@
       (#{uuid},
         #{customerName},
         #{lenovoID},
-        ${invoiceType},
+        #{invoiceType},
         #{payManType},
         #{payMan},
         #{taxNo},
@@ -144,7 +144,7 @@
         #{createBy},
         #{updateTime},
         #{isConfirmPersonal},
-        #{updateBy},${shopId})
+        #{updateBy},#{shopId})
   </insert>
 
   <sql id="updateSet">
@@ -153,11 +153,11 @@
         CustomerName=#{customerName},
       </if>
       <if test="invoiceType != null" >
-        InvoiceType=${invoiceType},
+        InvoiceType=#{invoiceType},
       </if>
 
       <if test="payManType != null" >
-        payManType=${payManType},
+        payManType=#{payManType},
       </if>
 
       <if test="payMan != null and payMan!=''" >
@@ -208,11 +208,11 @@
         PhoneNo=#{phoneNo},
       </if>
       <if test="isDefault == 1" >
-        isDefault=${isDefault},
+        isDefault=#{isDefault},
       </if>
 
       <if test="approvalStatus != null" >
-        approvalStatus=${approvalStatus},
+        approvalStatus=#{approvalStatus},
       </if>
 
       <if test="approver != null and approver!=''" >
@@ -225,13 +225,13 @@
         soldToCode=#{soldToCode},
       </if>
       <if test="isShow != null" >
-        isShow=${isShow},
+        isShow=#{isShow},
       </if>
       <if test="updateTime != null and updateTime!=''" >
         updateTime=#{updateTime},
       </if>
       <if test="isConfirmPersonal != null" >
-        isConfirmPersonal=${isConfirmPersonal},
+        isConfirmPersonal=#{isConfirmPersonal},
       </if>
       <if test="updateBy != null and updateBy!=''" >
         updateBy=#{updateBy},
@@ -256,7 +256,7 @@
   </select>
 
   <select id="queryInvoiceForId" resultMap="InvoiceShopMap">
-    SELECT * FROM  memberinvoiceinfoes WHERE id=${invoiceId}
+    SELECT * FROM  memberinvoiceinfoes WHERE id=#{invoiceId}
     <if test="lenovoid != null and lenovoid!=''">
         and LenovoID=#{lenovoid}
     </if>
@@ -340,7 +340,7 @@
     #{createBy},
     #{updateTime},
     #{isConfirmPersonal},
-    #{updateBy},${shopId},${synType},0)
+    #{updateBy},#{shopId},#{synType},0)
   </insert>
 
   <update id="editInvoiceIsDefault">

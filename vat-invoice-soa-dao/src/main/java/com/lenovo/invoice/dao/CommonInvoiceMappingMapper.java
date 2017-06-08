@@ -1,14 +1,14 @@
 package com.lenovo.invoice.dao;
 
-import com.lenovo.invoice.domain.CommonInvoiceMapping;
+import com.lenovo.invoice.domain.CommonInvoice;
 
 /**
  * Created by admin on 2017/3/16.
  */
 public interface CommonInvoiceMappingMapper {
 
-    public int addCommonInvoiceMapping(CommonInvoiceMapping commonInvoiceMapping);
+    public int addCommonInvoiceMapping(CommonInvoice commonInvoice);
 
-    public CommonInvoiceMapping getCommonInvoiceMapping(CommonInvoiceMapping commonInvoiceMapping);
+    public CommonInvoice getCommonInvoiceMapping(CommonInvoice commonInvoice);
 
 }

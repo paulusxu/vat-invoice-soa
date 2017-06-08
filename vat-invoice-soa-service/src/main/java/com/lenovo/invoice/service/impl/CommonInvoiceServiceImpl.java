@@ -2,20 +2,17 @@ package com.lenovo.invoice.service.impl;
 
 import com.lenovo.invoice.api.CommonInvoiceService;
 import com.lenovo.invoice.common.utils.InvoiceResultCode;
+import com.lenovo.invoice.common.utils.JacksonUtil;
 import com.lenovo.invoice.dao.CommonInvoiceMapper;
 import com.lenovo.invoice.dao.CommonInvoiceMappingMapper;
 import com.lenovo.invoice.domain.CommonInvoice;
-import com.lenovo.invoice.domain.CommonInvoiceMapping;
 import com.lenovo.invoice.service.BaseService;
 import com.lenovo.m2.arch.framework.domain.RemoteResult;
-import com.lenovo.m2.stock.soa.common.utils.JacksonUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.Date;
 
 /**
  * Created by admin on 2017/3/16.
@@ -33,51 +30,42 @@ public class CommonInvoiceServiceImpl extends BaseService implements CommonInvoi
     @Override
     @Transactional
     //添加普通发票
-    public RemoteResult<CommonInvoice> addCommonInvoice(String lenovoId, String invoiceTitle, Integer shopid,String createBy,Integer type) throws Exception {
-        LOGGER.info("addCommonInvoice参数==lenovoId="+lenovoId+";invoiceTitle="+invoiceTitle+";shopid="+shopid+";createBy="+createBy+";type="+type);
+    public RemoteResult<CommonInvoice> addCommonInvoice(CommonInvoice commonInvoice) throws Exception {
+        LOGGER.info("addCommonInvoice参数=="+JacksonUtil.toJson(commonInvoice));
 
         RemoteResult<CommonInvoice> remoteResult = new RemoteResult<CommonInvoice>();
 
         try {
-            if (isNull(lenovoId,invoiceTitle,shopid,createBy,type)){
+            String lenovoId = commonInvoice.getLenovoId();
+            String invoiceTitle = commonInvoice.getInvoiceTitle();
+            Integer shopid = commonInvoice.getShopid();
+            String createBy = commonInvoice.getCreateBy();
+            Integer type = commonInvoice.getType();
+            String taxNo = commonInvoice.getTaxNo();
+
+            if (isNull(lenovoId,invoiceTitle,shopid,createBy,type) || (type==1 && isNull(taxNo))){
                 remoteResult.setResultCode(InvoiceResultCode.PARAMSFAIL);
                 remoteResult.setResultMsg("必填参数错误");
                 LOGGER.info("addCommonInvoice返回值==" + JacksonUtil.toJson(remoteResult));
                 return remoteResult;
             }
 
-            Date date = new Date();
-            CommonInvoice commonInvoice = new CommonInvoice();
-            commonInvoice.setInvoiceTitle(invoiceTitle);
-            commonInvoice.setShopid(shopid);
-            commonInvoice.setType(type);
             LOGGER.info("commonInvoiceMapper" + commonInvoiceMapper);
             CommonInvoice commonInvoice2 = commonInvoiceMapper.getCommonInvoiceByTitle(commonInvoice);
             if (commonInvoice2==null){
                 //不存在相同的发票，可以添加
-                commonInvoice.setInvoiceTitle(invoiceTitle);
-                commonInvoice.setShopid(shopid);
-                commonInvoice.setType(type);
-                commonInvoice.setCreateBy(createBy);
-                commonInvoice.setCreatetime(date);
                 int i = commonInvoiceMapper.addCommonInvoice(commonInvoice);
                 if (i==0){
                     remoteResult.setResultMsg("添加普通发票失败");
                     remoteResult.setResultCode(InvoiceResultCode.ADDCOMMONINVOICEFAIL);
-                    throw new Exception();
+                    LOGGER.info("addCommonInvoice返回值=="+ JacksonUtil.toJson(remoteResult));
+                    return remoteResult;
                 }
             }else {
-                commonInvoice = commonInvoice2;
+                commonInvoice.setId(commonInvoice2.getId());
             }
 
-            CommonInvoiceMapping commonInvoiceMapping = new CommonInvoiceMapping();
-            commonInvoiceMapping.setLenovoId(lenovoId);
-            commonInvoiceMapping.setShopid(shopid);
-            commonInvoiceMapping.setCommonInvoiceId(commonInvoice.getId());
-            commonInvoiceMapping.setCreatetime(date);
-            commonInvoiceMapping.setCreateBy(createBy);
-
-            int j = commonInvoiceMappingMapper.addCommonInvoiceMapping(commonInvoiceMapping);
+            int j = commonInvoiceMappingMapper.addCommonInvoiceMapping(commonInvoice);
             if (j==0){
                 remoteResult.setResultMsg("添加普通发票映射失败");
                 remoteResult.setResultCode(InvoiceResultCode.ADDCOMMONINVOICEMAPPINGFAIL);
@@ -99,40 +87,38 @@ public class CommonInvoiceServiceImpl extends BaseService implements CommonInvoi
 
     @Override
     //获取用户最近一次开的普通发票，区分公司和个人
-    public RemoteResult<CommonInvoice> getCommonInvoice(String lenovoId, Integer shopid,Integer type){
-        LOGGER.info("getCommonInvoice参数==lenovoId="+lenovoId+";shopid="+shopid+";type="+type);
-
+    public RemoteResult<CommonInvoice> getCommonInvoice(CommonInvoice commonInvoice){
+        LOGGER.info("getCommonInvoice参数=="+JacksonUtil.toJson(commonInvoice));
         RemoteResult<CommonInvoice> remoteResult = new RemoteResult<CommonInvoice>();
 
         try {
-            if (isNull(lenovoId,shopid,type)){
+            String lenovoId = commonInvoice.getLenovoId();
+            Integer shopid = commonInvoice.getShopid();
+            Integer type = commonInvoice.getType();
+            String taxNo = commonInvoice.getTaxNo();
+            if (isNull(lenovoId,shopid,type) || (type==1 && isNull(taxNo))){
                 remoteResult.setResultCode(InvoiceResultCode.PARAMSFAIL);
                 remoteResult.setResultMsg("必填参数错误");
                 LOGGER.info("getCommonInvoice返回值==" + JacksonUtil.toJson(remoteResult));
                 return remoteResult;
             }
 
-            CommonInvoiceMapping commonInvoiceMapping = new CommonInvoiceMapping();
-            commonInvoiceMapping.setLenovoId(lenovoId);
-            commonInvoiceMapping.setShopid(shopid);
-            commonInvoiceMapping.setType(type);
+            CommonInvoice commonInvoice1 = commonInvoiceMappingMapper.getCommonInvoiceMapping(commonInvoice);
 
-            commonInvoiceMapping = commonInvoiceMappingMapper.getCommonInvoiceMapping(commonInvoiceMapping);
-
-            if (commonInvoiceMapping==null){
+            if (commonInvoice1==null){
                 remoteResult.setResultCode(InvoiceResultCode.SUCCESS);
                 remoteResult.setResultMsg("该用户没有任何普通发票记录");
                 remoteResult.setSuccess(true);
                 return remoteResult;
             }
 
-            Integer commonInvoiceId = commonInvoiceMapping.getCommonInvoiceId();
-            CommonInvoice commonInvoiceById = commonInvoiceMapper.getCommonInvoiceById(commonInvoiceId);
+            Integer id = commonInvoice1.getId();
+            commonInvoice = commonInvoiceMapper.getCommonInvoiceById(id);
 
             remoteResult.setSuccess(true);
             remoteResult.setResultMsg("查询成功");
             remoteResult.setResultCode(InvoiceResultCode.SUCCESS);
-            remoteResult.setT(commonInvoiceById);
+            remoteResult.setT(commonInvoice);
         }catch (Exception e){
             remoteResult.setResultMsg("系统异常");
             remoteResult.setResultCode(InvoiceResultCode.FAIL);
