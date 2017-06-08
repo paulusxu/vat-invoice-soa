@@ -12,6 +12,8 @@ public interface CommonInvoiceService {
 
     public RemoteResult<CommonInvoice> getCommonInvoice(CommonInvoice commonInvoice);
 
+    public RemoteResult<CommonInvoice> getCommonInvoiceByIds(String lenovoId,Integer id);
+
     //public RemoteResult updateCommonInvoice(Integer id,String invoiceTitle);
 
 }
