@@ -109,9 +109,9 @@ public class CommonInvoiceServiceImpl extends BaseService implements CommonInvoi
             CommonInvoice commonInvoice1 = commonInvoiceMappingMapper.getCommonInvoiceMapping(commonInvoice);
 
             if (commonInvoice1==null){
-                remoteResult.setResultCode(InvoiceResultCode.SUCCESS);
+                remoteResult.setResultCode(InvoiceResultCode.NOINVOICEMAPPING);
                 remoteResult.setResultMsg("该用户没有任何普通发票记录");
-                remoteResult.setSuccess(true);
+                LOGGER.info("getCommonInvoice返回值==" + JacksonUtil.toJson(remoteResult));
                 return remoteResult;
             }
 

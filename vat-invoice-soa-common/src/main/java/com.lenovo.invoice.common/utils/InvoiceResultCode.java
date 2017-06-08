@@ -11,7 +11,7 @@ public class InvoiceResultCode {
     public static final String UNEXCHANGEINVOICE = "02"; //订单已发货，不能进行换票操作
     public static final String FAIDNOTALLOWEXCHANGE = "03"; //该订单faid不允许换票
     public static final String ADDVATINVOICEFAIL = "04";//添加新的增票失败
-    public static final String UNEXCHANGEINVOICE_THROWORDER = "05";//订单不能抛送或者已抛送，不能换票
+    public static final String NOINVOICEMAPPING = "05";//订单不能抛送或者已抛送，不能换票
     public static final String ORDERTHROWSTATUSFAIL = "06";//订单抛送状态错误
     public static final String UPDATEORDERFAIL = "07";//修改订单失败
     public static final String THROWBTCPFAIL = "08";//抛BTCP失败
