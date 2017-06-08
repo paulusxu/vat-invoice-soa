@@ -8,6 +8,7 @@ import com.lenovo.invoice.dao.CommonInvoiceMappingMapper;
 import com.lenovo.invoice.domain.CommonInvoice;
 import com.lenovo.invoice.service.BaseService;
 import com.lenovo.m2.arch.framework.domain.RemoteResult;
+import com.lenovo.m2.arch.framework.domain.Tenant;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -132,7 +133,7 @@ public class CommonInvoiceServiceImpl extends BaseService implements CommonInvoi
     }
 
     @Override
-    public RemoteResult<CommonInvoice> getCommonInvoiceByIds(String lenovoId, Integer id) {
+    public RemoteResult<CommonInvoice> getCommonInvoiceByIds(String lenovoId, Integer id,Tenant tenant) {
         LOGGER.info("getCommonInvoiceByIds参数=="+lenovoId+"=="+id);
         RemoteResult<CommonInvoice> remoteResult = new RemoteResult<CommonInvoice>();
 
