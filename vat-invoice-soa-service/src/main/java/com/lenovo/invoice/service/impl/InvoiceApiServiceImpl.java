@@ -677,12 +677,12 @@ public class InvoiceApiServiceImpl extends BaseService implements InvoiceApiServ
             }
 
             //判断customername,taxno 是否有单独存在的
-//            List<VatInvoice> vatInvoiceListTmp = vatInvoiceMapper.getVatInvoiceInfo(customerName, taxNo, type);
-//            if (CollectionUtils.isNotEmpty(vatInvoiceListTmp)) {
-//                remoteResult.setResultCode(ErrorUtils.ERR_CODE_CUSTOMERNAME_TAXNO_EXIST);
-//                remoteResult.setResultMsg("公司名和税号不匹配，请核对后再试！");
-//                return remoteResult;
-//            }
+            List<VatInvoice> vatInvoiceListTmp = vatInvoiceMapper.getVatInvoiceInfo(customerName, taxNo, type);
+            if (CollectionUtils.isNotEmpty(vatInvoiceListTmp)) {
+                remoteResult.setResultCode(ErrorUtils.ERR_CODE_CUSTOMERNAME_TAXNO_EXIST);
+                remoteResult.setResultMsg("已有相同的税号或抬头的发票，如需修改请联系客服！");
+                return remoteResult;
+            }
 
             VatInvoice vatInvoice = vatInvoiceMapper.getVatInvoiceBySelected(new VatInvoice(customerName, taxNo, bankName, accountNo, address, phoneNo, type, faid, storeId));
             Long id = null;
