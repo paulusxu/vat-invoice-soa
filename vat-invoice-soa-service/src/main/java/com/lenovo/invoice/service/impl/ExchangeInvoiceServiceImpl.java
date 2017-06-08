@@ -136,7 +136,7 @@ public class ExchangeInvoiceServiceImpl extends BaseService implements ExchangeI
                 commonInvoice.setCreateBy(itCode);
                 commonInvoice.setLenovoId(invoiceChangeApi.getLenovoId());
                 //还未发货，客户换票，首先添加新得普票
-                RemoteResult<CommonInvoice> remoteResult1 = commonInvoiceService.addCommonInvoice(commonInvoice);
+                RemoteResult<CommonInvoice> remoteResult1 = commonInvoiceService.addCommonInvoice(commonInvoice,tenant);
                 if (!remoteResult1.isSuccess()){
                     //添加失败
                     remoteResult.setResultCode(InvoiceResultCode.ADDCOMMONINVOICEFAIL);

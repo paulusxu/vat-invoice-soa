@@ -9,9 +9,9 @@ import com.lenovo.m2.arch.framework.domain.Tenant;
  */
 public interface CommonInvoiceService {
 
-    public RemoteResult addCommonInvoice(CommonInvoice commonInvoice) throws Exception;
+    public RemoteResult addCommonInvoice(CommonInvoice commonInvoice,Tenant tenant) throws Exception;
 
-    public RemoteResult<CommonInvoice> getCommonInvoice(CommonInvoice commonInvoice);
+    public RemoteResult<CommonInvoice> getCommonInvoice(CommonInvoice commonInvoice,Tenant tenant);
 
     public RemoteResult<CommonInvoice> getCommonInvoiceByIds(String lenovoId,Integer id,Tenant tenant);
 

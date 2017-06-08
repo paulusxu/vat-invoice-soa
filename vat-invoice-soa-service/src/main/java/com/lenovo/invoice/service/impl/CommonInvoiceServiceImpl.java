@@ -33,7 +33,7 @@ public class CommonInvoiceServiceImpl extends BaseService implements CommonInvoi
     @Override
     @Transactional
     //添加普通发票
-    public RemoteResult<CommonInvoice> addCommonInvoice(CommonInvoice commonInvoice) throws Exception {
+    public RemoteResult<CommonInvoice> addCommonInvoice(CommonInvoice commonInvoice,Tenant tenant) throws Exception {
         LOGGER.info("addCommonInvoice参数=="+JacksonUtil.toJson(commonInvoice));
 
         RemoteResult<CommonInvoice> remoteResult = new RemoteResult<CommonInvoice>();
@@ -92,7 +92,7 @@ public class CommonInvoiceServiceImpl extends BaseService implements CommonInvoi
 
     @Override
     //获取用户最近一次开的普通发票，区分公司和个人
-    public RemoteResult<CommonInvoice> getCommonInvoice(CommonInvoice commonInvoice){
+    public RemoteResult<CommonInvoice> getCommonInvoice(CommonInvoice commonInvoice,Tenant tenant){
         LOGGER.info("getCommonInvoice参数=="+JacksonUtil.toJson(commonInvoice));
         RemoteResult<CommonInvoice> remoteResult = new RemoteResult<CommonInvoice>();
 
