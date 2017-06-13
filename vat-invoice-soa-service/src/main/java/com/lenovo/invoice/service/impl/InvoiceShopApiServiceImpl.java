@@ -270,6 +270,8 @@ public class InvoiceShopApiServiceImpl implements InvoiceShopApiService {
                 invoiceShopModifyLog.setUpdateTime(new Date());
                 if (invoiceShop.getIsDefault() == 1) {
                     invoiceShopMapper.editInvoiceIsDefault(invoiceShop.getLenovoID());
+                }else {
+                    invoiceShop.setApprovalStatus(3);
                 }
                 invoiceShopMapper.editInvoiceShop(invoiceShop);
             } else if (invoiceShop.getSynType() == 3) {
