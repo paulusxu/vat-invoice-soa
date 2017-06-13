@@ -61,7 +61,7 @@
         and taxNoType=#{param2.taxNoType}
       </if>
     </where>
-    AND isvalid=1 AND invoiceType IN (2,3) AND custType=1 AND taxNoType IN (1,2)
+    AND isvalid=1 AND invoiceType IN (2,3) AND custType=1 AND taxNoType IN (1,2) AND isDelete=0
     ORDER BY CreateTime DESC
   </select>
 
@@ -70,26 +70,26 @@
     SELECT
     <include refid="Base_Column_List"/>
     FROM vatinvoice
-    WHERE Id = #{id}
+    WHERE Id = #{id} AND isDelete=0
   </select>
 
   <!--修改发票信息，根据id，只能修改识别码类型，纳税人识别码，公司抬头-->
   <update id="updateInvoice" parameterType="com.lenovo.invoice.domain.VatInvoice">
     UPDATE vatinvoice
     set taxNoType=#{taxNoType},TaxNo=#{taxno},CustomerName=#{customername},UpdateBy=#{updateby},UpdateTime=now()
-    WHERE Id=#{id}
+    WHERE Id=#{id} AND isDelete=0
   </update>
 
   <!--审核通过，修改发票状态-->
   <update id="updateInvoiceIsCheck" parameterType="com.lenovo.invoice.domain.VatInvoice">
     UPDATE vatinvoice
     set isCheck=1,checkBy=#{checkBy},checkTime=now()
-    WHERE Id=#{id}
+    WHERE Id=#{id} AND isDelete=0
   </update>
 
   <!--订单支付后，将发票修改为有效状态-->
   <update id="updateInvoiceIsValid">
-    UPDATE vatinvoice set isvalid=1 WHERE Id=#{id}
+    UPDATE vatinvoice set isvalid=1 WHERE Id=#{id} AND isDelete=0
   </update>
 
   <!--前台页面，保存发票信息-->
@@ -98,7 +98,7 @@
       SELECT @@IDENTITY
     </selectKey>
     insert into vatinvoice (CustomerName,TaxNo,CreateTime,CreateBy,ShopId,taxNoType,custType,invoiceType,isCheck,isvalid)
-    values (#{customername},#{taxno},now(),#{createby},#{shopid},#{taxNoType},#{custType},#{ischeck},#{isvalid})
+    values (#{customername},#{taxno},now(),#{createby},#{shopid},#{taxNoType},#{custType},#{invoiceType},#{ischeck},#{isvalid})
   </insert>
 
   <!--前台页面根据发票抬头带出发票信息，必须是已审核的-->
@@ -106,7 +106,7 @@
     SELECT
     <include refid="Base_Column_List"/>
     FROM vatinvoice
-    WHERE CustomerName=#{customername} AND isCheck=1 AND custType=1 AND invoiceType IN (2,3)
+    WHERE CustomerName=#{customername} AND isCheck=1 AND custType=1 AND invoiceType IN (2,3) AND isDelete=0
   </select>
 
   <!--根据发票抬头，税号，开票方式和发票类型查询，用于判断发票是否已存在-->
@@ -114,7 +114,7 @@
     SELECT
     <include refid="Base_Column_List"/>
     FROM vatinvoice
-    WHERE CustomerName=#{customername} AND TaxNo=#{taxno} AND custType=#{custType} AND invoiceType IN (2,3)
+    WHERE CustomerName=#{customername} AND TaxNo=#{taxno} AND custType=#{custType} AND invoiceType IN (2,3) AND isDelete=0
   </select>
 
   <resultMap id="BaseResultMap" type="com.lenovo.invoice.domain.VatInvoice" >
@@ -147,12 +147,13 @@
     <result column="checkBy" property="checkBy" jdbcType="VARCHAR" />
     <result column="checkTime" property="checkTime" jdbcType="TIMESTAMP" />
     <result column="remark" property="remark" jdbcType="VARCHAR" />
+    <result column="isDelete" property="isDelete" jdbcType="BIT" />
   </resultMap>
 
   <sql id="Base_Column_List" >
     Id, CustomerName, TaxNo, BankName, AccountNo, Address, PhoneNo, BTCPSO, isCheck,
     IsThrowing, CreateTime, CreateBy, UpdateTime, UpdateBy, IsShared, isNeedMerge, ShopId,
-    ShardedBy, ShardedTime,faid,storesid,type,isvalid,taxNoType,custType,invoiceType,checkBy,checkTime,remark
+    ShardedBy, ShardedTime,faid,storesid,type,isvalid,taxNoType,custType,invoiceType,checkBy,checkTime,remark,isDelete
   </sql>
 
 </mapper>

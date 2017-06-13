@@ -181,6 +181,19 @@
         <appender-ref ref="exchangeInvoice_error" />
     </logger>
 
+    <!--普票和电子票和订单交互的错误日志-->
+    <appender name="invoice_order_error" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>${log.path}/invoice_order_error.%d{yyyy-MM-dd}.log</fileNamePattern>
+        </rollingPolicy>
+        <encoder>
+            <pattern>[%d{yyyy-MM-dd HH:mm:ss} %-5p] projectName : vat-invoice-soa %X{elk_leId} %X{elk_lenovoId} %X{elk_requestId} %X{ip} [%thread] %-5level %logger{5} - %msg%n</pattern>
+        </encoder>
+    </appender>
+    <logger name="com.lenovo.invoice.service.impl.commonInvoice" level="info" additivity="false">
+        <appender-ref ref="invoice_order_error" />
+    </logger>
+
 
     <logger name="org.springframework" level="WARN" additivity="false"/>
     <logger name="org.apache.commons.beanutils" level="WARN" additivity="false"/>

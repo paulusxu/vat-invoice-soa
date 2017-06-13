@@ -25,8 +25,14 @@ public interface CommonInvoiceService {
     //分页查询，后台审核使用
     public RemoteResult<PageModel2<VatInvoice>> getInvoiceByPage(PageQuery pageQuery,VatInvoice vatInvoice);
 
+    //后台审核通过接口
+    public RemoteResult checkInvoice(VatInvoice vatInvoice);
+
+    //后台修改发票信息接口
+    public RemoteResult updateInvoice(VatInvoice vatInvoice);
+
     //查询单个发票信息
-    public RemoteResult<VatInvoice> getInvoiceById(Long id);
+    public RemoteResult<VatInvoice> getInvoiceById(Long id,Tenant tenant);
 
     //前台页面，保存发票信息
     public RemoteResult<VatInvoice> saveInvoice(VatInvoice vatInvoice,Tenant tenant);

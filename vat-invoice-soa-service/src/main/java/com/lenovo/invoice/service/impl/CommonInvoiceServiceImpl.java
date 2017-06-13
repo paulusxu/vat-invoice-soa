@@ -25,6 +25,7 @@ import java.util.regex.Pattern;
 @Service("commonInvoiceService")
 public class CommonInvoiceServiceImpl extends BaseService implements CommonInvoiceService {
     private static final Logger LOGGER = LoggerFactory.getLogger(CommonInvoiceServiceImpl.class);
+    private static final Logger errorLogger = LoggerFactory.getLogger("com.lenovo.invoice.service.impl.commonInvoice");
 
     @Autowired
     private CommonInvoiceMapper commonInvoiceMapper;
@@ -194,12 +195,84 @@ public class CommonInvoiceServiceImpl extends BaseService implements CommonInvoi
         return remoteResult;
     }
 
+    //后台审核通过接口
+    @Override
+    public RemoteResult checkInvoice(VatInvoice vatInvoice) {
+        LOGGER.info("checkInvoice==参数=="+JacksonUtil.toJson(vatInvoice));
+        RemoteResult remoteResult = new RemoteResult();
+        try {
+            Long id = vatInvoice.getId();
+            String checkBy = vatInvoice.getCheckBy();
+            if (isNull(id,checkBy)){
+                remoteResult.setResultCode(InvoiceResultCode.PARAMSFAIL);
+                remoteResult.setResultMsg("必填参数为空！");
+                LOGGER.info("checkInvoice==返回值==" + JacksonUtil.toJson(remoteResult));
+                return remoteResult;
+            }
+            //TODO 判断是否存在已审核过的相同发票
+            //存在，删除这个，刷新订单 TODO
+            //不存在，修改发票状态
+            int i = commonInvoiceMapper.updateInvoiceIsCheck(vatInvoice);
+            if (i==0){
+                remoteResult.setResultCode(InvoiceResultCode.INVOICECHECKUPDATEFAIL);
+                remoteResult.setResultMsg("审核状态修改失败！");
+                LOGGER.info("checkInvoice==返回值==" + JacksonUtil.toJson(remoteResult));
+                return remoteResult;
+            }
+            //修改成功，通知订单 TODO
+
+            remoteResult.setSuccess(true);
+            remoteResult.setResultCode(InvoiceResultCode.SUCCESS);
+            remoteResult.setResultMsg("审核通过！");
+        }catch (Exception e){
+            remoteResult.setResultCode(InvoiceResultCode.FAIL);
+            remoteResult.setResultMsg("系统异常");
+            LOGGER.error(e.getMessage(),e);
+        }
+        LOGGER.info("checkInvoice==返回值=="+ JacksonUtil.toJson(remoteResult));
+        return remoteResult;
+    }
+
+    //后台修改发票信息接口
+    @Override
+    public RemoteResult updateInvoice(VatInvoice vatInvoice) {
+        LOGGER.info("updateInvoice==参数=="+JacksonUtil.toJson(vatInvoice));
+        RemoteResult remoteResult = new RemoteResult();
+        try {
+            //判断是否已存在审核过的该发票 TODO
+            //存在，刷订单 TODO
+            //不存在，修改发票
+            int i = commonInvoiceMapper.updateInvoice(vatInvoice);
+            if (i==0){
+                remoteResult.setResultCode(InvoiceResultCode.UPDATEINVOICEFAIL);
+                remoteResult.setResultMsg("发票修改失败！");
+                LOGGER.info("updateInvoice==返回值==" + JacksonUtil.toJson(remoteResult));
+                return remoteResult;
+            }
+            remoteResult.setSuccess(true);
+            remoteResult.setResultCode(InvoiceResultCode.SUCCESS);
+            remoteResult.setResultMsg("修改成功！");
+        }catch (Exception e){
+            remoteResult.setResultCode(InvoiceResultCode.FAIL);
+            remoteResult.setResultMsg("系统异常");
+            LOGGER.error(e.getMessage(),e);
+        }
+        LOGGER.info("updateInvoice==返回值=="+ JacksonUtil.toJson(remoteResult));
+        return remoteResult;
+    }
+
     //查询单个发票信息
-    public RemoteResult<VatInvoice> getInvoiceById(Long id){
+    public RemoteResult<VatInvoice> getInvoiceById(Long id,Tenant tenant){
         LOGGER.info("getInvoiceById==参数=="+id);
         RemoteResult<VatInvoice> remoteResult = new RemoteResult<VatInvoice>();
         try {
             VatInvoice invoiceById = commonInvoiceMapper.getInvoiceById(id);
+            if (invoiceById==null){
+                remoteResult.setResultCode(InvoiceResultCode.NOTHISINVOICE);
+                remoteResult.setResultMsg("没有这张发票！");
+                LOGGER.info("getInvoiceById==返回值==" + JacksonUtil.toJson(remoteResult));
+                return remoteResult;
+            }
             remoteResult.setSuccess(true);
             remoteResult.setResultCode(InvoiceResultCode.SUCCESS);
             remoteResult.setResultMsg("查询成功");
@@ -253,6 +326,14 @@ public class CommonInvoiceServiceImpl extends BaseService implements CommonInvoi
             //判断该发票是否已经存在
             VatInvoice invoiceIsExist = commonInvoiceMapper.invoiceIsExist(vatInvoice);
             if (invoiceIsExist==null){
+                vatInvoice.setTaxno(taxno);
+                if (custType==0||(custType==1&&taxNoType==3)){
+                    vatInvoice.setIscheck(1);
+                    vatInvoice.setIsvalid(1);
+                }else {
+                    vatInvoice.setIscheck(0);
+                    vatInvoice.setIsvalid(0);
+                }
                 int i = commonInvoiceMapper.saveInvoice(vatInvoice);
                 if (i==0){
                     remoteResult.setResultCode(InvoiceResultCode.ADDCOMMONINVOICEFAIL);

@@ -35,6 +35,15 @@ public class VatInvoice  implements Serializable {
     private String checkBy; //审核人
     private Date checkTime; //审核时间
     private String remark; //备注
+    private Integer isDelete; //是否删除
+
+    public Integer getIsDelete() {
+        return isDelete;
+    }
+
+    public void setIsDelete(Integer isDelete) {
+        this.isDelete = isDelete;
+    }
 
     public Integer getTaxNoType() {
         return taxNoType;
