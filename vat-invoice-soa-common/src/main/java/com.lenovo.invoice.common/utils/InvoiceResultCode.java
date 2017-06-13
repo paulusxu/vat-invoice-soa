@@ -23,7 +23,8 @@ public class InvoiceResultCode {
     public static final String ADDSPADDRESSFAIL = "14";//添加收票地址失败
     public static final String UPDATEVATINVOICEFAIL = "15";//修改增票信息失败
     public static final String GETPROVINCENOFAIL = "16";//获取省份编号失败
-    public static final String NOTHISINVOICE = "17";//该用户没有这张发票
+    public static final String NOTHISINVOICE = "17";//没有这张发票
+    public static final String TAXNOFAIL = "18";//税号格式错误
 
 
 

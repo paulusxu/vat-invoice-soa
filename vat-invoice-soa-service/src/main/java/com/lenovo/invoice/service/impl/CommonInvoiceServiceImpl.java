@@ -6,9 +6,9 @@ import com.lenovo.invoice.common.utils.JacksonUtil;
 import com.lenovo.invoice.dao.CommonInvoiceMapper;
 import com.lenovo.invoice.dao.CommonInvoiceMappingMapper;
 import com.lenovo.invoice.domain.CommonInvoice;
+import com.lenovo.invoice.domain.VatInvoice;
 import com.lenovo.invoice.service.BaseService;
-import com.lenovo.m2.arch.framework.domain.RemoteResult;
-import com.lenovo.m2.arch.framework.domain.Tenant;
+import com.lenovo.m2.arch.framework.domain.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,6 +16,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * Created by admin on 2017/3/16.
@@ -169,4 +171,137 @@ public class CommonInvoiceServiceImpl extends BaseService implements CommonInvoi
         LOGGER.info("getCommonInvoiceByIds返回值==" + JacksonUtil.toJson(remoteResult));
         return remoteResult;
     }
+
+    //以下为添加税号后方法。这里只操作普票和电子票
+
+    //分页查询，后台审核使用
+    public RemoteResult<PageModel2<VatInvoice>> getInvoiceByPage(PageQuery pageQuery,VatInvoice vatInvoice){
+        LOGGER.info("getInvoiceByPage==参数=="+JacksonUtil.toJson(pageQuery)+"=="+JacksonUtil.toJson(vatInvoice));
+        RemoteResult<PageModel2<VatInvoice>> remoteResult = new RemoteResult<PageModel2<VatInvoice>>();
+        try {
+            PageModel<VatInvoice> invoiceByPage = commonInvoiceMapper.getInvoiceByPage(pageQuery, vatInvoice);
+            PageModel2<VatInvoice> pageModel2 = new PageModel2<VatInvoice>(invoiceByPage);
+            remoteResult.setSuccess(true);
+            remoteResult.setResultCode(InvoiceResultCode.SUCCESS);
+            remoteResult.setResultMsg("查询成功");
+            remoteResult.setT(pageModel2);
+        }catch (Exception e){
+            remoteResult.setResultCode(InvoiceResultCode.FAIL);
+            remoteResult.setResultMsg("系统异常");
+            LOGGER.error(e.getMessage(),e);
+        }
+        LOGGER.info("getInvoiceByPage==返回值=="+ JacksonUtil.toJson(remoteResult));
+        return remoteResult;
+    }
+
+    //查询单个发票信息
+    public RemoteResult<VatInvoice> getInvoiceById(Long id){
+        LOGGER.info("getInvoiceById==参数=="+id);
+        RemoteResult<VatInvoice> remoteResult = new RemoteResult<VatInvoice>();
+        try {
+            VatInvoice invoiceById = commonInvoiceMapper.getInvoiceById(id);
+            remoteResult.setSuccess(true);
+            remoteResult.setResultCode(InvoiceResultCode.SUCCESS);
+            remoteResult.setResultMsg("查询成功");
+            remoteResult.setT(invoiceById);
+        }catch (Exception e){
+            remoteResult.setResultCode(InvoiceResultCode.FAIL);
+            remoteResult.setResultMsg("系统异常");
+            LOGGER.error(e.getMessage(),e);
+        }
+        LOGGER.info("getInvoiceById==返回值=="+ JacksonUtil.toJson(remoteResult));
+        return remoteResult;
+    }
+
+    //前台页面，保存发票信息
+    @Override
+    public RemoteResult<VatInvoice> saveInvoice(VatInvoice vatInvoice, Tenant tenant) {
+        LOGGER.info("saveInvoice==参数=="+JacksonUtil.toJson(vatInvoice));
+        RemoteResult<VatInvoice> remoteResult = new RemoteResult<VatInvoice>();
+        try {
+            String customername = vatInvoice.getCustomername();
+            String taxno = vatInvoice.getTaxno();
+            String createby = vatInvoice.getCreateby();
+            int shopid = vatInvoice.getShopid();
+            Integer taxNoType = vatInvoice.getTaxNoType();
+            Integer invoiceType = vatInvoice.getInvoiceType();
+            Integer custType = vatInvoice.getCustType();
+            if (isNull(customername,createby,shopid,custType,invoiceType)||(custType==1&&isNull(taxNoType))||(custType==1&&taxNoType!=3&&isNull(taxno))){
+                remoteResult.setResultCode(InvoiceResultCode.PARAMSFAIL);
+                remoteResult.setResultMsg("必填参数为空！");
+                LOGGER.info("saveInvoice==返回值==" + JacksonUtil.toJson(remoteResult));
+                return remoteResult;
+            }
+            if (taxNoType!=3){
+                //验证位数，转大写
+                Pattern pattern;
+                if (taxNoType==1){
+                    pattern = Pattern.compile("^.{15}$");
+                }else{
+                    pattern = Pattern.compile("^.{18}$");
+                }
+                Matcher matcher = pattern.matcher(taxno);
+                if (matcher.matches()) {
+                    taxno = taxno.toUpperCase();
+                } else {
+                    remoteResult.setResultCode(InvoiceResultCode.TAXNOFAIL);
+                    remoteResult.setResultMsg("税号格式错误！");
+                    LOGGER.info("saveInvoice==返回值==" + JacksonUtil.toJson(remoteResult));
+                    return remoteResult;
+                }
+            }
+            //判断该发票是否已经存在
+            VatInvoice invoiceIsExist = commonInvoiceMapper.invoiceIsExist(vatInvoice);
+            if (invoiceIsExist==null){
+                int i = commonInvoiceMapper.saveInvoice(vatInvoice);
+                if (i==0){
+                    remoteResult.setResultCode(InvoiceResultCode.ADDCOMMONINVOICEFAIL);
+                    remoteResult.setResultMsg("添加新发票失败！");
+                    LOGGER.info("saveInvoice==返回值==" + JacksonUtil.toJson(remoteResult));
+                    return remoteResult;
+                }else {
+                    remoteResult.setT(vatInvoice);
+                }
+            }else {
+                remoteResult.setT(invoiceIsExist);
+            }
+            remoteResult.setSuccess(true);
+            remoteResult.setResultCode(InvoiceResultCode.SUCCESS);
+            remoteResult.setResultMsg("保存成功！");
+        }catch (Exception e){
+            remoteResult.setResultCode(InvoiceResultCode.FAIL);
+            remoteResult.setResultMsg("系统异常");
+            LOGGER.error(e.getMessage(),e);
+        }
+        LOGGER.info("saveInvoice==返回值=="+ JacksonUtil.toJson(remoteResult));
+        return remoteResult;
+    }
+
+    //前台页面根据发票抬头带出发票信息，必须是已审核的
+    @Override
+    public RemoteResult<VatInvoice> getInvoiceByTitle(VatInvoice vatInvoice, Tenant tenant) {
+        LOGGER.info("getInvoiceByTitle==参数=="+JacksonUtil.toJson(vatInvoice));
+        RemoteResult<VatInvoice> remoteResult = new RemoteResult<VatInvoice>();
+        try {
+            VatInvoice invoiceByTitle = commonInvoiceMapper.getInvoiceByTitle(vatInvoice);
+            if (invoiceByTitle==null){
+                remoteResult.setResultCode(InvoiceResultCode.NOTHISINVOICE);
+                remoteResult.setResultMsg("未查询到发票信息！");
+                LOGGER.info("getInvoiceByTitle==返回值==" + JacksonUtil.toJson(remoteResult));
+                return remoteResult;
+            }
+            remoteResult.setSuccess(true);
+            remoteResult.setResultCode(InvoiceResultCode.SUCCESS);
+            remoteResult.setResultMsg("查询成功！");
+            remoteResult.setT(invoiceByTitle);
+        }catch (Exception e){
+            remoteResult.setResultCode(InvoiceResultCode.FAIL);
+            remoteResult.setResultMsg("系统异常");
+            LOGGER.error(e.getMessage(),e);
+        }
+        LOGGER.info("getInvoiceByTitle==返回值=="+ JacksonUtil.toJson(remoteResult));
+        return remoteResult;
+    }
+
+
 }

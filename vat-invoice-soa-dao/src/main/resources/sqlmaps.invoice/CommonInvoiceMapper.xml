@@ -42,4 +42,117 @@
       UPDATE common_invoice SET invoice_title=#{invoiceTitle} WHERE id=#{id}
   </update>
 
+  <!--以下为添加税号后方法。这里只操作普票和电子票-->
+
+  <!--分页查询，后台审核使用-->
+  <select id="getInvoiceByPage" parameterType="com.lenovo.invoice.domain.VatInvoice" resultMap="BaseResultMap">
+    SELECT
+    <include refid="Base_Column_List"/>
+    FROM vatinvoice
+    <where>
+      <if test="param2.customername!=null and param2.customername!=''">
+        and CustomerName=#{param2.customername}
+        <!--<![CDATA[ and CustomerName like '%${param2.customername}%' ]]>-->
+      </if>
+      <if test="param2.ischeck!=null">
+        and isCheck=#{param2.ischeck}
+      </if>
+      <if test="param2.taxNoType!=null">
+        and taxNoType=#{param2.taxNoType}
+      </if>
+    </where>
+    AND isvalid=1 AND invoiceType IN (2,3) AND custType=1 AND taxNoType IN (1,2)
+    ORDER BY CreateTime DESC
+  </select>
+
+  <!--查询单个发票信息-->
+  <select id="getInvoiceById" parameterType="java.lang.Long" resultMap="BaseResultMap">
+    SELECT
+    <include refid="Base_Column_List"/>
+    FROM vatinvoice
+    WHERE Id = #{id}
+  </select>
+
+  <!--修改发票信息，根据id，只能修改识别码类型，纳税人识别码，公司抬头-->
+  <update id="updateInvoice" parameterType="com.lenovo.invoice.domain.VatInvoice">
+    UPDATE vatinvoice
+    set taxNoType=#{taxNoType},TaxNo=#{taxno},CustomerName=#{customername},UpdateBy=#{updateby},UpdateTime=now()
+    WHERE Id=#{id}
+  </update>
+
+  <!--审核通过，修改发票状态-->
+  <update id="updateInvoiceIsCheck" parameterType="com.lenovo.invoice.domain.VatInvoice">
+    UPDATE vatinvoice
+    set isCheck=1,checkBy=#{checkBy},checkTime=now()
+    WHERE Id=#{id}
+  </update>
+
+  <!--订单支付后，将发票修改为有效状态-->
+  <update id="updateInvoiceIsValid">
+    UPDATE vatinvoice set isvalid=1 WHERE Id=#{id}
+  </update>
+
+  <!--前台页面，保存发票信息-->
+  <insert id="saveInvoice" parameterType="com.lenovo.invoice.domain.VatInvoice" >
+    <selectKey resultType="java.lang.Long" keyProperty="id" order="AFTER">
+      SELECT @@IDENTITY
+    </selectKey>
+    insert into vatinvoice (CustomerName,TaxNo,CreateTime,CreateBy,ShopId,taxNoType,custType,invoiceType,isCheck,isvalid)
+    values (#{customername},#{taxno},now(),#{createby},#{shopid},#{taxNoType},#{custType},#{ischeck},#{isvalid})
+  </insert>
+
+  <!--前台页面根据发票抬头带出发票信息，必须是已审核的-->
+  <select id="getInvoiceByTitle" parameterType="com.lenovo.invoice.domain.VatInvoice" resultMap="BaseResultMap">
+    SELECT
+    <include refid="Base_Column_List"/>
+    FROM vatinvoice
+    WHERE CustomerName=#{customername} AND isCheck=1 AND custType=1 AND invoiceType IN (2,3)
+  </select>
+
+  <!--根据发票抬头，税号，开票方式和发票类型查询，用于判断发票是否已存在-->
+  <select id="invoiceIsExist" parameterType="com.lenovo.invoice.domain.VatInvoice" resultMap="BaseResultMap">
+    SELECT
+    <include refid="Base_Column_List"/>
+    FROM vatinvoice
+    WHERE CustomerName=#{customername} AND TaxNo=#{taxno} AND custType=#{custType} AND invoiceType IN (2,3)
+  </select>
+
+  <resultMap id="BaseResultMap" type="com.lenovo.invoice.domain.VatInvoice" >
+    <id column="Id" property="id" jdbcType="BIGINT" />
+    <result column="CustomerName" property="customername" jdbcType="VARCHAR" />
+    <result column="TaxNo" property="taxno" jdbcType="VARCHAR" />
+    <result column="BankName" property="bankname" jdbcType="VARCHAR" />
+    <result column="AccountNo" property="accountno" jdbcType="VARCHAR" />
+    <result column="Address" property="address" jdbcType="VARCHAR" />
+    <result column="PhoneNo" property="phoneno" jdbcType="VARCHAR" />
+    <result column="BTCPSO" property="btcpso" jdbcType="VARCHAR" />
+    <result column="isCheck" property="ischeck" jdbcType="BIT" />
+    <result column="IsThrowing" property="isthrowing" jdbcType="BIT" />
+    <result column="CreateTime" property="createtime" jdbcType="TIMESTAMP" />
+    <result column="CreateBy" property="createby" jdbcType="VARCHAR" />
+    <result column="UpdateTime" property="updatetime" jdbcType="TIMESTAMP" />
+    <result column="UpdateBy" property="updateby" jdbcType="VARCHAR" />
+    <result column="IsShared" property="isshared" jdbcType="BIT" />
+    <result column="IsNeedMerge" property="isNeedMerge" jdbcType="BIT" />
+    <result column="ShopId" property="shopid" jdbcType="INTEGER" />
+    <result column="ShardedBy" property="shardedby" jdbcType="VARCHAR" />
+    <result column="ShardedTime" property="shardedtime" jdbcType="TIMESTAMP" />
+    <result column="faid" property="faid"/>
+    <result column="storesid" property="storesid"/>
+    <result column="type" property="type"/>
+    <result column="isvalid" property="isvalid" jdbcType="BIT" />
+    <result column="taxNoType" property="taxNoType" jdbcType="BIT" />
+    <result column="custType" property="custType" jdbcType="BIT" />
+    <result column="invoiceType" property="invoiceType" jdbcType="BIT" />
+    <result column="checkBy" property="checkBy" jdbcType="VARCHAR" />
+    <result column="checkTime" property="checkTime" jdbcType="TIMESTAMP" />
+    <result column="remark" property="remark" jdbcType="VARCHAR" />
+  </resultMap>
+
+  <sql id="Base_Column_List" >
+    Id, CustomerName, TaxNo, BankName, AccountNo, Address, PhoneNo, BTCPSO, isCheck,
+    IsThrowing, CreateTime, CreateBy, UpdateTime, UpdateBy, IsShared, isNeedMerge, ShopId,
+    ShardedBy, ShardedTime,faid,storesid,type,isvalid,taxNoType,custType,invoiceType,checkBy,checkTime,remark
+  </sql>
+
 </mapper>
