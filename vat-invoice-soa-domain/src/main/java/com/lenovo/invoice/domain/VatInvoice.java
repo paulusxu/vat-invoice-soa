@@ -13,7 +13,7 @@ public class VatInvoice  implements Serializable {
     private String address;
     private String phoneno;
     private String btcpso;
-    private Integer ischeck;
+    private Integer ischeck; //审核状态 0：未审核 1：客服审核通过 2：BTCP审核通过 3：审核驳回
     private Boolean isthrowing;
     private Date createtime;
     private String createby;
@@ -28,6 +28,70 @@ public class VatInvoice  implements Serializable {
     private String storesid;
     private String type;
     private Integer isvalid;
+
+    private Integer taxNoType; //识别码类型，1是15位，2是18位，3是无
+    private Integer custType; //开票方式，1公司，0个人
+    private Integer invoiceType; //发票类型，1增票，2普票，3电子票
+    private String checkBy; //审核人
+    private Date checkTime; //审核时间
+    private String remark; //备注
+    private Integer isDelete; //是否删除
+
+    public Integer getIsDelete() {
+        return isDelete;
+    }
+
+    public void setIsDelete(Integer isDelete) {
+        this.isDelete = isDelete;
+    }
+
+    public Integer getTaxNoType() {
+        return taxNoType;
+    }
+
+    public void setTaxNoType(Integer taxNoType) {
+        this.taxNoType = taxNoType;
+    }
+
+    public Integer getCustType() {
+        return custType;
+    }
+
+    public void setCustType(Integer custType) {
+        this.custType = custType;
+    }
+
+    public Integer getInvoiceType() {
+        return invoiceType;
+    }
+
+    public void setInvoiceType(Integer invoiceType) {
+        this.invoiceType = invoiceType;
+    }
+
+    public String getCheckBy() {
+        return checkBy;
+    }
+
+    public void setCheckBy(String checkBy) {
+        this.checkBy = checkBy;
+    }
+
+    public Date getCheckTime() {
+        return checkTime;
+    }
+
+    public void setCheckTime(Date checkTime) {
+        this.checkTime = checkTime;
+    }
+
+    public String getRemark() {
+        return remark;
+    }
+
+    public void setRemark(String remark) {
+        this.remark = remark;
+    }
 
     public String getFaid() {
         return faid;

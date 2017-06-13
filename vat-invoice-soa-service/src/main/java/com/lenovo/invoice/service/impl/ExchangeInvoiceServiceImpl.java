@@ -9,7 +9,6 @@ import com.lenovo.invoice.dao.OrderInvoiceMapper;
 import com.lenovo.invoice.dao.VathrowBtcpMapper;
 import com.lenovo.invoice.domain.CommonInvoice;
 import com.lenovo.invoice.domain.ExchangeInvoiceRecord;
-import com.lenovo.invoice.domain.OrderInvoice;
 import com.lenovo.invoice.domain.VathrowBtcp;
 import com.lenovo.invoice.domain.param.AddVatInvoiceInfoParam;
 import com.lenovo.invoice.domain.param.GetVatInvoiceInfoParam;
@@ -137,7 +136,7 @@ public class ExchangeInvoiceServiceImpl extends BaseService implements ExchangeI
                 commonInvoice.setCreateBy(itCode);
                 commonInvoice.setLenovoId(invoiceChangeApi.getLenovoId());
                 //还未发货，客户换票，首先添加新得普票
-                RemoteResult<CommonInvoice> remoteResult1 = commonInvoiceService.addCommonInvoice(commonInvoice);
+                RemoteResult<CommonInvoice> remoteResult1 = commonInvoiceService.addCommonInvoice(commonInvoice,tenant);
                 if (!remoteResult1.isSuccess()){
                     //添加失败
                     remoteResult.setResultCode(InvoiceResultCode.ADDCOMMONINVOICEFAIL);
@@ -245,7 +244,7 @@ public class ExchangeInvoiceServiceImpl extends BaseService implements ExchangeI
                         }catch (Exception e){
                             ERRORLOGGER.error("增换普，换票成功，增票和订单映射删除出现异常！"+orderCode+"=="+e.getMessage(),e);
                         }
-                        try {
+                        /*try {
                             //修改orderInvoice
                             OrderInvoice orderInvoice = new OrderInvoice();
                             orderInvoice.setOrderid(Long.parseLong(orderCode));
@@ -265,7 +264,7 @@ public class ExchangeInvoiceServiceImpl extends BaseService implements ExchangeI
                             }
                         }catch (Exception e){
                             ERRORLOGGER.error("换普票，修改orderInvoice出现异常！"+orderCode+"=="+e.getMessage(),e);
-                        }
+                        }*/
                     }else if ("9003".equals(remoteResult2.getResultCode())){
                         remoteResult.setResultCode(InvoiceResultCode.UPDATEORDERFAIL);
                         remoteResult.setResultMsg("该订单正在抛单，请五分钟后再试！");
@@ -635,7 +634,7 @@ public class ExchangeInvoiceServiceImpl extends BaseService implements ExchangeI
                         } catch (Exception e) {
                             ERRORLOGGER.error("添加换票记录出现异常==参数==" + JacksonUtil.toJson(record)+"==" + e.getMessage(), e);
                         }
-                        try {
+                        /*try {
                             //修改orderInvoice
                             OrderInvoice orderInvoice = new OrderInvoice();
                             orderInvoice.setOrderid(Long.parseLong(orderCode));
@@ -659,7 +658,7 @@ public class ExchangeInvoiceServiceImpl extends BaseService implements ExchangeI
                             }
                         }catch (Exception e){
                             ERRORLOGGER.error("换增票，修改orderInvoice出现异常！"+orderCode+"=="+e.getMessage(),e);
-                        }
+                        }*/
                     } else {
                         //修改订单失败，修改增票要回滚
                         if (changeType==5){
@@ -1088,7 +1087,7 @@ public class ExchangeInvoiceServiceImpl extends BaseService implements ExchangeI
                 }catch (Exception e){
                     ERRORLOGGER.error("BTCP回调===修改增票信息出现异常==" + orderCode+"=="+applyId+"=="+e.getMessage(),e);
                 }
-                try {
+                /*try {
                     //修改orderInvoice
                     OrderInvoice orderInvoice = new OrderInvoice();
                     orderInvoice.setOrderid(Long.parseLong(orderCode));
@@ -1116,7 +1115,7 @@ public class ExchangeInvoiceServiceImpl extends BaseService implements ExchangeI
                     }
                 }catch (Exception e){
                     ERRORLOGGER.error("换普票，修改orderInvoice出现异常！"+orderCode+"=="+e.getMessage(),e);
-                }
+                }*/
             }else {
                 //换票失败
                 try {

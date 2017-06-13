@@ -9,6 +9,12 @@
     ORDER BY createtime DESC limit 1;
   </select>
 
+  <select id="getCommonInvoiceMappingByIds" parameterType="com.lenovo.invoice.domain.CommonInvoice" resultMap="CommonInvoiceMappingResultMap" >
+    select id,lenovoId,common_invoice_id,shopid,createtime,createBy,type
+    from common_invoice_mapping
+    where lenovoId=#{lenovoId} AND common_invoice_id=#{id}
+  </select>
+
   <resultMap id="CommonInvoiceMappingResultMap" type="com.lenovo.invoice.domain.CommonInvoice">
     <id column="id" property="mappingId"/>
     <result column="lenovoId" property="lenovoId"/>
