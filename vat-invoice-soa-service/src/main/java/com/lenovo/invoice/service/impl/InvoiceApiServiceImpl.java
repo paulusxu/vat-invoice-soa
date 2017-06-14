@@ -1077,9 +1077,9 @@ public class InvoiceApiServiceImpl extends BaseService implements InvoiceApiServ
         zyFaTye.add(3);
         if (zyFaTye.contains(fatype)) {//直营 fatypes.contains(0/3)
             if (openZy.equals("on")) {
-                return new InvoiceList(Arrays.asList(new InvoiceType[]{InvoiceType.DZFP, InvoiceType.PTFP}), Arrays.asList(new InvoiceType[]{InvoiceType.PTFP, InvoiceType.ZZFP}));
+                return new InvoiceList(Arrays.asList(new InvoiceType[]{InvoiceType.DZFP, InvoiceType.PTFP}), Arrays.asList(new InvoiceType[]{InvoiceType.PTFP, InvoiceType.ZZFP,InvoiceType.DZFP}));
             } else {
-                return new InvoiceList(Arrays.asList(new InvoiceType[]{InvoiceType.DZFP}), Arrays.asList(new InvoiceType[]{InvoiceType.ZZFP}));
+                return new InvoiceList(Arrays.asList(new InvoiceType[]{InvoiceType.DZFP}), Arrays.asList(new InvoiceType[]{InvoiceType.ZZFP,InvoiceType.DZFP}));
             }
         }
         if (shopId == 9 || shopId == 15 || fatype == 5) {
