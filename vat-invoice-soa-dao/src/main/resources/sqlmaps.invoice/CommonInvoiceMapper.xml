@@ -49,19 +49,17 @@
     SELECT
     <include refid="Base_Column_List"/>
     FROM vatinvoice
-    <where>
-      <if test="param2.customername!=null and param2.customername!=''">
-        and CustomerName=#{param2.customername}
-        <!--<![CDATA[ and CustomerName like '%${param2.customername}%' ]]>-->
-      </if>
-      <if test="param2.ischeck!=null">
-        and isCheck=#{param2.ischeck}
-      </if>
-      <if test="param2.taxNoType!=null">
-        and taxNoType=#{param2.taxNoType}
-      </if>
-    </where>
-    AND isvalid=1 AND invoiceType IN (2,3) AND custType=1 AND taxNoType IN (1,2) AND isDelete=0
+    WHERE isvalid=1 AND invoiceType IN (2,3) AND custType=1 AND taxNoType IN (1,2) AND isDelete=0
+    <if test="param2.customername!=null and param2.customername!=''">
+      AND CustomerName=#{param2.customername}
+      <!--<![CDATA[ and CustomerName like '%${param2.customername}%' ]]>-->
+    </if>
+    <if test="param2.ischeck!=null">
+      AND isCheck=#{param2.ischeck}
+    </if>
+    <if test="param2.taxNoType!=null">
+      AND taxNoType=#{param2.taxNoType}
+    </if>
     ORDER BY UpdateTime DESC
   </select>
 
@@ -115,7 +113,15 @@
     <include refid="Base_Column_List"/>
     FROM vatinvoice
     WHERE CustomerName=#{customername} AND TaxNo=#{taxno} AND custType=#{custType} AND invoiceType IN (2,3) AND isDelete=0
+    <if test="param2.ischeck!=null">
+      AND isCheck=#{param2.ischeck}
+    </if>
   </select>
+
+  <!--伪删除这张票-->
+  <update id="deleteInvoice" parameterType="java.lang.Long">
+    UPDATE vatinvoice set isDelete=1,UpdateTime=now() WHERE Id=#{id}
+  </update>
 
   <resultMap id="BaseResultMap" type="com.lenovo.invoice.domain.VatInvoice" >
     <id column="Id" property="id" jdbcType="BIGINT" />
