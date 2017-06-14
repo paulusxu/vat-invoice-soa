@@ -39,9 +39,13 @@ public class PaidOrderVatInvoiceMessageCustomer {
                 String zid = (String) map.get("invoiceId");
                 Integer orderCode = (Integer) map.get("orderCode");
                 Integer shopId = (Integer) map.get("shopId");
-                long rows = vatInvoiceService.initVathrowBtcp(orderCode + "", zid,shopId);
-                LOGGER.info("PaidOrderVatInvoiceMessageCustomer End:{},{}", msg, rows);
-                invoiceService.updateIsvalid(zid);
+                Integer type = (Integer) map.get("type");
+                if (type == 2) {
+                    long rows = vatInvoiceService.initVathrowBtcp(orderCode + "", zid, shopId);
+                    LOGGER.info("PaidOrderVatInvoiceMessageCustomer End:{},{}", msg, rows);
+                    invoiceService.updateIsvalid(zid);
+                }
+
             } catch (Exception e) {
                 LOGGER.error(e.getMessage(), e);
             }

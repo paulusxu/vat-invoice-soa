@@ -8,4 +8,6 @@ import com.lenovo.m2.arch.framework.domain.RemoteResult;
  */
 public interface OrderInvoiceApiService {
     RemoteResult<Boolean> initOrderInvoice(OrderInvoice orderInvoice);
+
+    void updateInvoiceLogistics();
 }
