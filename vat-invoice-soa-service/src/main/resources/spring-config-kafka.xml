@@ -57,7 +57,7 @@
     <!--支付消费，用于将普票和电子票置为有效。-->
     <bean id="kafkaConsumerOptions_order_invoice" class="com.lenovo.kafka.api.core.factory.KafkaConsumerOptions">
         <property name="connectionZk" value="${connectionZk}" />
-        <property name="groupName" value="${groupName}" />
+        <property name="groupName" value="${order_invoice_group}" />
         <property name="zkSessionTimeout" value="${zkSessionTimeout}" />
         <property name="zkSyncTime" value="${zkSyncTime}" />
         <property name="autoCommitInterval" value="${autoCommitInterval}" />
