@@ -35,4 +35,9 @@ public class OrderInvoiceApiServiceImpl implements OrderInvoiceApiService {
         }
         return remoteResult;
     }
+
+    @Override
+    public void updateInvoiceLogistics() {
+
+    }
 }
