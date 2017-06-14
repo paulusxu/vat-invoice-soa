@@ -203,7 +203,11 @@ public class CommonInvoiceServiceImpl extends BaseService implements CommonInvoi
         try {
             Long id = vatInvoice.getId();
             String checkBy = vatInvoice.getCheckBy();
-            if (isNull(id,checkBy)){
+            String customername = vatInvoice.getCustomername();
+            String taxno = vatInvoice.getTaxno();
+            Integer custType = vatInvoice.getCustType();
+            Integer taxNoType = vatInvoice.getTaxNoType();
+            if (isNull(id,checkBy,customername,taxno,custType,taxNoType)){
                 remoteResult.setResultCode(InvoiceResultCode.PARAMSFAIL);
                 remoteResult.setResultMsg("必填参数为空！");
                 LOGGER.info("checkInvoice==返回值==" + JacksonUtil.toJson(remoteResult));
@@ -242,6 +246,12 @@ public class CommonInvoiceServiceImpl extends BaseService implements CommonInvoi
             //判断是否已存在审核过的该发票 TODO
             //存在，刷订单 TODO
             //不存在，修改发票
+            Integer taxNoType = vatInvoice.getTaxNoType();
+            if (taxNoType==3){
+                vatInvoice.setIscheck(1);
+            }else {
+                vatInvoice.setIscheck(0);
+            }
             int i = commonInvoiceMapper.updateInvoice(vatInvoice);
             if (i==0){
                 remoteResult.setResultCode(InvoiceResultCode.UPDATEINVOICEFAIL);

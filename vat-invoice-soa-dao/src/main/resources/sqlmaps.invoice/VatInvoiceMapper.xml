@@ -98,7 +98,7 @@
   <select id="getVatInvoiceValidationList" resultMap="BaseResultMap">
       select
         <include refid="Base_Column_List" />
-      from vatinvoice WHERE id <![CDATA[<>]]> ${vid} and isvalid=1
+      from vatinvoice WHERE id <![CDATA[<>]]> ${vid} and isvalid=1 and invoiceType=1
 
       <if test="type != null" >
         and type = #{type}
@@ -130,7 +130,7 @@
         and type = #{type}
       </if>
     </where>
-     and isCheck in (1,2) and IsShared = 1
+     and isCheck in (1,2) and IsShared = 1 and invoiceType=1
     ORDER BY CreateTime DESC LIMIT 1
   </select>
 
@@ -138,7 +138,7 @@
     select
     <include refid="Base_Column_List" />
     from vatinvoice WHERE
-    type = #{type} and ((CustomerName = #{customerName,jdbcType=VARCHAR} and TaxNo <![CDATA[<>]]> #{taxNo,jdbcType=VARCHAR}) or (CustomerName <![CDATA[<>]]> #{customerName,jdbcType=VARCHAR} and TaxNo = #{taxNo,jdbcType=VARCHAR})) and isCheck in (1,2)
+    type = #{type} and ((CustomerName = #{customerName,jdbcType=VARCHAR} and TaxNo <![CDATA[<>]]> #{taxNo,jdbcType=VARCHAR}) or (CustomerName <![CDATA[<>]]> #{customerName,jdbcType=VARCHAR} and TaxNo = #{taxNo,jdbcType=VARCHAR})) and isCheck in (1,2) and invoiceType=1
     ORDER BY CreateTime DESC LIMIT 1
   </select>
 
@@ -301,13 +301,13 @@
 
   <select id="getVatInvoiceCount" resultType="java.lang.Integer" parameterType="java.util.Map">
     select count(1) from vatinvoice
-    WHERE 1=1 and AccountNo is not null and faid in(${faid}) and isvalid=1
+    WHERE 1=1 and AccountNo is not null and faid in(${faid}) and isvalid=1 and invoiceType=1
     <include refid="queryVatInvoice" />
   </select>
 
   <select id="getVatInvoicePage" resultMap="BaseResultMap" parameterType="java.util.Map">
     select <include refid="Base_Column_List" /> from vatinvoice
-    WHERE 1=1 and AccountNo is not null and faid in(${faid}) and isvalid=1
+    WHERE 1=1 and AccountNo is not null and faid in(${faid}) and isvalid=1 and invoiceType=1
     <include refid="queryVatInvoice" />
     ORDER BY TaxNo,CustomerName,CreateTime DESC limit ${pageIndex},${pageSize}
   </select>
@@ -328,7 +328,7 @@
   <select id="getExportVatInvoiceList" resultMap="BaseResultMap" parameterType="java.util.Map">
     select <include refid="Base_Column_List" />
     from vatinvoice
-    WHERE AccountNo is not null and faid in(${faid})
+    WHERE AccountNo is not null and faid in(${faid})  and invoiceType=1
     <include refid="queryVatInvoice" />
     ORDER BY TaxNo,CustomerName
   </select>
@@ -338,7 +338,7 @@
     select
     <include refid="Base_Column_List" />
     from vatinvoice WHERE CustomerName = #{customername,jdbcType=VARCHAR}
-    and TaxNo = #{taxno,jdbcType=VARCHAR} and AccountNo is null
+    and TaxNo = #{taxno,jdbcType=VARCHAR} and AccountNo is null  and invoiceType=1
     and ShopId = #{shopid} LIMIT 1
   </select>
 

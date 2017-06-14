@@ -20,6 +20,7 @@ public interface VathrowBtcpMapper {
 
     //根据批量增票zid获取 准备抛送btcp的列表
     List<VathrowBtcp> getVatInvoice2BtcpListByZid(String zid);
+
     //根据批量orderid获取 准备抛送btcp的列表
     List<VathrowBtcp> getVatInvoice2BtcpListByOrderCode(String orderCodes);
 

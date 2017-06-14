@@ -62,7 +62,7 @@
       </if>
     </where>
     AND isvalid=1 AND invoiceType IN (2,3) AND custType=1 AND taxNoType IN (1,2) AND isDelete=0
-    ORDER BY CreateTime DESC
+    ORDER BY UpdateTime DESC
   </select>
 
   <!--查询单个发票信息-->
@@ -76,20 +76,20 @@
   <!--修改发票信息，根据id，只能修改识别码类型，纳税人识别码，公司抬头-->
   <update id="updateInvoice" parameterType="com.lenovo.invoice.domain.VatInvoice">
     UPDATE vatinvoice
-    set taxNoType=#{taxNoType},TaxNo=#{taxno},CustomerName=#{customername},UpdateBy=#{updateby},UpdateTime=now()
+    set taxNoType=#{taxNoType},TaxNo=#{taxno},CustomerName=#{customername},UpdateBy=#{updateby},UpdateTime=now(),isCheck=#{ischeck}
     WHERE Id=#{id} AND isDelete=0
   </update>
 
   <!--审核通过，修改发票状态-->
   <update id="updateInvoiceIsCheck" parameterType="com.lenovo.invoice.domain.VatInvoice">
     UPDATE vatinvoice
-    set isCheck=1,checkBy=#{checkBy},checkTime=now()
+    set isCheck=1,checkBy=#{checkBy},checkTime=now(),UpdateTime=now()
     WHERE Id=#{id} AND isDelete=0
   </update>
 
   <!--订单支付后，将发票修改为有效状态-->
   <update id="updateInvoiceIsValid">
-    UPDATE vatinvoice set isvalid=1 WHERE Id=#{id} AND isDelete=0
+    UPDATE vatinvoice set isvalid=1,UpdateTime=now() WHERE Id=#{id} AND isDelete=0
   </update>
 
   <!--前台页面，保存发票信息-->
@@ -97,8 +97,8 @@
     <selectKey resultType="java.lang.Long" keyProperty="id" order="AFTER">
       SELECT @@IDENTITY
     </selectKey>
-    insert into vatinvoice (CustomerName,TaxNo,CreateTime,CreateBy,ShopId,taxNoType,custType,invoiceType,isCheck,isvalid)
-    values (#{customername},#{taxno},now(),#{createby},#{shopid},#{taxNoType},#{custType},#{invoiceType},#{ischeck},#{isvalid})
+    insert into vatinvoice (CustomerName,TaxNo,CreateTime,CreateBy,ShopId,taxNoType,custType,invoiceType,isCheck,isvalid,UpdateTime)
+    values (#{customername},#{taxno},now(),#{createby},#{shopid},#{taxNoType},#{custType},#{invoiceType},#{ischeck},#{isvalid},now())
   </insert>
 
   <!--前台页面根据发票抬头带出发票信息，必须是已审核的-->
