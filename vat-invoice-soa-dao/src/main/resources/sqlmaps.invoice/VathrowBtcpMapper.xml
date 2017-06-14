@@ -94,7 +94,7 @@
         select
         vat.*
         FROM vathrowbtcp btcp, vatinvoice vat WHERE btcp.Zid=vat.Id AND btcp.OrderStatus=3 AND btcp.ThrowingStatus
-        IN(0,2,4) AND IsUsable=1
+        IN(0,2,4) AND IsUsable=1  and vat.invoiceType=1
         <if test="orderCode != null and orderCode!=''">
             AND btcp.OrderCode=#{orderCode}
         </if>
@@ -107,7 +107,7 @@
 
     <select id="getNotThrowBtcpVatInvoiceCount" resultType="java.lang.Integer" parameterType="java.util.Map">
         SELECT COUNT(1) FROM
-        (SELECT vat.* FROM vathrowbtcp btcp, vatinvoice vat WHERE btcp.Zid=vat.Id AND btcp.OrderStatus=3 AND btcp.ThrowingStatus IN(0,2,4)  AND IsUsable=1
+        (SELECT vat.* FROM vathrowbtcp btcp, vatinvoice vat WHERE btcp.Zid=vat.Id AND btcp.OrderStatus=3 AND btcp.ThrowingStatus IN(0,2,4)  AND IsUsable=1 and vat.invoiceType=1
         <if test="orderCode != null and orderCode!=''">
             AND btcp.OrderCode=#{orderCode}
         </if>
@@ -169,7 +169,7 @@
     <select id="getThrowBtcpList" resultMap="BaseResultMap">
     select
     btcp.*
-    FROM vathrowbtcp btcp, vatinvoice vat WHERE vat.isCheck in(1,2) AND btcp.Zid=vat.Id AND btcp.OrderStatus=3 AND btcp.ThrowingStatus =0  AND IsUsable=1
+    FROM vathrowbtcp btcp, vatinvoice vat WHERE vat.isCheck in(1,2) AND btcp.Zid=vat.Id AND btcp.OrderStatus=3 AND btcp.ThrowingStatus =0  AND IsUsable=1 and vat.invoiceType=1
   </select>
 
     <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
