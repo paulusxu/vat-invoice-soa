@@ -46,6 +46,8 @@ public interface CommonInvoiceMapper {
     //根据发票抬头，税号，开票方式和发票类型查询，用于判断发票是否已存在
     public VatInvoice invoiceIsExist(VatInvoice vatInvoice);
 
+    //伪删除这张发票
+    public int deleteInvoice(Long id);
 
 
 

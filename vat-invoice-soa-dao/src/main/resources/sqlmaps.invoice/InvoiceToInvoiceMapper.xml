@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.lenovo.invoice.dao.InvoiceToInvoiceMapper" >
+
+  <select id="getInvoiceToInvoice" parameterType="java.lang.Long" resultType="com.lenovo.invoice.domain.InvoiceToInvoice" >
+    select id,targetId,createTime,createBy
+    from invoice_invoice
+    where id=#{id}
+  </select>
+
+  <select id="getVatInvoice" parameterType="java.lang.Long" resultType="com.lenovo.invoice.domain.VatInvoice" >
+    SELECT * FROM vatinvoice WHERE id=(SELECT targetId FROM invoice_invoice WHERE id=#{id})
+  </select>
+
+  <insert id="saveInvoiceToInvoice" parameterType="com.lenovo.invoice.domain.InvoiceToInvoice">
+    insert into invoice_invoice (id,targetId,createTime,createBy) values (#{id}, #{targetId},now(),#{createBy})
+  </insert>
+</mapper>

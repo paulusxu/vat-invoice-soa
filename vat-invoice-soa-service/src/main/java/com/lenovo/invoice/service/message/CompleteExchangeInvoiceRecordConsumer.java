@@ -16,7 +16,7 @@ import org.springframework.beans.factory.annotation.Autowired;
  * 订单抛单后 订单推送 用来完善修改发票记录的BTCP号
  */
 public class CompleteExchangeInvoiceRecordConsumer {
-    private static final Logger LOGGER = LoggerFactory.getLogger("com.lenovo.m2.message.soa.service.message.credit");
+    private static final Logger LOGGER = LoggerFactory.getLogger(CompleteExchangeInvoiceRecordConsumer.class);
 
     private KafkaConsumer kafkaConsumer;
 
