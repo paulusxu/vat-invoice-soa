@@ -326,7 +326,7 @@ public class CommonInvoiceServiceImpl extends BaseService implements CommonInvoi
                 //验证位数，转大写
                 Pattern pattern;
                 if (taxNoType==1){
-                    pattern = Pattern.compile("^.{15}$");
+                    pattern = Pattern.compile("^.{15}$|^.{20}$");
                 }else{
                     pattern = Pattern.compile("^.{18}$");
                 }
@@ -439,8 +439,9 @@ public class CommonInvoiceServiceImpl extends BaseService implements CommonInvoi
             if (taxNoType!=3){
                 //验证位数，转大写
                 Pattern pattern;
+                /*"^.{15}$|^.{18}$|^.{20}$"*/
                 if (taxNoType==1){
-                    pattern = Pattern.compile("^.{15}$");
+                    pattern = Pattern.compile("^.{15}$|^.{20}$");
                 }else{
                     pattern = Pattern.compile("^.{18}$");
                 }
@@ -538,7 +539,7 @@ public class CommonInvoiceServiceImpl extends BaseService implements CommonInvoi
                 //验证位数，转大写
                 Pattern pattern;
                 if (taxNoType==1){
-                    pattern = Pattern.compile("^.{15}$");
+                    pattern = Pattern.compile("^.{15}$|^.{20}$");
                 }else{
                     pattern = Pattern.compile("^.{18}$");
                 }
