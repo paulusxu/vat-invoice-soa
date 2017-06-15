@@ -361,8 +361,6 @@ public class InvoiceShopApiServiceImpl implements InvoiceShopApiService {
             return 9;
         }else if (invoiceShop.getCompanyType() == null) {
             return 10;
-        }else if (invoiceShop.getTaxNoType() == null||"".equals(invoiceShop.getTaxNoType())) {
-            return 11;
         }
         return 0;
     }
