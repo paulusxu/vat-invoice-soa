@@ -54,6 +54,29 @@
         <constructor-arg ref="kafkaConsumerFactory_order" />
     </bean>
 
+    <!--支付消费，用于将普票和电子票置为有效。-->
+    <bean id="kafkaConsumerOptions_order_invoice" class="com.lenovo.kafka.api.core.factory.KafkaConsumerOptions">
+        <property name="connectionZk" value="${connectionZk}" />
+        <property name="groupName" value="${order_invoice_group}" />
+        <property name="zkSessionTimeout" value="${zkSessionTimeout}" />
+        <property name="zkSyncTime" value="${zkSyncTime}" />
+        <property name="autoCommitInterval" value="${autoCommitInterval}" />
+        <property name="rebalanceBackOff" value="${rebalanceBackOff}" />
+        <property name="rebalanceMaxRetries" value="${rebalanceMaxRetries}" />
+        <property name="autoOffsetReset" value="${autoOffsetReset}" />
+        <property name="topicName" value="${order.topicName}" />
+    </bean>
+    <bean id="kafkaConsumerFactory_order_invoice" class="com.lenovo.kafka.api.core.factory.KafkaConsumerFactory"
+          init-method="initialize">
+        <constructor-arg ref="kafkaConsumerOptions_order_invoice" />
+    </bean>
+    <bean id="kafkaConsumer_order_invoice" class="com.lenovo.kafka.api.core.consumer.KafkaConsumer">
+        <constructor-arg ref="kafkaConsumerFactory_order_invoice" />
+    </bean>
+    <bean id="updateInvoiceIsValidConsumer" class="com.lenovo.invoice.service.message.UpdateInvoiceIsValidConsumer">
+        <constructor-arg ref="kafkaConsumer_order_invoice"/>
+    </bean>
+
     <!--是否可抛送增票 订单推送-->
     <bean id="kafkaConsumerOptions_order_throwStatus" class="com.lenovo.kafka.api.core.factory.KafkaConsumerOptions">
         <property name="connectionZk" value="${connectionZk}" />

@@ -31,13 +31,19 @@ public interface CommonInvoiceService {
     //后台修改发票信息接口
     public RemoteResult updateInvoice(VatInvoice vatInvoice);
 
-    //查询单个发票信息
+    //查询单个发票信息，只能查询到有效数据
     public RemoteResult<VatInvoice> getInvoiceById(Long id,Tenant tenant);
+
+    //查询单个发票信息，支持使用废弃发票id查询
+    public RemoteResult<VatInvoice> getInvoiceByIdForAll(Long id,Tenant tenant);
 
     //前台页面，保存发票信息
     public RemoteResult<VatInvoice> saveInvoice(VatInvoice vatInvoice,Tenant tenant);
 
     //前台页面根据发票抬头带出发票信息，必须是已审核的
     public RemoteResult<VatInvoice> getInvoiceByTitle(VatInvoice vatInvoice,Tenant tenant);
+
+    //订单使用新增发票接口，如果已存在，返回老发票信息
+    public RemoteResult<VatInvoice> addInvoice(VatInvoice vatInvoice,Tenant tenant);
 
 }
