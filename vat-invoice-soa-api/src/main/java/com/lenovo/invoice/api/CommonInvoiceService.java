@@ -1,6 +1,7 @@
 package com.lenovo.invoice.api;
 
 import com.lenovo.invoice.domain.CommonInvoice;
+import com.lenovo.invoice.domain.InvoiceToInvoice;
 import com.lenovo.invoice.domain.VatInvoice;
 import com.lenovo.m2.arch.framework.domain.PageModel2;
 import com.lenovo.m2.arch.framework.domain.PageQuery;
@@ -45,5 +46,19 @@ public interface CommonInvoiceService {
 
     //订单使用新增发票接口，如果已存在，返回老发票信息
     public RemoteResult<VatInvoice> addInvoice(VatInvoice vatInvoice,Tenant tenant);
+
+
+    //伪删除发票
+    public RemoteResult deleteInvoice(Long id,Tenant tenant);
+
+    //添加废弃发票和有效发票的映射
+    public RemoteResult addInvoiceToInvoice(InvoiceToInvoice invoice,Tenant tenant);
+
+    //伪删除还原发票
+    public RemoteResult rollbackDeleteInvoice(Long id,Tenant tenant);
+
+    //删除废弃发票和有效发票的映射
+    public RemoteResult deleteInvoiceToInvoice(Long id,Tenant tenant);
+
 
 }

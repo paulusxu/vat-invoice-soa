@@ -3,7 +3,6 @@ package com.lenovo.invoice.service.impl;
 import com.lenovo.invoice.api.CommonInvoiceService;
 import com.lenovo.invoice.common.utils.InvoiceResultCode;
 import com.lenovo.invoice.common.utils.JacksonUtil;
-import com.lenovo.invoice.common.utils.StringUtil;
 import com.lenovo.invoice.dao.CommonInvoiceMapper;
 import com.lenovo.invoice.dao.CommonInvoiceMappingMapper;
 import com.lenovo.invoice.dao.InvoiceToInvoiceMapper;
@@ -278,9 +277,9 @@ public class CommonInvoiceServiceImpl extends BaseService implements CommonInvoi
             Integer taxNoType = vatInvoice.getTaxNoType();
             Integer custType = vatInvoice.getCustType();
             String updateby = vatInvoice.getUpdateby();
-            if (StringUtil.isNull(customername, id, taxNoType, custType, updateby)||(taxNoType!=3&&StringUtil.isNull(taxno))){
+            if (isNull(customername, id, taxNoType, custType, updateby)||(taxNoType!=3&&isNull(taxno))||(taxNoType==3&&isNotNull(taxno))){
                 remoteResult.setResultCode(InvoiceResultCode.PARAMSFAIL);
-                remoteResult.setResultMsg("必填参数为空！");
+                remoteResult.setResultMsg("必填参数错误！");
                 LOGGER.info("updateInvoice==返回值==" + com.lenovo.invoice.common.utils.JacksonUtil.toJson(remoteResult));
                 return remoteResult;
             }
@@ -430,9 +429,9 @@ public class CommonInvoiceServiceImpl extends BaseService implements CommonInvoi
             Integer taxNoType = vatInvoice.getTaxNoType();
             Integer invoiceType = vatInvoice.getInvoiceType();
             Integer custType = vatInvoice.getCustType();
-            if (isNull(customername,createby,shopid,custType,invoiceType)||(custType==1&&isNull(taxNoType))||(custType==1&&taxNoType!=3&&isNull(taxno))){
+            if (isNull(customername,createby,shopid,custType,invoiceType)||(custType==1&&isNull(taxNoType))||(custType==1&&taxNoType!=3&&isNull(taxno))||(custType==1&&taxNoType==3&&isNotNull(taxno))){
                 remoteResult.setResultCode(InvoiceResultCode.PARAMSFAIL);
-                remoteResult.setResultMsg("必填参数为空！");
+                remoteResult.setResultMsg("必填参数错误！");
                 LOGGER.info("saveInvoice==返回值==" + JacksonUtil.toJson(remoteResult));
                 return remoteResult;
             }
@@ -529,9 +528,9 @@ public class CommonInvoiceServiceImpl extends BaseService implements CommonInvoi
             Integer taxNoType = vatInvoice.getTaxNoType();
             Integer invoiceType = vatInvoice.getInvoiceType();
             Integer custType = vatInvoice.getCustType();
-            if (isNull(customername,createby,shopid,custType,invoiceType)||(custType==1&&isNull(taxNoType))||(custType==1&&taxNoType!=3&&isNull(taxno))){
+            if (isNull(customername,createby,shopid,custType,invoiceType)||(custType==1&&isNull(taxNoType))||(custType==1&&taxNoType!=3&&isNull(taxno))||(custType==1&&taxNoType==3&&isNotNull(taxno))){
                 remoteResult.setResultCode(InvoiceResultCode.PARAMSFAIL);
-                remoteResult.setResultMsg("必填参数为空！");
+                remoteResult.setResultMsg("必填参数错误！");
                 LOGGER.info("addInvoice==返回值==" + JacksonUtil.toJson(remoteResult));
                 return remoteResult;
             }
@@ -585,6 +584,102 @@ public class CommonInvoiceServiceImpl extends BaseService implements CommonInvoi
             LOGGER.error(e.getMessage(),e);
         }
         LOGGER.info("addInvoice==返回值=="+ JacksonUtil.toJson(remoteResult));
+        return remoteResult;
+    }
+
+    @Override
+    public RemoteResult deleteInvoice(Long id, Tenant tenant) {
+        LOGGER.info("deleteInvoice==参数=="+id);
+        RemoteResult remoteResult = new RemoteResult();
+        try {
+            int i = commonInvoiceMapper.deleteInvoice(id);
+            if (i==0){
+                remoteResult.setResultCode(InvoiceResultCode.FAIL);
+                remoteResult.setResultMsg("删除失败！");
+                LOGGER.info("deleteInvoice==返回值==" + JacksonUtil.toJson(remoteResult));
+                return remoteResult;
+            }
+            remoteResult.setSuccess(true);
+            remoteResult.setResultCode(InvoiceResultCode.SUCCESS);
+            remoteResult.setResultMsg("删除成功！");
+        }catch (Exception e){
+            remoteResult.setResultCode(InvoiceResultCode.FAIL);
+            remoteResult.setResultMsg("系统异常");
+            LOGGER.error(e.getMessage(),e);
+        }
+        LOGGER.info("deleteInvoice==返回值=="+ JacksonUtil.toJson(remoteResult));
+        return remoteResult;
+    }
+
+    @Override
+    public RemoteResult addInvoiceToInvoice(InvoiceToInvoice invoice, Tenant tenant) {
+        LOGGER.info("addInvoiceToInvoice==参数=="+JacksonUtil.toJson(invoice));
+        RemoteResult remoteResult = new RemoteResult();
+        try {
+            int i = invoiceToInvoiceMapper.saveInvoiceToInvoice(invoice);
+            if (i==0){
+                remoteResult.setResultCode(InvoiceResultCode.FAIL);
+                remoteResult.setResultMsg("添加失败！");
+                LOGGER.info("addInvoiceToInvoice==返回值==" + JacksonUtil.toJson(remoteResult));
+                return remoteResult;
+            }
+            remoteResult.setSuccess(true);
+            remoteResult.setResultCode(InvoiceResultCode.SUCCESS);
+            remoteResult.setResultMsg("添加成功！");
+        }catch (Exception e){
+            remoteResult.setResultCode(InvoiceResultCode.FAIL);
+            remoteResult.setResultMsg("系统异常");
+            LOGGER.error(e.getMessage(),e);
+        }
+        LOGGER.info("addInvoiceToInvoice==返回值=="+ JacksonUtil.toJson(remoteResult));
+        return remoteResult;
+    }
+
+    @Override
+    public RemoteResult rollbackDeleteInvoice(Long id, Tenant tenant) {
+        LOGGER.info("rollbackDeleteInvoice==参数=="+id);
+        RemoteResult remoteResult = new RemoteResult();
+        try {
+            int i = commonInvoiceMapper.rollbackDeleteInvoice(id);
+            if (i==0){
+                remoteResult.setResultCode(InvoiceResultCode.FAIL);
+                remoteResult.setResultMsg("删除还原失败！");
+                LOGGER.info("rollbackDeleteInvoice==返回值==" + JacksonUtil.toJson(remoteResult));
+                return remoteResult;
+            }
+            remoteResult.setSuccess(true);
+            remoteResult.setResultCode(InvoiceResultCode.SUCCESS);
+            remoteResult.setResultMsg("删除还原成功！");
+        }catch (Exception e){
+            remoteResult.setResultCode(InvoiceResultCode.FAIL);
+            remoteResult.setResultMsg("系统异常");
+            LOGGER.error(e.getMessage(),e);
+        }
+        LOGGER.info("rollbackDeleteInvoice==返回值=="+ JacksonUtil.toJson(remoteResult));
+        return remoteResult;
+    }
+
+    @Override
+    public RemoteResult deleteInvoiceToInvoice(Long id, Tenant tenant) {
+        LOGGER.info("deleteInvoiceToInvoice==参数=="+id);
+        RemoteResult remoteResult = new RemoteResult();
+        try {
+            int i = invoiceToInvoiceMapper.deleteInvoiceToInvoice(id);
+            if (i==0){
+                remoteResult.setResultCode(InvoiceResultCode.FAIL);
+                remoteResult.setResultMsg("删除失败！");
+                LOGGER.info("deleteInvoiceToInvoice==返回值==" + JacksonUtil.toJson(remoteResult));
+                return remoteResult;
+            }
+            remoteResult.setSuccess(true);
+            remoteResult.setResultCode(InvoiceResultCode.SUCCESS);
+            remoteResult.setResultMsg("删除成功！");
+        }catch (Exception e){
+            remoteResult.setResultCode(InvoiceResultCode.FAIL);
+            remoteResult.setResultMsg("系统异常");
+            LOGGER.error(e.getMessage(),e);
+        }
+        LOGGER.info("deleteInvoiceToInvoice==返回值=="+ JacksonUtil.toJson(remoteResult));
         return remoteResult;
     }
 

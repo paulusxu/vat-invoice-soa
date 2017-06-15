@@ -17,4 +17,7 @@ public interface InvoiceToInvoiceMapper {
     //根据废弃id查询有效记录
     public VatInvoice getVatInvoice(Long id);
 
+    //删除废弃发票到有效发票的映射
+    public int deleteInvoiceToInvoice(Long id);
+
 }

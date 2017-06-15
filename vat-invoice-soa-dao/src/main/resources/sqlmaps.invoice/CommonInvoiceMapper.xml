@@ -123,6 +123,12 @@
     UPDATE vatinvoice set isDelete=1,UpdateTime=now() WHERE Id=#{id}
   </update>
 
+  <!--伪删除还原发票-->
+  <update id="rollbackDeleteInvoice" parameterType="java.lang.Long">
+    UPDATE vatinvoice set isDelete=0,UpdateTime=now() WHERE Id=#{id}
+  </update>
+
+
   <resultMap id="BaseResultMap" type="com.lenovo.invoice.domain.VatInvoice" >
     <id column="Id" property="id" jdbcType="BIGINT" />
     <result column="CustomerName" property="customername" jdbcType="VARCHAR" />

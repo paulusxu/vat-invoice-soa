@@ -12,6 +12,10 @@
     SELECT * FROM vatinvoice WHERE id=(SELECT targetId FROM invoice_invoice WHERE id=#{id})
   </select>
 
+  <delete id="deleteInvoiceToInvoice" parameterType="java.lang.Long">
+    DELETE FROM invoice_invoice WHERE id=#{id}
+  </delete>
+
   <insert id="saveInvoiceToInvoice" parameterType="com.lenovo.invoice.domain.InvoiceToInvoice">
     insert into invoice_invoice (id,targetId,createTime,createBy) values (#{id}, #{targetId},now(),#{createBy})
   </insert>

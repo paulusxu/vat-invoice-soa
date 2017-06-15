@@ -49,6 +49,9 @@ public interface CommonInvoiceMapper {
     //伪删除这张发票
     public int deleteInvoice(Long id);
 
+    //伪删除还原发票
+    public int rollbackDeleteInvoice(Long id);
+
 
 
 
