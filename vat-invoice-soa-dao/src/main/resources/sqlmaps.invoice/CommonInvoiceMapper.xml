@@ -113,8 +113,8 @@
     <include refid="Base_Column_List"/>
     FROM vatinvoice
     WHERE CustomerName=#{customername} AND TaxNo=#{taxno} AND custType=#{custType} AND invoiceType IN (1,3) AND isDelete=0
-    <if test="param2.ischeck!=null">
-      AND isCheck=#{param2.ischeck}
+    <if test="ischeck!=null">
+      AND isCheck=#{ischeck}
     </if>
   </select>
 

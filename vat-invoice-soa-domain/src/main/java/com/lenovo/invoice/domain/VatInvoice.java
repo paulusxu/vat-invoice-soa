@@ -5,9 +5,9 @@ import java.util.Date;
 
 public class VatInvoice  implements Serializable {
 
-    private Long id;
-    private String customername;
-    private String taxno;
+    private Long id; //发票id
+    private String customername; //抬头
+    private String taxno; //税号
     private String bankname;
     private String accountno;
     private String address;
