@@ -49,7 +49,7 @@
     SELECT
     <include refid="Base_Column_List"/>
     FROM vatinvoice
-    WHERE isvalid=1 AND invoiceType IN (2,3) AND custType=1 AND taxNoType IN (1,2) AND isDelete=0
+    WHERE isvalid=1 AND invoiceType IN (1,3) AND custType=1 AND taxNoType IN (1,2) AND isDelete=0
     <if test="param2.customername!=null and param2.customername!=''">
       AND CustomerName=#{param2.customername}
       <!--<![CDATA[ and CustomerName like '%${param2.customername}%' ]]>-->
@@ -104,7 +104,7 @@
     SELECT
     <include refid="Base_Column_List"/>
     FROM vatinvoice
-    WHERE CustomerName=#{customername} AND isCheck=1 AND custType=1 AND invoiceType IN (2,3) AND isDelete=0
+    WHERE CustomerName=#{customername} AND isCheck=1 AND custType=1 AND invoiceType IN (1,3) AND isDelete=0
   </select>
 
   <!--根据发票抬头，税号，开票方式和发票类型查询，用于判断发票是否已存在-->
@@ -112,7 +112,7 @@
     SELECT
     <include refid="Base_Column_List"/>
     FROM vatinvoice
-    WHERE CustomerName=#{customername} AND TaxNo=#{taxno} AND custType=#{custType} AND invoiceType IN (2,3) AND isDelete=0
+    WHERE CustomerName=#{customername} AND TaxNo=#{taxno} AND custType=#{custType} AND invoiceType IN (1,3) AND isDelete=0
     <if test="param2.ischeck!=null">
       AND isCheck=#{param2.ischeck}
     </if>
