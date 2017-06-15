@@ -222,7 +222,7 @@ public class CommonInvoiceServiceImpl extends BaseService implements CommonInvoi
             //判断是否存在已审核过的相同发票
             vatInvoice.setIscheck(1);
             VatInvoice invoiceIsExist = commonInvoiceMapper.invoiceIsExist(vatInvoice);
-            if (invoiceIsExist==null){
+            if (invoiceIsExist==null || id==invoiceIsExist.getId()){
                 //不存在，审核通过这张发票
                 int i = commonInvoiceMapper.updateInvoiceIsCheck(vatInvoice);
                 if (i==0){
@@ -287,7 +287,7 @@ public class CommonInvoiceServiceImpl extends BaseService implements CommonInvoi
             if (taxNoType==3){
                 //需要判断是否已存在该发票
                 VatInvoice invoiceIsExist = commonInvoiceMapper.invoiceIsExist(vatInvoice);
-                if (invoiceIsExist==null){
+                if (invoiceIsExist==null || id==invoiceIsExist.getId()){
                     //不存在
                     vatInvoice.setIscheck(1);
                     int i = commonInvoiceMapper.updateInvoice(vatInvoice);
