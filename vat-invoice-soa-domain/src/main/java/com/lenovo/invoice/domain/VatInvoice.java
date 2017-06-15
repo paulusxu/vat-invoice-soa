@@ -5,9 +5,9 @@ import java.util.Date;
 
 public class VatInvoice  implements Serializable {
 
-    private Long id;
-    private String customername;
-    private String taxno;
+    private Long id; //发票id
+    private String customername; //抬头
+    private String taxno; //税号
     private String bankname;
     private String accountno;
     private String address;
@@ -31,7 +31,7 @@ public class VatInvoice  implements Serializable {
 
     private Integer taxNoType; //识别码类型，1是15位，2是18位，3是无
     private Integer custType; //开票方式，1公司，0个人
-    private Integer invoiceType; //发票类型，1增票，2普票，3电子票
+    private Integer invoiceType; //发票类型，1:电子票2:增票3:普票
     private String checkBy; //审核人
     private Date checkTime; //审核时间
     private String remark; //备注
