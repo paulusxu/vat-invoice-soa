@@ -314,7 +314,7 @@ public class InvoiceShopApiServiceImpl implements InvoiceShopApiService {
                 remoteResult.setResultMsg("参数错误！");
             } else {
                 InvoiceShop invoice = invoiceShopMapper.queryInvoiceForId(id, null);
-                if (invoice.getApprovalStatus() == 2) {
+                if (invoice!=null&&invoice.getApprovalStatus()!=null&&invoice.getApprovalStatus() == 2) {
                     remoteResult.setSuccess(true);
                     remoteResult.setT(invoice);
                     remoteResult.setResultCode(InvoiceShopCode.SUCCESS);
@@ -327,6 +327,7 @@ public class InvoiceShopApiServiceImpl implements InvoiceShopApiService {
         } catch (Exception e) {
             remoteResult.setResultCode(InvoiceShopCode.FAIL);
             remoteResult.setResultMsg("失败!");
+            e.printStackTrace();
             logger.error(e.getMessage(),e);
         }
         logger.info("queryInvoiceAuditForId返回参数>>" + JacksonUtil.toJson(remoteResult));
