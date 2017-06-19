@@ -32,7 +32,7 @@ public class UpdateInvoiceIsValidConsumer {
             try {
                 JSONObject jsonObject = JSONObject.parseObject(message);
                 Integer shopId = jsonObject.getInteger("shopId");
-                Integer type = jsonObject.getInteger("type");
+                 Integer type = jsonObject.getInteger("type");
                 if ((shopId==1||shopId==3||shopId==14)&&(type==0||type==1)){
                     String invoiceId = jsonObject.getString("invoiceId");
                     int i = commonInvoiceMapper.updateInvoiceIsValid(Long.parseLong(invoiceId));
