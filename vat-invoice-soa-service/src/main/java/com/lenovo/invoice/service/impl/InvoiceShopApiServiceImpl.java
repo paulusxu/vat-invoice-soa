@@ -63,7 +63,7 @@ public class InvoiceShopApiServiceImpl implements InvoiceShopApiService {
             }
             if (invoiceShop.getSynType() == 1) {
                 //判断customername,taxno 是否有单独存在的
-                int validationInvoice=invoiceShopMapper.validationInvoice(invoiceShop.getLenovoID(),invoiceShop.getCompanyType(),invoiceShop.getCustomerName(),invoiceShop.getTaxNo());
+                int validationInvoice=invoiceShopMapper.validationInvoice(invoiceShop.getLenovoID(),invoiceShop.getInvoiceType(),invoiceShop.getCustomerName(),invoiceShop.getTaxNo());
                 if(validationInvoice>0){
                     remoteResult.setResultCode(ErrorUtils.ERR_CODE_CUSTOMERNAME_TAXNO_EXIST);
                     remoteResult.setResultMsg("公司名和税号不匹配，请核对后再试！");
@@ -250,7 +250,7 @@ public class InvoiceShopApiServiceImpl implements InvoiceShopApiService {
             }
             if (invoiceShop.getSynType() == 1) {
                 //判断customername,taxno 是否有单独存在的
-                int validationInvoice=invoiceShopMapper.validationInvoice(invoiceShop.getLenovoID(),invoiceShop.getCompanyType(),invoiceShop.getCustomerName(),invoiceShop.getTaxNo());
+                int validationInvoice=invoiceShopMapper.validationInvoice(invoiceShop.getLenovoID(),invoiceShop.getInvoiceType(),invoiceShop.getCustomerName(),invoiceShop.getTaxNo());
                 if(validationInvoice>0){
                     remoteResult.setResultCode(ErrorUtils.ERR_CODE_CUSTOMERNAME_TAXNO_EXIST);
                     remoteResult.setResultMsg("公司名和税号不匹配，请核对后再试！");
