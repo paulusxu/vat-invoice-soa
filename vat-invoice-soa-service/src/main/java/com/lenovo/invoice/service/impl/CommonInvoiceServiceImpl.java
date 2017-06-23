@@ -435,7 +435,7 @@ public class CommonInvoiceServiceImpl extends BaseService implements CommonInvoi
                 LOGGER.info("saveInvoice==返回值==" + JacksonUtil.toJson(remoteResult));
                 return remoteResult;
             }
-            if (taxNoType!=3){
+            if (custType==1&&taxNoType!=3){
                 //验证位数，转大写
                 Pattern pattern;
                 /*"^.{15}$|^.{18}$|^.{20}$"*/
@@ -453,8 +453,8 @@ public class CommonInvoiceServiceImpl extends BaseService implements CommonInvoi
                     LOGGER.info("saveInvoice==返回值==" + JacksonUtil.toJson(remoteResult));
                     return remoteResult;
                 }
+                vatInvoice.setTaxno(taxno);
             }
-            vatInvoice.setTaxno(taxno);
             //判断该发票是否已经存在
             VatInvoice invoiceIsExist = commonInvoiceMapper.invoiceIsExist(vatInvoice);
             if (invoiceIsExist==null){
@@ -534,7 +534,7 @@ public class CommonInvoiceServiceImpl extends BaseService implements CommonInvoi
                 LOGGER.info("addInvoice==返回值==" + JacksonUtil.toJson(remoteResult));
                 return remoteResult;
             }
-            if (taxNoType!=3){
+            if (custType==1&&taxNoType!=3){
                 //验证位数，转大写
                 Pattern pattern;
                 if (taxNoType==1){
@@ -551,8 +551,8 @@ public class CommonInvoiceServiceImpl extends BaseService implements CommonInvoi
                     LOGGER.info("addInvoice==返回值==" + JacksonUtil.toJson(remoteResult));
                     return remoteResult;
                 }
+                vatInvoice.setTaxno(taxno);
             }
-            vatInvoice.setTaxno(taxno);
             //判断该发票是否已经存在
             VatInvoice invoiceIsExist = commonInvoiceMapper.invoiceIsExist(vatInvoice);
             if (invoiceIsExist==null){

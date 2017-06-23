@@ -17,6 +17,7 @@ import com.lenovo.invoice.domain.result.*;
 import com.lenovo.invoice.service.BaseService;
 import com.lenovo.invoice.service.MemberVatInvoiceService;
 import com.lenovo.invoice.service.VatInvoiceService;
+import com.lenovo.invoice.service.message.param.ThrowStatusParam;
 import com.lenovo.invoice.service.redisObject.RedisObjectManager;
 import com.lenovo.m2.arch.framework.domain.PageModel2;
 import com.lenovo.m2.arch.framework.domain.PageQuery;
@@ -52,6 +53,8 @@ public class InvoiceApiServiceImpl extends BaseService implements InvoiceApiServ
     private static final Logger LOGGER = LoggerFactory.getLogger(InvoiceApiServiceImpl.class);
     private static final Logger LOGGER_BTCP = LoggerFactory.getLogger("com.lenovo.invoice.service.impl.throwBtcp");
     private static final Logger LOGGER_UPDATEZID = LoggerFactory.getLogger("com.lenovo.invoice.service.impl.updateZid");
+    private static final Logger LOGGER_THROWSTATUS = LoggerFactory.getLogger("com.lenovo.invoice.customer.order.throwStatus");
+
 
     @Autowired
     private VatInvoiceMapper vatInvoiceMapper;
@@ -258,11 +261,13 @@ public class InvoiceApiServiceImpl extends BaseService implements InvoiceApiServ
 
     @Override
     public int updateThrowingStatus(String orderCode, int status) {
+        LOGGER.info("ThrowStatusMessageCustomer Start:{{},{}",orderCode,status);
         int rows = 0;
         try {
             rows = vathrowBtcpMapper.updateThrowingStatus(orderCode, status);
+            LOGGER.info("ThrowStatusMessageCustomer End:{},{}", orderCode, rows);
         } catch (Exception e) {
-            LOGGER.error(e.getMessage());
+            LOGGER_THROWSTATUS.error(e.getMessage(),e);
         }
         return rows;
     }
@@ -1012,6 +1017,7 @@ public class InvoiceApiServiceImpl extends BaseService implements InvoiceApiServ
         LOGGER_BTCP.info("getConfigurationInformation 返回" + JacksonUtil.toJson(result));
         return result;
     }
+
 
     public Payment getPaymentType(GetCiParam getCiParam, Tenant tenant) {
         if (getCiParam.getSalesType() == 98) {

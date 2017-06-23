@@ -112,7 +112,15 @@
     SELECT
     <include refid="Base_Column_List"/>
     FROM vatinvoice
-    WHERE CustomerName=#{customername} AND TaxNo=#{taxno} AND custType=#{custType} AND invoiceType IN (1,3) AND isDelete=0
+    WHERE CustomerName=#{customername} AND custType=#{custType} AND invoiceType IN (1,3) AND isDelete=0
+    <choose>
+      <when test="taxno!=null and taxno!=''">
+        AND TaxNo=#{taxno}
+      </when>
+      <otherwise>
+        AND TaxNo IS NULL
+      </otherwise>
+    </choose>
     <if test="ischeck!=null">
       AND isCheck=#{ischeck}
     </if>
