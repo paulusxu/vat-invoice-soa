@@ -367,6 +367,14 @@
   </update>
 
   <select id="validationInvoice" resultType="java.lang.Integer">
-    SELECT count(1) FROM memberinvoiceinfoes  WHERE  companyType=#{companyType} and (CustomerName=#{customerName} OR TaxNo=#{taxNo})
+    SELECT count(1) FROM memberinvoiceinfoes  WHERE LenovoID=#{lenovoid}
+    and companyType=#{companyType}
+    <if test="taxNo != null and taxNo!=''" >
+      AND  (CustomerName=#{customerName} OR TaxNo=#{taxNo})
+    </if>
+
+    <if test="taxNo == null or taxNo==''" >
+      AND  CustomerName=#{customerName}
+    </if>
   </select>
 </mapper>
