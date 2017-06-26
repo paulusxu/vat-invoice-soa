@@ -15,6 +15,16 @@ public class PropertiesUtil {
 
     private String downLoadInvoiceUrl;
 
+    private String invoiceEmails;
+
+
+    public String getInvoiceEmails() {
+        return invoiceEmails;
+    }
+
+    public void setInvoiceEmails(String invoiceEmails) {
+        this.invoiceEmails = invoiceEmails;
+    }
 
     public String getOpenO2O() {
         return openO2O;

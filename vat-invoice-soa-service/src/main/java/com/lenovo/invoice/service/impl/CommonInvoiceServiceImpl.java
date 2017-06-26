@@ -222,19 +222,58 @@ public class CommonInvoiceServiceImpl extends BaseService implements CommonInvoi
             vatInvoice.setIscheck(1);
             VatInvoice invoiceIsExist = commonInvoiceMapper.invoiceIsExist(vatInvoice);
             if (invoiceIsExist==null || id==invoiceIsExist.getId()){
-                //不存在，审核通过这张发票
+                //不存在，判断是否有已审核过的该抬头
+                VatInvoice vatInvoice1 = commonInvoiceMapper.invoiceTitleIsExist(customername);
+                if (vatInvoice1 != null){
+                    remoteResult.setResultCode(InvoiceResultCode.invoiceTitleIsExist);
+                    remoteResult.setResultMsg("存在已审核过的相同抬头！");
+                    LOGGER.info("checkInvoice==返回值==" + JacksonUtil.toJson(remoteResult));
+                    return remoteResult;
+                }
+                //判断是否有已审核过的该税号
+                VatInvoice vatInvoice2 = commonInvoiceMapper.invoiceTaxNoIsExist(taxno);
+                if (vatInvoice2 != null){
+                    remoteResult.setResultCode(InvoiceResultCode.invoiceTaxNoIsExist);
+                    remoteResult.setResultMsg("存在已审核过的相同税号！");
+                    LOGGER.info("checkInvoice==返回值==" + JacksonUtil.toJson(remoteResult));
+                    return remoteResult;
+                }
                 int i = commonInvoiceMapper.updateInvoiceIsCheck(vatInvoice);
                 if (i==0){
                     remoteResult.setResultCode(InvoiceResultCode.INVOICECHECKUPDATEFAIL);
                     remoteResult.setResultMsg("审核状态修改失败！");
                     LOGGER.info("checkInvoice==返回值==" + JacksonUtil.toJson(remoteResult));
                     return remoteResult;
+                }else{
+                    //审核成功，将相同抬头的其他发票废弃，添加映射
+                    try {
+                        List<VatInvoice> list = commonInvoiceMapper.getAllInvoiceByTitle(customername);
+                        if (list!=null && list.size()>0){
+                            for (int j = 0; j < list.size(); j++) {
+                                VatInvoice invoice = list.get(j);
+                                InvoiceToInvoice invoiceToInvoice = new InvoiceToInvoice();
+                                invoiceToInvoice.setId(invoice.getId());
+                                invoiceToInvoice.setTargetId(id);
+                                invoiceToInvoice.setCreateBy(checkBy);
+                                int k = invoiceToInvoiceMapper.saveInvoiceToInvoice(invoiceToInvoice);
+                                if (k==0){
+                                    errorLogger.info("checkInvoice==添加废弃发票和有效发票的映射失败=="+JacksonUtil.toJson(invoiceToInvoice));
+                                }
+                                int i1 = commonInvoiceMapper.deleteInvoice(invoice.getId());
+                                if (i1==0){
+                                    errorLogger.info("checkInvoice==废弃发票失败=="+invoice.getId());
+                                }
+                            }
+                        }
+                    }catch (Exception e){
+                        LOGGER.error(e.getMessage(),e);
+                    }
+                    remoteResult.setSuccess(true);
+                    remoteResult.setResultCode(InvoiceResultCode.SUCCESS);
+                    remoteResult.setResultMsg("审核通过！");
+                    LOGGER.info("checkInvoice==返回值==" + JacksonUtil.toJson(remoteResult));
+                    return remoteResult;
                 }
-                remoteResult.setSuccess(true);
-                remoteResult.setResultCode(InvoiceResultCode.SUCCESS);
-                remoteResult.setResultMsg("审核通过！");
-                LOGGER.info("checkInvoice==返回值==" + JacksonUtil.toJson(remoteResult));
-                return remoteResult;
             }else {
                 //存在，伪删除这条发票记录，添加一条废弃发票和有效发票的映射
                 InvoiceToInvoice invoice = new InvoiceToInvoice();
@@ -254,7 +293,6 @@ public class CommonInvoiceServiceImpl extends BaseService implements CommonInvoi
                 remoteResult.setResultMsg("审核通过！");
                 LOGGER.info("checkInvoice==返回值==" + JacksonUtil.toJson(remoteResult));
                 return remoteResult;
-
             }
         }catch (Exception e){
             remoteResult.setResultCode(InvoiceResultCode.FAIL);

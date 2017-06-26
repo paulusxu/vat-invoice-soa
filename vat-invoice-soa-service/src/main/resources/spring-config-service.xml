@@ -27,6 +27,9 @@
         <property name="exchangeinvoiceurl" value="${exchangeinvoiceurl}"/>
         <property name="exchangeinvoicekey" value="${exchangeinvoicekey}"/>
         <property name="downLoadInvoiceUrl" value="${url.btcp.downLoadInvoice}"/>
+        <property name="invoiceEmails" value="${invoiceEmails}"/>
     </bean>
+
+    <bean id="emailUtil" class="com.lenovo.invoice.common.utils.EmailUtil"/>
 
 </beans>
