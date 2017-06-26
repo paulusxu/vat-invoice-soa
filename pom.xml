@@ -415,7 +415,7 @@
                 <leconf.common-file>classpath:/zookeeper.properties</leconf.common-file>
                 <leconf.common-env>test</leconf.common-env>
                 <leconf.common-version>1_0_0</leconf.common-version>
-                <leconf.env>uat</leconf.env>
+                <leconf.env>docker-uat-new</leconf.env>
                 <leconf.ignore></leconf.ignore>
                 <leconf.conf_server_url_retry_times>3</leconf.conf_server_url_retry_times>
                 <leconf.conf_server_url_retry_sleep_seconds>1</leconf.conf_server_url_retry_sleep_seconds>
