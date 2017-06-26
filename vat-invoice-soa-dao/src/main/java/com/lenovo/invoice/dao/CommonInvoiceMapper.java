@@ -5,6 +5,8 @@ import com.lenovo.invoice.domain.VatInvoice;
 import com.lenovo.m2.arch.framework.domain.PageModel;
 import com.lenovo.m2.arch.framework.domain.PageQuery;
 
+import java.util.List;
+
 /**
  * Created by admin on 2017/3/16.
  */
@@ -45,6 +47,14 @@ public interface CommonInvoiceMapper {
 
     //根据发票抬头，税号，开票方式和发票类型查询，用于判断发票是否已存在
     public VatInvoice invoiceIsExist(VatInvoice vatInvoice);
+
+    //根据发票抬头，判断是否有已审核过得该抬头
+    public VatInvoice invoiceTitleIsExist(String customername);
+    //根据发票税号，判断是否有已审核过的该税号
+    public VatInvoice invoiceTaxNoIsExist(String taxno);
+
+    //查询该抬头的所有未审核发票
+    public List<VatInvoice> getAllInvoiceByTitle(String customername);
 
     //伪删除这张发票
     public int deleteInvoice(Long id);

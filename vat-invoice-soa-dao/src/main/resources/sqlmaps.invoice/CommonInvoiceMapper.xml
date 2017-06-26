@@ -126,6 +126,30 @@
     </if>
   </select>
 
+  <!--根据发票抬头，判断是否有已审核过得该抬头-->
+  <select id="invoiceTitleIsExist" parameterType="java.lang.String" resultMap="BaseResultMap">
+    SELECT
+    <include refid="Base_Column_List"/>
+    FROM vatinvoice
+    WHERE CustomerName=#{customername} AND invoiceType IN (1,3) AND isDelete=0 AND isCheck=1
+  </select>
+
+  <!--根据发票税号，判断是否有已审核过的该税号-->
+  <select id="invoiceTaxNoIsExist" parameterType="java.lang.String" resultMap="BaseResultMap">
+    SELECT
+    <include refid="Base_Column_List"/>
+    FROM vatinvoice
+    WHERE TaxNo=#{taxno} AND invoiceType IN (1,3) AND isDelete=0 AND isCheck=1
+  </select>
+
+  <!--查询该抬头的所有未审核发票-->
+  <select id="getAllInvoiceByTitle" parameterType="java.lang.String" resultMap="BaseResultMap">
+    SELECT
+    <include refid="Base_Column_List"/>
+    FROM vatinvoice
+    WHERE CustomerName=#{customername} AND invoiceType IN (1,3) AND isDelete=0 AND isCheck=0
+  </select>
+
   <!--伪删除这张票-->
   <update id="deleteInvoice" parameterType="java.lang.Long">
     UPDATE vatinvoice set isDelete=1,UpdateTime=now() WHERE Id=#{id}
