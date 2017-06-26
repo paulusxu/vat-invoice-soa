@@ -329,6 +329,7 @@
             <version>${framework-version}</version>
         </dependency>
 
+
         <dependency>
             <groupId>com.lenovo.m2.arch.framework</groupId>
             <artifactId>framework-mybatis</artifactId>
