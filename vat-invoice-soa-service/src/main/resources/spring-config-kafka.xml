@@ -89,13 +89,6 @@
         <property name="autoOffsetReset" value="${autoOffsetReset}" />
         <property name="topicName" value="${order.throwStatus.topicName}" />
     </bean>
-    <bean id="kafkaConsumerFactory_order_throwStatus" class="com.lenovo.kafka.api.core.factory.KafkaConsumerFactory"
-          init-method="initialize">
-        <constructor-arg ref="kafkaConsumerOptions_order_throwStatus" />
-    </bean>
-    <bean id="kafkaConsumer_order_throwStatus" class="com.lenovo.kafka.api.core.consumer.KafkaConsumer">
-        <constructor-arg ref="kafkaConsumerFactory_order_throwStatus" />
-    </bean>
 
     <!--订单抛单后 订单推送-->
     <bean id="kafkaConsumerOptions_order_throw" class="com.lenovo.kafka.api.core.factory.KafkaConsumerOptions">
@@ -161,10 +154,6 @@
         <constructor-arg ref="kafkaConsumerFactory_order_deliver" />
     </bean>
 
-    <bean id="throwStatusMessageCustomer" class="com.lenovo.invoice.service.message.ThrowStatusMessageCustomer">
-        <constructor-arg ref="kafkaConsumer_order_throwStatus"/>
-        <constructor-arg ref="vatInvoiceService"/>
-    </bean>
 
 
     <bean id="throwOrderVatInvoiceMessageCustomer" class="com.lenovo.invoice.service.message.ThrowOrderVatInvoiceMessageCustomer">

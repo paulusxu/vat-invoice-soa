@@ -61,7 +61,7 @@ public interface InvoiceApiService {
 
     //补单
     long makeUpVatInvocie(String orderCode);
-
+    //是否可抛送增票 订单推送
     int updateThrowingStatus(String orderCode, int status);
 
     //修改单条增票
@@ -81,6 +81,7 @@ public interface InvoiceApiService {
     RemoteResult<List<FaInvoiceResult>> getInvoiceTypes(GetInvoiceTypeParam getInvoiceTypeParam, Tenant tenant);
 
     RemoteResult<ConfigurationInformation> getConfigurationInformation(GetCiParam getCiParam, Tenant tenant);
+
 
 
 }
