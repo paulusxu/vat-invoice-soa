@@ -63,14 +63,17 @@ public class InvoiceShopApiServiceImpl implements InvoiceShopApiService {
             }
             if (invoiceShop.getSynType() == 1) {
                 //判断customername,taxno 是否有单独存在的
-                int validationInvoice=invoiceShopMapper.validationInvoice(invoiceShop.getLenovoID(),invoiceShop.getInvoiceType(),invoiceShop.getCustomerName(),invoiceShop.getTaxNo());
-                if(validationInvoice>0){
-                    remoteResult.setResultCode(ErrorUtils.ERR_CODE_CUSTOMERNAME_TAXNO_EXIST);
-                    remoteResult.setResultMsg("公司名和税号不匹配，请核对后再试！");
-                    logger.info("synInvoicePersonalCenter返回参数>>" + JacksonUtil.toJson(remoteResult));
-                    return remoteResult;
-                }
+                if(invoiceShop.getCompanyType()==0&&"个人".equals(invoiceShop.getCustomerName())){
 
+                }else {
+                    int validationInvoice = invoiceShopMapper.validationInvoice(invoiceShop.getLenovoID(), invoiceShop.getInvoiceType(), invoiceShop.getCustomerName(), invoiceShop.getTaxNo());
+                    if (validationInvoice > 0) {
+                        remoteResult.setResultCode(ErrorUtils.ERR_CODE_CUSTOMERNAME_TAXNO_EXIST);
+                        remoteResult.setResultMsg("公司名和税号不匹配，请核对后再试！");
+                        logger.info("synInvoicePersonalCenter返回参数>>" + JacksonUtil.toJson(remoteResult));
+                        return remoteResult;
+                    }
+                }
                 String uuid = UUID.randomUUID().toString();
                 invoiceShop.setUuid(uuid);
                 invoiceShopMapper.addInvoiceShop(invoiceShop);
@@ -250,12 +253,17 @@ public class InvoiceShopApiServiceImpl implements InvoiceShopApiService {
             }
             if (invoiceShop.getSynType() == 1) {
                 //判断customername,taxno 是否有单独存在的
-                int validationInvoice=invoiceShopMapper.validationInvoice(invoiceShop.getLenovoID(),invoiceShop.getInvoiceType(),invoiceShop.getCustomerName(),invoiceShop.getTaxNo());
-                if(validationInvoice>0){
-                    remoteResult.setResultCode(ErrorUtils.ERR_CODE_CUSTOMERNAME_TAXNO_EXIST);
-                    remoteResult.setResultMsg("公司名和税号不匹配，请核对后再试！");
-                    logger.info("synInvoicePersonalCenter返回参数>>" + JacksonUtil.toJson(remoteResult));
-                    return remoteResult;
+                //个人开抬头为个人忽略验证
+                if(invoiceShop.getCompanyType()==0&&"个人".equals(invoiceShop.getCustomerName())){
+
+                }else {
+                    int validationInvoice=invoiceShopMapper.validationInvoice(invoiceShop.getLenovoID(),invoiceShop.getInvoiceType(),invoiceShop.getCustomerName(),invoiceShop.getTaxNo());
+                    if(validationInvoice>0){
+                        remoteResult.setResultCode(ErrorUtils.ERR_CODE_CUSTOMERNAME_TAXNO_EXIST);
+                        remoteResult.setResultMsg("公司名和税号不匹配，请核对后再试！");
+                        logger.info("synInvoicePersonalCenter返回参数>>" + JacksonUtil.toJson(remoteResult));
+                        return remoteResult;
+                    }
                 }
                 String uuid = UUID.randomUUID().toString();
                 invoiceShop.setUuid(uuid);
