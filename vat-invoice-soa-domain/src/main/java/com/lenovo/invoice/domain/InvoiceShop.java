@@ -15,8 +15,6 @@ public class InvoiceShop  implements Serializable {
     private Integer payManType;
     private String payMan;
     private String taxNo;
-    private String taxNoType;//纳税人类型  0 ：税务登记，1:统一社会信用代码，2：无事业单位
-    private Integer companyType;//开票公司类型
     private String bankName;
     private String accountNo;
     private String subAreaCode;
@@ -44,22 +42,6 @@ public class InvoiceShop  implements Serializable {
     private Integer synType;
     private Integer shopId;
     private boolean noLog;//true:不写日志  false:写日志
-
-    public Integer getCompanyType() {
-        return companyType;
-    }
-
-    public void setCompanyType(Integer companyType) {
-        this.companyType = companyType;
-    }
-
-    public String getTaxNoType() {
-        return taxNoType;
-    }
-
-    public void setTaxNoType(String taxNoType) {
-        this.taxNoType = taxNoType;
-    }
 
     public Integer getId() {
         return id;
