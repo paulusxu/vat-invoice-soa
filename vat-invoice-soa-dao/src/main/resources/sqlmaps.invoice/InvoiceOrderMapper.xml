@@ -4,14 +4,14 @@
 
   <insert id="addInvoiceOrder" parameterType="com.lenovo.invoice.domain.InvoiceOrder">
     insert into invoice_order (orderCode,invoiceId,invoiceTitle,taxNo,custType,invoiceType,taxNoType,
-                          memberCode,name,mobile,address,zip,createBy,createTime,udpateBy,updateTime)
+                          memberCode,name,mobile,address,zip,createBy,createTime,updateBy,updateTime)
     values (#{orderCode},#{invoiceId},#{invoiceTitle},#{taxNo},#{custType},#{invoiceType},#{taxNoType},
-                      #{memberCode},#{name},#{mobile},#{address},#{zip},#{createBy},now(),#{udpateBy},now())
+                      #{memberCode},#{name},#{mobile},#{address},#{zip},#{createBy},now(),#{updateBy},now())
   </insert>
 
   <select id="getOrderIds" parameterType="java.lang.Long" resultType="com.lenovo.invoice.domain.InvoiceOrder">
     SELECT id,orderCode,invoiceId,invoiceTitle,taxNo,custType,invoiceType,taxNoType,
-          memberCode,name,mobile,address,zip,createBy,createTime,udpateBy,updateTime
+          memberCode,name,mobile,address,zip,createBy,createTime,updateBy,updateTime
     FROM invoice_order
     WHERE invoiceId=#{invoiceId}
   </select>
