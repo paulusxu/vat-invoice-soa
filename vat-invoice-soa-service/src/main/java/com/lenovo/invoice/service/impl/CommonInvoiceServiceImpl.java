@@ -224,8 +224,10 @@ public class CommonInvoiceServiceImpl extends BaseService implements CommonInvoi
             VatInvoice invoiceIsExist = commonInvoiceMapper.invoiceIsExist(vatInvoice);
             LOGGER.info("invoiceIsExist=="+JacksonUtil.toJson(invoiceIsExist));
             if (invoiceIsExist==null || id==invoiceIsExist.getId()){
+                LOGGER.info("走了吗");
                 //不存在，判断是否有已审核过的该抬头
                 VatInvoice vatInvoice1 = commonInvoiceMapper.invoiceTitleIsExist(customername);
+                LOGGER.info("vatInvoice1=="+JacksonUtil.toJson(vatInvoice1));
                 if (vatInvoice1 != null){
                     remoteResult.setResultCode(InvoiceResultCode.invoiceTitleIsExist);
                     remoteResult.setResultMsg("存在已审核过的相同抬头！");
@@ -234,6 +236,7 @@ public class CommonInvoiceServiceImpl extends BaseService implements CommonInvoi
                 }
                 //判断是否有已审核过的该税号
                 VatInvoice vatInvoice2 = commonInvoiceMapper.invoiceTaxNoIsExist(taxno);
+                LOGGER.info("vatInvoice2=="+JacksonUtil.toJson(vatInvoice2));
                 if (vatInvoice2 != null){
                     remoteResult.setResultCode(InvoiceResultCode.invoiceTaxNoIsExist);
                     remoteResult.setResultMsg("存在已审核过的相同税号！");
@@ -241,6 +244,7 @@ public class CommonInvoiceServiceImpl extends BaseService implements CommonInvoi
                     return remoteResult;
                 }
                 int i = commonInvoiceMapper.updateInvoiceIsCheck(vatInvoice);
+                LOGGER.info("审核=="+i);
                 if (i==0){
                     remoteResult.setResultCode(InvoiceResultCode.INVOICECHECKUPDATEFAIL);
                     remoteResult.setResultMsg("审核状态修改失败！");
@@ -250,6 +254,7 @@ public class CommonInvoiceServiceImpl extends BaseService implements CommonInvoi
                     //审核成功，将相同抬头的其他发票废弃，添加映射
                     try {
                         List<VatInvoice> list = commonInvoiceMapper.getAllInvoiceByTitle(customername);
+                        LOGGER.info("getAllInvoiceByTitle=="+JacksonUtil.toJson(list));
                         if (list!=null && list.size()>0){
                             for (int j = 0; j < list.size(); j++) {
                                 VatInvoice invoice = list.get(j);
@@ -277,6 +282,7 @@ public class CommonInvoiceServiceImpl extends BaseService implements CommonInvoi
                     return remoteResult;
                 }
             }else {
+                LOGGER.info("废弃发票");
                 //存在，伪删除这条发票记录，添加一条废弃发票和有效发票的映射
                 InvoiceToInvoice invoice = new InvoiceToInvoice();
                 invoice.setId(id);
