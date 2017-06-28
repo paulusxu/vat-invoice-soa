@@ -220,7 +220,7 @@ public class CommonInvoiceServiceImpl extends BaseService implements CommonInvoi
             }
             //判断是否存在已审核过的相同发票
             vatInvoice.setIscheck(1);
-            //vatInvoice.setShopid(1);
+            vatInvoice.setShopid(1);
             VatInvoice invoiceIsExist = commonInvoiceMapper.invoiceIsExist(vatInvoice);
             if (invoiceIsExist==null || id.equals(invoiceIsExist.getId())){
                 //不存在，判断是否有已审核过的该抬头
@@ -324,7 +324,7 @@ public class CommonInvoiceServiceImpl extends BaseService implements CommonInvoi
             }
             if (taxNoType==3){
                 //需要判断是否已存在该发票
-                //vatInvoice.setShopid(1);
+                vatInvoice.setShopid(1);
                 VatInvoice invoiceIsExist = commonInvoiceMapper.invoiceIsExist(vatInvoice);
                 if (invoiceIsExist==null || id.equals(invoiceIsExist.getId())){
                     //不存在
@@ -536,7 +536,7 @@ public class CommonInvoiceServiceImpl extends BaseService implements CommonInvoi
         LOGGER.info("getInvoiceByTitle==参数=="+JacksonUtil.toJson(vatInvoice));
         RemoteResult<VatInvoice> remoteResult = new RemoteResult<VatInvoice>();
         try {
-            //vatInvoice.setShopid(tenant.getShopId());
+            vatInvoice.setShopid(tenant.getShopId());
             VatInvoice invoiceByTitle = commonInvoiceMapper.getInvoiceByTitle(vatInvoice);
             if (invoiceByTitle==null){
                 remoteResult.setResultCode(InvoiceResultCode.NOTHISINVOICE);

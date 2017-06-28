@@ -24,6 +24,24 @@ public class InvoiceOrder implements Serializable {
     private Date createTime;
     private String updateBy;
     private Date updateTime;
+    private Integer orderStatus;
+    private Integer shopid;
+
+    public Integer getOrderStatus() {
+        return orderStatus;
+    }
+
+    public void setOrderStatus(Integer orderStatus) {
+        this.orderStatus = orderStatus;
+    }
+
+    public Integer getShopid() {
+        return shopid;
+    }
+
+    public void setShopid(Integer shopid) {
+        this.shopid = shopid;
+    }
 
     public Long getId() {
         return id;

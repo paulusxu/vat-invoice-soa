@@ -56,7 +56,8 @@ public class UpdateInvoiceIsValidConsumer {
                 JSONObject jsonObject = JSONObject.parseObject(message);
                 Integer shopId = jsonObject.getInteger("shopId");
                  Integer type = jsonObject.getInteger("type");
-                if ((shopId==1||shopId==3||shopId==14)&&(type==0||type==1)){
+                //只关注Lenovo和epp，发票为普票和电子票
+                if ((shopId==1||shopId==3)&&(type==0||type==1)){
                     String invoiceId = jsonObject.getString("invoiceId");
                     RemoteResult<VatInvoice> remoteResult = commonInvoiceService.getInvoiceByIdForAll(Long.parseLong(invoiceId), new Tenant());
                     if (remoteResult.isSuccess()){
@@ -70,7 +71,6 @@ public class UpdateInvoiceIsValidConsumer {
                         }
                         String customername = invoice.getCustomername();
                         String taxno = invoice.getTaxno();
-                        Integer invoiceType = invoice.getInvoiceType();
                         Integer custType = invoice.getCustType();
                         Integer taxNoType = invoice.getTaxNoType();
 
@@ -87,25 +87,34 @@ public class UpdateInvoiceIsValidConsumer {
                             String zip = ma.getDeliveryAddress().getZip();
                             //添加发票和订单的映射表记录
                             try {
-                                InvoiceOrder invoiceOrder = new InvoiceOrder();
-                                invoiceOrder.setInvoiceId(Long.parseLong(invoiceId));
-                                invoiceOrder.setOrderCode(orderCode);
-                                invoiceOrder.setInvoiceTitle(customername);
-                                invoiceOrder.setInvoiceType(invoiceType);
-                                invoiceOrder.setTaxNo(taxno);
-                                invoiceOrder.setTaxNoType(taxNoType);
-                                invoiceOrder.setCustType(custType);
-                                invoiceOrder.setMemberCode(memberCode);
-                                invoiceOrder.setName(name);
-                                invoiceOrder.setMobile(mobile);
-                                invoiceOrder.setAddress(address);
-                                invoiceOrder.setZip(zip);
-                                invoiceOrder.setCreateBy("admin");
-                                invoiceOrder.setUpdateBy("admin");
+                                if (invoice!=null && custType==1 && taxNoType!=3 && shopId!=14){
+                                    //只保存带税号的记录
+                                    InvoiceOrder invoiceOrder = new InvoiceOrder();
+                                    invoiceOrder.setInvoiceId(Long.parseLong(invoiceId));
+                                    invoiceOrder.setOrderCode(orderCode);
+                                    invoiceOrder.setInvoiceTitle(customername);
+                                    if (type==0){
+                                        invoiceOrder.setInvoiceType(1);
+                                    }else {
+                                        invoiceOrder.setInvoiceType(3);
+                                    }
+                                    invoiceOrder.setTaxNo(taxno);
+                                    invoiceOrder.setTaxNoType(taxNoType);
+                                    invoiceOrder.setCustType(custType);
+                                    invoiceOrder.setMemberCode(memberCode);
+                                    invoiceOrder.setName(name);
+                                    invoiceOrder.setMobile(mobile);
+                                    invoiceOrder.setAddress(address);
+                                    invoiceOrder.setZip(zip);
+                                    invoiceOrder.setCreateBy("admin");
+                                    invoiceOrder.setUpdateBy("admin");
+                                    invoiceOrder.setShopid(shopId);
+                                    invoiceOrder.setOrderStatus(0);
 
-                                int i = invoiceOrderMapper.addInvoiceOrder(invoiceOrder);
-                                if (i==1){
-                                    LOGGER.info("添加发票和订单的映射表记录成功=="+i);
+                                    int i = invoiceOrderMapper.addInvoiceOrder(invoiceOrder);
+                                    if (i==1){
+                                        LOGGER.info("添加发票和订单的映射表记录成功=="+i);
+                                    }
                                 }
                             }catch (Exception e){
                                 LOGGER.info("添加发票和订单的映射表记录出现异常=="+e.getMessage(),e);
@@ -113,7 +122,7 @@ public class UpdateInvoiceIsValidConsumer {
                             //置为有效后，判断是否是需要审核的，且未审核的，如果是，发邮件通知客服
                             try {
                                 Integer ischeck = invoice.getIscheck();
-                                if (invoice!=null && ischeck==0 && custType==1 && taxNoType!=3){
+                                if (invoice!=null && ischeck==0 && custType==1 && taxNoType!=3 && shopId!=14){
                                     //未审核，发邮件
                                     //拼邮件1.下单账号，2.发票抬头，3.识别码类型，4.税号，5.发票类型，6.订单号，7.收货人，8.收货电话。税务登记证（15位）统一社会信用代码（18位）
                                     String taxNoTypeStr;

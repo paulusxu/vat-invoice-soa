@@ -4,14 +4,18 @@
 
   <insert id="addInvoiceOrder" parameterType="com.lenovo.invoice.domain.InvoiceOrder">
     insert into invoice_order (orderCode,invoiceId,invoiceTitle,taxNo,custType,invoiceType,taxNoType,
-                          memberCode,name,mobile,address,zip,createBy,createTime,updateBy,updateTime)
+                          memberCode,name,mobile,address,zip,createBy,createTime,updateBy,updateTime,orderStatus,shopid)
     values (#{orderCode},#{invoiceId},#{invoiceTitle},#{taxNo},#{custType},#{invoiceType},#{taxNoType},
-                      #{memberCode},#{name},#{mobile},#{address},#{zip},#{createBy},now(),#{updateBy},now())
+                      #{memberCode},#{name},#{mobile},#{address},#{zip},#{createBy},now(),#{updateBy},now(),#{orderStatus},#{shopid})
   </insert>
+
+    <update id="updateOrderStatus" parameterType="java.lang.Long">
+        UPDATE invoice_order set orderStatus=1,UpdateTime=now() WHERE orderCode=#{orderCode}
+    </update>
 
   <select id="getOrderIds" parameterType="java.lang.Long" resultType="com.lenovo.invoice.domain.InvoiceOrder">
     SELECT id,orderCode,invoiceId,invoiceTitle,taxNo,custType,invoiceType,taxNoType,
-          memberCode,name,mobile,address,zip,createBy,createTime,updateBy,updateTime
+          memberCode,name,mobile,address,zip,createBy,createTime,updateBy,updateTime,orderStatus,shopid
     FROM invoice_order
     WHERE invoiceId=#{invoiceId}
   </select>

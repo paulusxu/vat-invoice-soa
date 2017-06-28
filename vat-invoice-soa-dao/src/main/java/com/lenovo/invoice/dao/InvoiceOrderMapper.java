@@ -11,6 +11,8 @@ public interface InvoiceOrderMapper {
 
     public int addInvoiceOrder(InvoiceOrder invoiceOrder);
 
+    public int updateOrderStatus(Long orderCode);
+
     public List<InvoiceOrder> getOrderIds(Long invoiceId);
 
 }
