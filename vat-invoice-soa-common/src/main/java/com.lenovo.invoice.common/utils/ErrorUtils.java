@@ -23,7 +23,7 @@ public class ErrorUtils {
     //增值税发票未通过BTCP审核，或者不是同一个商城
     public static final String ERR_CODE_SHARED = "10006";
 
-    //增值税发票未通过BTCP审核，或者不是同一个商城
+    //已有相同的税号或抬头的发票，如需修改请联系客服！
     public static final String ERR_CODE_CUSTOMERNAME_TAXNO_EXIST = "10007";
     //增票信息不存在
     public static final String ERR_CODE_VATINVOICE_NOT_EXIST = "10008";
