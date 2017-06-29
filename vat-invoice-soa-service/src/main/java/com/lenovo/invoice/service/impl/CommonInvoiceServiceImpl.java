@@ -331,7 +331,7 @@ public class CommonInvoiceServiceImpl extends BaseService implements CommonInvoi
                     VatInvoice vatInvoice1 = commonInvoiceMapper.invoiceTitleIsExist(customername);
                     if (vatInvoice1 != null){
                         remoteResult.setResultCode(InvoiceResultCode.invoiceTitleIsExist);
-                        remoteResult.setResultMsg("存在已审核过的相同抬头！");
+                        remoteResult.setResultMsg("修改失败，存在已审核过的相同抬头！");
                         LOGGER.info("saveInvoice==返回值==" + JacksonUtil.toJson(remoteResult));
                         return remoteResult;
                     }else{
@@ -514,7 +514,7 @@ public class CommonInvoiceServiceImpl extends BaseService implements CommonInvoi
                     VatInvoice vatInvoice1 = commonInvoiceMapper.invoiceTitleIsExist(customername);
                     if (vatInvoice1 != null){
                         remoteResult.setResultCode(InvoiceResultCode.invoiceTitleIsExist);
-                        remoteResult.setResultMsg("存在已审核过的相同抬头！");
+                        remoteResult.setResultMsg("保存失败，存在已审核过的相同抬头，请重新填写！");
                         LOGGER.info("saveInvoice==返回值==" + JacksonUtil.toJson(remoteResult));
                         return remoteResult;
                     }else{
@@ -624,7 +624,7 @@ public class CommonInvoiceServiceImpl extends BaseService implements CommonInvoi
                     VatInvoice vatInvoice1 = commonInvoiceMapper.invoiceTitleIsExist(customername);
                     if (vatInvoice1 != null){
                         remoteResult.setResultCode(InvoiceResultCode.invoiceTitleIsExist);
-                        remoteResult.setResultMsg("存在已审核过的相同抬头！");
+                        remoteResult.setResultMsg("保存失败，存在已审核过的相同抬头，请重新填写！");
                         LOGGER.info("addInvoice==返回值==" + JacksonUtil.toJson(remoteResult));
                         return remoteResult;
                     }else{
