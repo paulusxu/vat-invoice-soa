@@ -26,8 +26,8 @@ public class InvoiceResultCode {
     public static final String NOTHISINVOICE = "17";//没有这张发票
     public static final String TAXNOFAIL = "18";//税号格式错误
     public static final String UPDATEINVOICEFAIL = "19"; //发票修改失败
-    public static final String invoiceTitleIsExist = "20"; //该抬头已存在
-    public static final String invoiceTaxNoIsExist = "21"; //该税号已存在
+    public static final String invoiceTitleIsExist = "20"; //存在已审核过的相同抬头！
+    public static final String invoiceTaxNoIsExist = "21"; //存在已审核过的相同税号！
 
 
 

@@ -499,9 +499,20 @@ public class CommonInvoiceServiceImpl extends BaseService implements CommonInvoi
             VatInvoice invoiceIsExist = commonInvoiceMapper.invoiceIsExist(vatInvoice);
             if (invoiceIsExist==null){
                 //不存在
-                if (shopid==14||custType==0||(custType==1&&taxNoType==3)){
+                if (shopid==14||custType==0){
                     vatInvoice.setIscheck(1);
                     vatInvoice.setIsvalid(1);
+                }else if (custType==1&&taxNoType==3){
+                    VatInvoice vatInvoice1 = commonInvoiceMapper.invoiceTitleIsExist(customername);
+                    if (vatInvoice1 != null){
+                        remoteResult.setResultCode(InvoiceResultCode.invoiceTitleIsExist);
+                        remoteResult.setResultMsg("存在已审核过的相同抬头！");
+                        LOGGER.info("saveInvoice==返回值==" + JacksonUtil.toJson(remoteResult));
+                        return remoteResult;
+                    }else{
+                        vatInvoice.setIscheck(1);
+                        vatInvoice.setIsvalid(1);
+                    }
                 }else {
                     vatInvoice.setIscheck(0);
                     vatInvoice.setIsvalid(0);
@@ -598,10 +609,21 @@ public class CommonInvoiceServiceImpl extends BaseService implements CommonInvoi
             //判断该发票是否已经存在
             VatInvoice invoiceIsExist = commonInvoiceMapper.invoiceIsExist(vatInvoice);
             if (invoiceIsExist==null){
-                if (shopid==14||custType==0||(custType==1&&taxNoType==3)){
+                if (shopid==14||custType==0){
                     vatInvoice.setIscheck(1);
                     vatInvoice.setIsvalid(1);
-                }else {
+                }else if (custType==1&&taxNoType==3){
+                    VatInvoice vatInvoice1 = commonInvoiceMapper.invoiceTitleIsExist(customername);
+                    if (vatInvoice1 != null){
+                        remoteResult.setResultCode(InvoiceResultCode.invoiceTitleIsExist);
+                        remoteResult.setResultMsg("存在已审核过的相同抬头！");
+                        LOGGER.info("addInvoice==返回值==" + JacksonUtil.toJson(remoteResult));
+                        return remoteResult;
+                    }else{
+                        vatInvoice.setIscheck(1);
+                        vatInvoice.setIsvalid(1);
+                    }
+                } else {
                     vatInvoice.setIscheck(0);
                     vatInvoice.setIsvalid(1);
                 }
