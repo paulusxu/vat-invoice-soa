@@ -328,7 +328,15 @@ public class CommonInvoiceServiceImpl extends BaseService implements CommonInvoi
                 VatInvoice invoiceIsExist = commonInvoiceMapper.invoiceIsExist(vatInvoice);
                 if (invoiceIsExist==null || id.equals(invoiceIsExist.getId())){
                     //不存在
-                    vatInvoice.setIscheck(1);
+                    VatInvoice vatInvoice1 = commonInvoiceMapper.invoiceTitleIsExist(customername);
+                    if (vatInvoice1 != null){
+                        remoteResult.setResultCode(InvoiceResultCode.invoiceTitleIsExist);
+                        remoteResult.setResultMsg("存在已审核过的相同抬头！");
+                        LOGGER.info("saveInvoice==返回值==" + JacksonUtil.toJson(remoteResult));
+                        return remoteResult;
+                    }else{
+                        vatInvoice.setIscheck(1);
+                    }
                     int i = commonInvoiceMapper.updateInvoice(vatInvoice);
                     if (i==0){
                         remoteResult.setResultCode(InvoiceResultCode.UPDATEINVOICEFAIL);
