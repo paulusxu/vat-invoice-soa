@@ -1020,6 +1020,9 @@ public class InvoiceApiServiceImpl extends BaseService implements InvoiceApiServ
 
 
     public Payment getPaymentType(GetCiParam getCiParam, Tenant tenant) {
+        if (tenant.getShopId() == 9) {
+            return new Payment();
+        }
         if (getCiParam.getSalesType() == 98) {
             Payment payment=new Payment();
             payment.setDefaultType(PaymentType.ZXZF);
