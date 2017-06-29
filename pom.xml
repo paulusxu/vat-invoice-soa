@@ -329,6 +329,7 @@
             <version>${framework-version}</version>
         </dependency>
 
+
         <dependency>
             <groupId>com.lenovo.m2.arch.framework</groupId>
             <artifactId>framework-mybatis</artifactId>
@@ -353,6 +354,13 @@
             <groupId>com.lenovo.m2.buy.order.address</groupId>
             <artifactId>order-address-api</artifactId>
             <version>3.1.0-SNAPSHOT</version>
+        </dependency>
+
+        <!--邮件服务-->
+        <dependency>
+            <groupId>com.lenovo</groupId>
+            <artifactId>lenovo-email-client</artifactId>
+            <version>2.4.1</version>
         </dependency>
 
     </dependencies>
@@ -415,7 +423,7 @@
                 <leconf.common-file>classpath:/zookeeper.properties</leconf.common-file>
                 <leconf.common-env>test</leconf.common-env>
                 <leconf.common-version>1_0_0</leconf.common-version>
-                <leconf.env>uat</leconf.env>
+                <leconf.env>docker-uat-new</leconf.env>
                 <leconf.ignore></leconf.ignore>
                 <leconf.conf_server_url_retry_times>3</leconf.conf_server_url_retry_times>
                 <leconf.conf_server_url_retry_sleep_seconds>1</leconf.conf_server_url_retry_sleep_seconds>
