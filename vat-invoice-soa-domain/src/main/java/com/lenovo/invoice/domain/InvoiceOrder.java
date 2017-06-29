@@ -26,6 +26,15 @@ public class InvoiceOrder implements Serializable {
     private Date updateTime;
     private Integer orderStatus;
     private Integer shopid;
+    private Integer isDelete;
+
+    public Integer getIsDelete() {
+        return isDelete;
+    }
+
+    public void setIsDelete(Integer isDelete) {
+        this.isDelete = isDelete;
+    }
 
     public Integer getOrderStatus() {
         return orderStatus;

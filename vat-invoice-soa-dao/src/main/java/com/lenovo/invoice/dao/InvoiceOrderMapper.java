@@ -15,4 +15,8 @@ public interface InvoiceOrderMapper {
 
     public List<InvoiceOrder> getOrderIds(Long invoiceId);
 
+    public int deleteInvalid();
+
+    public int deleteInvalidRollback(Long id);
+
 }

@@ -53,6 +53,9 @@
     <if test="param2.customername!=null and param2.customername!=''">
       AND CustomerName=#{param2.customername}
     </if>
+    <if test="param2.taxno!=null and param2.taxno!=''">
+      AND TaxNo=#{param2.taxno}
+    </if>
     <if test="param2.ischeck!=null">
       AND isCheck=#{param2.ischeck}
     </if>

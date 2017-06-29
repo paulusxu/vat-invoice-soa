@@ -10,14 +10,22 @@
   </insert>
 
     <update id="updateOrderStatus" parameterType="java.lang.Long">
-        UPDATE invoice_order set orderStatus=1,UpdateTime=now() WHERE orderCode=#{orderCode}
+        UPDATE invoice_order set orderStatus=1,UpdateTime=now() WHERE orderCode=#{orderCode} AND isDelete=0
     </update>
 
   <select id="getOrderIds" parameterType="java.lang.Long" resultType="com.lenovo.invoice.domain.InvoiceOrder">
     SELECT id,orderCode,invoiceId,invoiceTitle,taxNo,custType,invoiceType,taxNoType,
-          memberCode,name,mobile,address,zip,createBy,createTime,updateBy,updateTime,orderStatus,shopid
+          memberCode,name,mobile,address,zip,createBy,createTime,updateBy,updateTime,orderStatus,shopid,isDelete
     FROM invoice_order
-    WHERE invoiceId=#{invoiceId}
+    WHERE invoiceId=#{invoiceId} AND orderStatus=0 AND invoiceType IN (1,3) AND custType=1 AND taxNoType IN (1,2) isDelete=0
   </select>
+    
+    <update id="deleteInvalid">
+        UPDATE invoice_order SET isDelete=1 WHERE custType=0 OR taxNoType=3
+    </update>
+
+    <update id="deleteInvalidRollback">
+        UPDATE invoice_order SET isDelete=0 WHERE id=#{id}
+    </update>
 
 </mapper>
