@@ -1046,6 +1046,9 @@ public class InvoiceApiServiceImpl extends BaseService implements InvoiceApiServ
     }
 
     public InvoiceList getInvoiceTypes(int shopId, int salesType, int fatype, String faid, String openO2O, String openZy) {
+        if (shopId == 9) {
+            return null;
+        }
         HashSet<Integer> fatypesets = new HashSet<Integer>();
         fatypesets.add(1);
         fatypesets.add(2);
@@ -1088,9 +1091,10 @@ public class InvoiceApiServiceImpl extends BaseService implements InvoiceApiServ
                 return new InvoiceList(Arrays.asList(new InvoiceType[]{InvoiceType.DZFP}), Arrays.asList(new InvoiceType[]{InvoiceType.ZZFP}));
             }
         }
-        if (shopId == 9 || shopId == 15 || fatype == 5) {
+        if (shopId == 15 || fatype == 5) {
             return null;
         }
+
         return null;
     }
 }
