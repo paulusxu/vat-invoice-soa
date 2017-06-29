@@ -261,7 +261,7 @@ public class InvoiceApiServiceImpl extends BaseService implements InvoiceApiServ
 
     @Override
     public int updateThrowingStatus(String orderCode, int status) {
-        LOGGER.info("ThrowStatusMessageCustomer Start:{{},{}",orderCode,status);
+        LOGGER_THROWSTATUS.info("ThrowStatusMessageCustomer Start:{{},{}",orderCode,status);
         int rows = 0;
         try {
             rows = vathrowBtcpMapper.updateThrowingStatus(orderCode, status);
