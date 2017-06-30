@@ -368,7 +368,6 @@
 
   <select id="validationInvoice" resultType="java.lang.Integer">
     SELECT count(1) FROM memberinvoiceinfoes  WHERE LenovoID=#{lenovoid}
-    and InvoiceType=#{invoiceType}
     <if test="taxNo != null and taxNo!=''" >
       AND  (CustomerName=#{customerName} OR TaxNo=#{taxNo})
     </if>
