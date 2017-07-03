@@ -162,9 +162,9 @@ public class ExchangeInvoiceServiceImpl extends BaseService implements ExchangeI
                     LOGGER.info("exchangeToCommon返回值==" + JacksonUtil.toJson(remoteResult));
                     return remoteResult;
                 }else if (orderStatus2==0) {
-                    //订单未抛单-已支付，直接修改订单 TODO
+                    //订单未抛单-已支付，直接修改订单
                     InvoiceChangeApi invoiceChangeApi1 = new InvoiceChangeApi();
-                    /*invoiceChangeApi1.setOrderId(Long.parseLong(orderCode));
+                    invoiceChangeApi1.setOrderId(Long.parseLong(orderCode));
                     invoiceChangeApi1.setOrderStatus(0);
                     invoiceChangeApi1.setType(commonInvoiceType);
                     invoiceChangeApi1.setTitle(newInvoiceTitle);
@@ -173,7 +173,10 @@ public class ExchangeInvoiceServiceImpl extends BaseService implements ExchangeI
                     invoiceChangeApi1.setOperator(itCode);
                     invoiceChangeApi1.setIsNeedMerge(0);
                     invoiceChangeApi1.setShopId(invoiceChangeApi2.getShopId());
-                    invoiceChangeApi1.setTaxpayerIdentity(taxNo);*/
+                    invoiceChangeApi1.setTaxpayerIdentity(taxNo);
+                    invoiceChangeApi1.setZid(remoteResult1.getT().getId() + "");
+                    invoiceChangeApi1.setTaxNoType(taxNoType);
+                    invoiceChangeApi1.setTaxpayerIdentity(taxNo);
 
                     LOGGER.info("修改订单==参数=="+JacksonUtil.toJson(invoiceChangeApi1));
                     RemoteResult remoteResult2 = vatApiOrderCenter.updateInvoice(invoiceChangeApi1);
@@ -200,7 +203,7 @@ public class ExchangeInvoiceServiceImpl extends BaseService implements ExchangeI
 
                             //老发票信息
                             record.setOldType(invoiceChangeApi2.getUnits());
-                            record.setOldInvoiceId(Long.parseLong(invoiceChangeApi2.getZid()));//没有，初始化1
+                            record.setOldInvoiceId(Long.parseLong(invoiceChangeApi2.getZid()));
                             record.setOldInvoiceTitle(invoiceChangeApi2.getTitle());
                             record.setOldInvoiceType(invoiceChangeApi2.getType());
                             record.setOldTaxNo(invoiceChangeApi2.getTaxpayerIdentity());
@@ -208,7 +211,7 @@ public class ExchangeInvoiceServiceImpl extends BaseService implements ExchangeI
                             record.setOldBankNo(invoiceChangeApi2.getBankNo());
                             record.setOldAddress(invoiceChangeApi2.getRegisterAddress());
                             record.setOldPhone(invoiceChangeApi2.getRegisterPhone());
-                            //record.setOldTaxNoType();
+                            record.setOldTaxNoType(invoiceChangeApi2.getTaxNoType());
 
                             //新发票信息
                             record.setNewType(type);
@@ -310,7 +313,7 @@ public class ExchangeInvoiceServiceImpl extends BaseService implements ExchangeI
                             record.setOldBankNo(invoiceChangeApi2.getBankNo());
                             record.setOldAddress(invoiceChangeApi2.getRegisterAddress());
                             record.setOldPhone(invoiceChangeApi2.getRegisterPhone());
-                            //todo 添加老发票的taxNoType
+                            record.setOldTaxNoType(invoiceChangeApi2.getTaxNoType());
 
                             //新发票信息
                             record.setNewType(type);
@@ -525,7 +528,7 @@ public class ExchangeInvoiceServiceImpl extends BaseService implements ExchangeI
                     }
                     //修改增票成功，再修改订单
                     InvoiceChangeApi invoiceChangeApi1 = new InvoiceChangeApi();
-                    /*invoiceChangeApi1.setOrderId(Long.parseLong(orderCode));
+                    invoiceChangeApi1.setOrderId(Long.parseLong(orderCode));
                     invoiceChangeApi1.setOrderStatus(0);
                     invoiceChangeApi1.setTitle(newInvoiceTitle);
                     invoiceChangeApi1.setTaxpayerIdentity(newTaxNo);
@@ -542,12 +545,13 @@ public class ExchangeInvoiceServiceImpl extends BaseService implements ExchangeI
                     invoiceChangeApi1.setCounty(county);
                     invoiceChangeApi1.setAddress(address2);
                     invoiceChangeApi1.setMobile(phone2);
+                    invoiceChangeApi1.setPhone(tel);
                     invoiceChangeApi1.setZip(zip);
                     invoiceChangeApi1.setShopId(invoiceChangeApi2.getShopId());
                     invoiceChangeApi1.setChangeType(changeType);
                     invoiceChangeApi1.setOperator(itCode);
                     invoiceChangeApi1.setIsNeedMerge(0);
-                    invoiceChangeApi1.setZid(remoteResult1.getT().getVatInvoiceId()+"");*/
+                    invoiceChangeApi1.setZid(remoteResult1.getT().getVatInvoiceId()+"");
 
                     LOGGER.info("修改订单==参数==" + JacksonUtil.toJson(invoiceChangeApi1));
                     RemoteResult remoteResult2 = vatApiOrderCenter.updateInvoice(invoiceChangeApi1);
@@ -581,8 +585,7 @@ public class ExchangeInvoiceServiceImpl extends BaseService implements ExchangeI
                             record.setOldBankNo(invoiceChangeApi2.getBankNo());
                             record.setOldAddress(invoiceChangeApi2.getRegisterAddress());
                             record.setOldPhone(invoiceChangeApi2.getRegisterPhone());
-                            //老发票识别码类型
-                            //record.setOldTaxNoType();
+                            record.setOldTaxNoType(invoiceChangeApi2.getTaxNoType());
                             //新发票信息
                             record.setNewType(1);//增票只有公司的
                             record.setNewInvoiceId(remoteResult1.getT().getVatInvoiceId());
@@ -702,7 +705,7 @@ public class ExchangeInvoiceServiceImpl extends BaseService implements ExchangeI
                             record.setOldBankNo(invoiceChangeApi2.getBankNo());
                             record.setOldAddress(invoiceChangeApi2.getRegisterAddress());
                             record.setOldPhone(invoiceChangeApi2.getRegisterPhone());
-                            //record.setOldTaxNoType(); todo
+                            record.setOldTaxNoType(invoiceChangeApi2.getTaxNoType());
                             //新发票信息
                             record.setNewType(1);//增票只有公司的
                             record.setNewInvoiceId(remoteResult1.getT().getVatInvoiceId());
@@ -924,9 +927,9 @@ public class ExchangeInvoiceServiceImpl extends BaseService implements ExchangeI
                 Tenant tenant = new Tenant();
                 tenant.setShopId(record.getShopid());
                 try {
-                    //修改成功，调用订单修改接口 TODO
+                    //修改成功，调用订单修改接口
                     InvoiceChangeApi invoiceChangeApi = new InvoiceChangeApi();
-                    /*invoiceChangeApi.setOrderId(Long.parseLong(orderCode));
+                    invoiceChangeApi.setOrderId(Long.parseLong(orderCode));
                     invoiceChangeApi.setOrderStatus(1);
                     invoiceChangeApi.setTitle(record.getNewInvoiceTitle());
                     invoiceChangeApi.setTaxpayerIdentity(record.getNewTaxNo());
@@ -949,9 +952,8 @@ public class ExchangeInvoiceServiceImpl extends BaseService implements ExchangeI
                     invoiceChangeApi.setOperator(record.getItCode());
                     invoiceChangeApi.setShopId(record.getShopid());
                     invoiceChangeApi.setIsNeedMerge(0);
-                    if (exchangeType==4 || exchangeType==5 || exchangeType==6){
-                        invoiceChangeApi.setZid(record.getNewInvoiceId()+"");
-                    }*/
+                    invoiceChangeApi.setZid(record.getNewInvoiceId()+"");
+                    invoiceChangeApi.setTaxNoType(record.getNewTaxNoType());
                     LOGGER.info("BTCP通知=修改订单参数==" + JacksonUtil.toJson(invoiceChangeApi));
                     RemoteResult remoteResult1 = vatApiOrderCenter.updateInvoice(invoiceChangeApi);
                     LOGGER.info("BTCP通知=修改订单返回值=="+JacksonUtil.toJson(remoteResult1));
