@@ -23,10 +23,11 @@ public class ExchangeInvoiceRecord implements Serializable {
 
     //老发票信息
     private Integer oldType;//开票方式，1公司，0个人
-    private Integer oldInvoiceId;//发票的id
+    private Long oldInvoiceId;//发票的id
     private Integer oldInvoiceType;//发票的类型，1电，2增，3普
     private String oldInvoiceTitle;//发票的抬头
     private String oldTaxNo;//税号
+    private Integer oldTaxNoType;//旧发票识别码类型，1是15、20位，2是18位，3是无
     private String oldBankName;//开户银行
     private String oldBankNo;//开户账号
     private String oldAddress;//开户地址
@@ -34,10 +35,11 @@ public class ExchangeInvoiceRecord implements Serializable {
 
     //新发票信息
     private Integer newType;//开票方式，1公司，0个人
-    private Integer newInvoiceId;//发票的id
+    private Long newInvoiceId;//发票的id
     private Integer newInvoiceType;//发票的类型，1电，2增，3普
     private String newInvoiceTitle;//发票的抬头
     private String newTaxNo;//税号
+    private Integer newTaxNoType;//新发票识别码类型，1是15、20位，2是18位，3是无
     private String newBankName;//开户银行
     private String newBankNo;//开户账号
     private String newAddress;//开户地址
@@ -57,6 +59,22 @@ public class ExchangeInvoiceRecord implements Serializable {
     //分页查询，换票开始时间，结束时间
     private Date beginTime;
     private Date endTime;
+
+    public Integer getOldTaxNoType() {
+        return oldTaxNoType;
+    }
+
+    public void setOldTaxNoType(Integer oldTaxNoType) {
+        this.oldTaxNoType = oldTaxNoType;
+    }
+
+    public Integer getNewTaxNoType() {
+        return newTaxNoType;
+    }
+
+    public void setNewTaxNoType(Integer newTaxNoType) {
+        this.newTaxNoType = newTaxNoType;
+    }
 
     public String getTel() {
         return tel;
@@ -242,14 +260,6 @@ public class ExchangeInvoiceRecord implements Serializable {
         this.oldType = oldType;
     }
 
-    public Integer getOldInvoiceId() {
-        return oldInvoiceId;
-    }
-
-    public void setOldInvoiceId(Integer oldInvoiceId) {
-        this.oldInvoiceId = oldInvoiceId;
-    }
-
     public Integer getOldInvoiceType() {
         return oldInvoiceType;
     }
@@ -314,14 +324,6 @@ public class ExchangeInvoiceRecord implements Serializable {
         this.newType = newType;
     }
 
-    public Integer getNewInvoiceId() {
-        return newInvoiceId;
-    }
-
-    public void setNewInvoiceId(Integer newInvoiceId) {
-        this.newInvoiceId = newInvoiceId;
-    }
-
     public Integer getNewInvoiceType() {
         return newInvoiceType;
     }
@@ -376,5 +378,21 @@ public class ExchangeInvoiceRecord implements Serializable {
 
     public void setNewPhone(String newPhone) {
         this.newPhone = newPhone;
+    }
+
+    public Long getNewInvoiceId() {
+        return newInvoiceId;
+    }
+
+    public void setNewInvoiceId(Long newInvoiceId) {
+        this.newInvoiceId = newInvoiceId;
+    }
+
+    public Long getOldInvoiceId() {
+        return oldInvoiceId;
+    }
+
+    public void setOldInvoiceId(Long oldInvoiceId) {
+        this.oldInvoiceId = oldInvoiceId;
     }
 }

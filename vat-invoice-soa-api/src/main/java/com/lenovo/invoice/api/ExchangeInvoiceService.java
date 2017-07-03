@@ -21,7 +21,7 @@ public interface ExchangeInvoiceService {
 
     //换普票
     public RemoteResult exchangeToCommon(String orderCode,String itCode,Integer oldInvoiceType,
-                                         Integer type,String newInvoiceTitle,String taxNo);
+                                         Integer type,String newInvoiceTitle,String taxNo,Integer taxNoType);
 
     //换增票
     public RemoteResult exchangeToVat(String orderCode,String itCode, Integer oldInvoiceType,Integer exchangeType,String newInvoiceTitle,

@@ -5,10 +5,9 @@ import com.lenovo.invoice.api.ExchangeInvoiceService;
 import com.lenovo.invoice.api.InvoiceApiService;
 import com.lenovo.invoice.common.utils.*;
 import com.lenovo.invoice.dao.ExchangeInvoiceRecordMapper;
-import com.lenovo.invoice.dao.OrderInvoiceMapper;
 import com.lenovo.invoice.dao.VathrowBtcpMapper;
-import com.lenovo.invoice.domain.CommonInvoice;
 import com.lenovo.invoice.domain.ExchangeInvoiceRecord;
+import com.lenovo.invoice.domain.VatInvoice;
 import com.lenovo.invoice.domain.VathrowBtcp;
 import com.lenovo.invoice.domain.param.AddVatInvoiceInfoParam;
 import com.lenovo.invoice.domain.param.GetVatInvoiceInfoParam;
@@ -65,20 +64,17 @@ public class ExchangeInvoiceServiceImpl extends BaseService implements ExchangeI
     @Autowired
     private VatInvoiceService vatInvoiceService;
 
-    @Autowired
-    private OrderInvoiceMapper orderInvoiceMapper;
-
     private static final Integer commonInvoiceType = 3;//普票类型是3
     private static final Integer vatInvoiceType = 2;//增票类型是2
 
     //换普票
     @Override
-    public RemoteResult exchangeToCommon(String orderCode,String itCode,Integer oldInvoiceType,Integer type,String newInvoiceTitle,String taxNo) {
-        LOGGER.info("exchangeToCommon参数==orderCode="+orderCode+";oldInvoiceType="+oldInvoiceType+";itCode="+itCode+";taxNo="+taxNo+";type="+type+";newInvoiceTitle="+newInvoiceTitle);
+    public RemoteResult exchangeToCommon(String orderCode,String itCode,Integer oldInvoiceType,Integer type,String newInvoiceTitle,String taxNo,Integer taxNoType) {
+        LOGGER.info("exchangeToCommon参数==orderCode="+orderCode+";oldInvoiceType="+oldInvoiceType+";itCode="+itCode+";taxNo="+taxNo+";type="+type+";newInvoiceTitle="+newInvoiceTitle+";taxNoType="+taxNoType);
 
         RemoteResult remoteResult = new RemoteResult();
         try {
-            if (isNull(orderCode,itCode,oldInvoiceType,type,newInvoiceTitle) || (type==1 && isNull(taxNo))){
+            if (isNull(orderCode,itCode,oldInvoiceType,type,newInvoiceTitle)||(type==1&&isNull(taxNoType))||(type==1&&taxNoType==3&&isNotNull(taxNo))||(type==1&&taxNoType!=3&&isNull(taxNo))){
                 remoteResult.setResultCode(InvoiceResultCode.PARAMSFAIL);
                 remoteResult.setResultMsg("必填参数错误");
                 LOGGER.info("exchangeToCommon返回值==" + JacksonUtil.toJson(remoteResult));
@@ -127,18 +123,17 @@ public class ExchangeInvoiceServiceImpl extends BaseService implements ExchangeI
                 Tenant tenant = new Tenant();
                 tenant.setShopId(invoiceChangeApi.getShopId());
 
-                //填充新的普票信息
-                CommonInvoice commonInvoice = new CommonInvoice();
-                commonInvoice.setInvoiceTitle(newInvoiceTitle);
-                commonInvoice.setShopid(invoiceChangeApi.getShopId());
-                commonInvoice.setType(type);
-                commonInvoice.setTaxNo(taxNo);
-                commonInvoice.setCreateBy(itCode);
-                commonInvoice.setLenovoId(invoiceChangeApi.getLenovoId());
-                //还未发货，客户换票，首先添加新得普票
-                RemoteResult<CommonInvoice> remoteResult1 = commonInvoiceService.addCommonInvoice(commonInvoice,tenant);
+                //添加新普票
+                VatInvoice vatInvoice = new VatInvoice();
+                vatInvoice.setCustomername(newInvoiceTitle);
+                vatInvoice.setTaxno(taxNo);
+                vatInvoice.setCreateby(itCode);
+                vatInvoice.setShopid(invoiceChangeApi.getShopId());
+                vatInvoice.setTaxNoType(taxNoType);
+                vatInvoice.setInvoiceType(commonInvoiceType);
+                vatInvoice.setCustType(type);
+                RemoteResult<VatInvoice> remoteResult1 = commonInvoiceService.addInvoice(vatInvoice,tenant);
                 if (!remoteResult1.isSuccess()){
-                    //添加失败
                     remoteResult.setResultCode(InvoiceResultCode.ADDCOMMONINVOICEFAIL);
                     remoteResult.setResultMsg("添加新普票失败");
                     LOGGER.info("exchangeToCommon返回值==" + JacksonUtil.toJson(remoteResult));
@@ -167,9 +162,9 @@ public class ExchangeInvoiceServiceImpl extends BaseService implements ExchangeI
                     LOGGER.info("exchangeToCommon返回值==" + JacksonUtil.toJson(remoteResult));
                     return remoteResult;
                 }else if (orderStatus2==0) {
-                    //订单未抛单-已支付，直接修改订单
+                    //订单未抛单-已支付，直接修改订单 TODO
                     InvoiceChangeApi invoiceChangeApi1 = new InvoiceChangeApi();
-                    invoiceChangeApi1.setOrderId(Long.parseLong(orderCode));
+                    /*invoiceChangeApi1.setOrderId(Long.parseLong(orderCode));
                     invoiceChangeApi1.setOrderStatus(0);
                     invoiceChangeApi1.setType(commonInvoiceType);
                     invoiceChangeApi1.setTitle(newInvoiceTitle);
@@ -178,7 +173,7 @@ public class ExchangeInvoiceServiceImpl extends BaseService implements ExchangeI
                     invoiceChangeApi1.setOperator(itCode);
                     invoiceChangeApi1.setIsNeedMerge(0);
                     invoiceChangeApi1.setShopId(invoiceChangeApi2.getShopId());
-                    invoiceChangeApi1.setTaxpayerIdentity(taxNo);
+                    invoiceChangeApi1.setTaxpayerIdentity(taxNo);*/
 
                     LOGGER.info("修改订单==参数=="+JacksonUtil.toJson(invoiceChangeApi1));
                     RemoteResult remoteResult2 = vatApiOrderCenter.updateInvoice(invoiceChangeApi1);
@@ -205,7 +200,7 @@ public class ExchangeInvoiceServiceImpl extends BaseService implements ExchangeI
 
                             //老发票信息
                             record.setOldType(invoiceChangeApi2.getUnits());
-                            record.setOldInvoiceId(1);//没有，初始化1
+                            record.setOldInvoiceId(Long.parseLong(invoiceChangeApi2.getZid()));//没有，初始化1
                             record.setOldInvoiceTitle(invoiceChangeApi2.getTitle());
                             record.setOldInvoiceType(invoiceChangeApi2.getType());
                             record.setOldTaxNo(invoiceChangeApi2.getTaxpayerIdentity());
@@ -213,6 +208,7 @@ public class ExchangeInvoiceServiceImpl extends BaseService implements ExchangeI
                             record.setOldBankNo(invoiceChangeApi2.getBankNo());
                             record.setOldAddress(invoiceChangeApi2.getRegisterAddress());
                             record.setOldPhone(invoiceChangeApi2.getRegisterPhone());
+                            //record.setOldTaxNoType();
 
                             //新发票信息
                             record.setNewType(type);
@@ -220,6 +216,7 @@ public class ExchangeInvoiceServiceImpl extends BaseService implements ExchangeI
                             record.setNewInvoiceTitle(newInvoiceTitle);
                             record.setNewInvoiceType(commonInvoiceType);
                             record.setNewTaxNo(taxNo);
+                            record.setNewTaxNoType(taxNoType);
 
                             int i = exchangeInvoiceRecordMapper.addExchangeInvoiceRecord(record);
                             if (i<=0){
@@ -244,27 +241,6 @@ public class ExchangeInvoiceServiceImpl extends BaseService implements ExchangeI
                         }catch (Exception e){
                             ERRORLOGGER.error("增换普，换票成功，增票和订单映射删除出现异常！"+orderCode+"=="+e.getMessage(),e);
                         }
-                        /*try {
-                            //修改orderInvoice
-                            OrderInvoice orderInvoice = new OrderInvoice();
-                            orderInvoice.setOrderid(Long.parseLong(orderCode));
-                            orderInvoice.setType(1);//0：电子票 1：普票 2：增票
-                            orderInvoice.setTitle(newInvoiceTitle);
-                            orderInvoice.setUnits(type + "");
-                            orderInvoice.setTaxpayeridentity(taxNo);
-                            orderInvoice.setZid(remoteResult1.getT().getId()+"");
-                            orderInvoice.setUpdatetime(date);
-                            orderInvoice.setFlag(1);//0:不可修改 1：可修改
-
-                            int i = orderInvoiceMapper.updateByOrderId(orderInvoice);
-                            if (i<=0){
-                                ERRORLOGGER.error("换普票成功，修改orderInvoice失败！=="+i+"=="+orderCode);
-                            }else {
-                                LOGGER.info("换普票成功，修改orderInvoice成功！=="+i+"=="+orderCode);
-                            }
-                        }catch (Exception e){
-                            ERRORLOGGER.error("换普票，修改orderInvoice出现异常！"+orderCode+"=="+e.getMessage(),e);
-                        }*/
                     }else if ("9003".equals(remoteResult2.getResultCode())){
                         remoteResult.setResultCode(InvoiceResultCode.UPDATEORDERFAIL);
                         remoteResult.setResultMsg("该订单正在抛单，请五分钟后再试！");
@@ -281,9 +257,9 @@ public class ExchangeInvoiceServiceImpl extends BaseService implements ExchangeI
                     xml += "<InvoiceType>P</InvoiceType>"; //普票P，增票Z，电子票D
                     xml += "<invoiceTitle>"+newInvoiceTitle+"</invoiceTitle>";
                     xml += "<UpdatedBy>"+itCode+"</UpdatedBy>";
-                    if (type==0){
+                    if (type==0||(type==1&&taxNoType==3)){
                         xml += "<CustType>i</CustType>";
-                    }else if (type==1){
+                    }else {
                         xml += "<CustType>c</CustType>";
                         xml += "<TaxNo>"+taxNo+"</TaxNo>";
                     }
@@ -303,7 +279,6 @@ public class ExchangeInvoiceServiceImpl extends BaseService implements ExchangeI
                     Map<String, String> map = new HashMap<String, String>();
                     map = XMLUtil.parseXml(resposeData);
                     String resCode = map.get("Code");
-                    //String message = map.get("Message");
 
                     if (resCode!=null && "200".equals(resCode)){
                         remoteResult.setResultCode(InvoiceResultCode.SUCCESS);
@@ -327,7 +302,7 @@ public class ExchangeInvoiceServiceImpl extends BaseService implements ExchangeI
 
                             //老发票信息
                             record.setOldType(invoiceChangeApi2.getUnits());
-                            record.setOldInvoiceId(1);//没有，初始化为1
+                            record.setOldInvoiceId(Long.parseLong(invoiceChangeApi2.getZid()));//没有，初始化为1
                             record.setOldInvoiceTitle(invoiceChangeApi2.getTitle());
                             record.setOldInvoiceType(invoiceChangeApi2.getType());
                             record.setOldTaxNo(invoiceChangeApi2.getTaxpayerIdentity());
@@ -335,6 +310,7 @@ public class ExchangeInvoiceServiceImpl extends BaseService implements ExchangeI
                             record.setOldBankNo(invoiceChangeApi2.getBankNo());
                             record.setOldAddress(invoiceChangeApi2.getRegisterAddress());
                             record.setOldPhone(invoiceChangeApi2.getRegisterPhone());
+                            //todo 添加老发票的taxNoType
 
                             //新发票信息
                             record.setNewType(type);
@@ -342,6 +318,7 @@ public class ExchangeInvoiceServiceImpl extends BaseService implements ExchangeI
                             record.setNewInvoiceTitle(newInvoiceTitle);
                             record.setNewInvoiceType(commonInvoiceType);
                             record.setNewTaxNo(taxNo);
+                            record.setNewTaxNoType(taxNoType);
 
                             int i = exchangeInvoiceRecordMapper.addExchangeInvoiceRecord(record);
                             if (i<=0){
@@ -548,7 +525,7 @@ public class ExchangeInvoiceServiceImpl extends BaseService implements ExchangeI
                     }
                     //修改增票成功，再修改订单
                     InvoiceChangeApi invoiceChangeApi1 = new InvoiceChangeApi();
-                    invoiceChangeApi1.setOrderId(Long.parseLong(orderCode));
+                    /*invoiceChangeApi1.setOrderId(Long.parseLong(orderCode));
                     invoiceChangeApi1.setOrderStatus(0);
                     invoiceChangeApi1.setTitle(newInvoiceTitle);
                     invoiceChangeApi1.setTaxpayerIdentity(newTaxNo);
@@ -570,7 +547,7 @@ public class ExchangeInvoiceServiceImpl extends BaseService implements ExchangeI
                     invoiceChangeApi1.setChangeType(changeType);
                     invoiceChangeApi1.setOperator(itCode);
                     invoiceChangeApi1.setIsNeedMerge(0);
-                    invoiceChangeApi1.setZid(remoteResult1.getT().getVatInvoiceId()+"");
+                    invoiceChangeApi1.setZid(remoteResult1.getT().getVatInvoiceId()+"");*/
 
                     LOGGER.info("修改订单==参数==" + JacksonUtil.toJson(invoiceChangeApi1));
                     RemoteResult remoteResult2 = vatApiOrderCenter.updateInvoice(invoiceChangeApi1);
@@ -596,7 +573,7 @@ public class ExchangeInvoiceServiceImpl extends BaseService implements ExchangeI
                             record.setPaidTime(invoiceChangeApi2.getPaidTime());
                             //老发票信息
                             record.setOldType(invoiceChangeApi2.getUnits());
-                            record.setOldInvoiceId(1);//没有，初始化为1
+                            record.setOldInvoiceId(Long.parseLong(invoiceChangeApi2.getZid()));
                             record.setOldInvoiceTitle(invoiceChangeApi2.getTitle());
                             record.setOldInvoiceType(invoiceChangeApi2.getType());
                             record.setOldTaxNo(invoiceChangeApi2.getTaxpayerIdentity());
@@ -604,9 +581,11 @@ public class ExchangeInvoiceServiceImpl extends BaseService implements ExchangeI
                             record.setOldBankNo(invoiceChangeApi2.getBankNo());
                             record.setOldAddress(invoiceChangeApi2.getRegisterAddress());
                             record.setOldPhone(invoiceChangeApi2.getRegisterPhone());
+                            //老发票识别码类型
+                            //record.setOldTaxNoType();
                             //新发票信息
                             record.setNewType(1);//增票只有公司的
-                            record.setNewInvoiceId((int) remoteResult1.getT().getVatInvoiceId());
+                            record.setNewInvoiceId(remoteResult1.getT().getVatInvoiceId());
                             record.setNewInvoiceTitle(newInvoiceTitle);
                             record.setNewInvoiceType(vatInvoiceType);
                             record.setNewTaxNo(newTaxNo);
@@ -634,31 +613,6 @@ public class ExchangeInvoiceServiceImpl extends BaseService implements ExchangeI
                         } catch (Exception e) {
                             ERRORLOGGER.error("添加换票记录出现异常==参数==" + JacksonUtil.toJson(record)+"==" + e.getMessage(), e);
                         }
-                        /*try {
-                            //修改orderInvoice
-                            OrderInvoice orderInvoice = new OrderInvoice();
-                            orderInvoice.setOrderid(Long.parseLong(orderCode));
-                            orderInvoice.setType(2);//0：电子票 1：普票 2：增票
-                            orderInvoice.setTitle(newInvoiceTitle);
-                            orderInvoice.setUnits("1");
-                            orderInvoice.setTaxpayeridentity(newTaxNo);
-                            orderInvoice.setRegisteraddress(newAddress);
-                            orderInvoice.setRegisterphone(newPhone);
-                            orderInvoice.setDepositbank(newBankName);
-                            orderInvoice.setBankno(newBankNo);
-                            orderInvoice.setZid(remoteResult1.getT().getVatInvoiceId()+"");
-                            orderInvoice.setUpdatetime(date);
-                            orderInvoice.setFlag(1);//0:不可修改 1：可修改
-
-                            int i = orderInvoiceMapper.updateByOrderId(orderInvoice);
-                            if (i<=0){
-                                ERRORLOGGER.error("换普票成功，修改orderInvoice失败！=="+i+"=="+orderCode);
-                            }else {
-                                LOGGER.info("换普票成功，修改orderInvoice成功！=="+i+"=="+orderCode);
-                            }
-                        }catch (Exception e){
-                            ERRORLOGGER.error("换增票，修改orderInvoice出现异常！"+orderCode+"=="+e.getMessage(),e);
-                        }*/
                     } else {
                         //修改订单失败，修改增票要回滚
                         if (changeType==5){
@@ -718,7 +672,6 @@ public class ExchangeInvoiceServiceImpl extends BaseService implements ExchangeI
                     Map<String, String> map = new HashMap<String, String>();
                     map = XMLUtil.parseXml(resposeData);
                     String resCode = map.get("Code");
-                    String message = map.get("Message");
 
                     if (resCode != null && "200".equals(resCode)) {
                         remoteResult.setResultCode(InvoiceResultCode.SUCCESS);
@@ -741,7 +694,7 @@ public class ExchangeInvoiceServiceImpl extends BaseService implements ExchangeI
                             record.setPaidTime(invoiceChangeApi2.getPaidTime());
                             //老发票信息
                             record.setOldType(invoiceChangeApi2.getUnits());
-                            record.setOldInvoiceId(1);//没有，初始化为1
+                            record.setOldInvoiceId(Long.parseLong(invoiceChangeApi2.getZid()));
                             record.setOldInvoiceTitle(invoiceChangeApi2.getTitle());
                             record.setOldInvoiceType(invoiceChangeApi2.getType());
                             record.setOldTaxNo(invoiceChangeApi2.getTaxpayerIdentity());
@@ -749,9 +702,10 @@ public class ExchangeInvoiceServiceImpl extends BaseService implements ExchangeI
                             record.setOldBankNo(invoiceChangeApi2.getBankNo());
                             record.setOldAddress(invoiceChangeApi2.getRegisterAddress());
                             record.setOldPhone(invoiceChangeApi2.getRegisterPhone());
+                            //record.setOldTaxNoType(); todo
                             //新发票信息
                             record.setNewType(1);//增票只有公司的
-                            record.setNewInvoiceId((int) remoteResult1.getT().getVatInvoiceId());
+                            record.setNewInvoiceId(remoteResult1.getT().getVatInvoiceId());
                             record.setNewInvoiceTitle(newInvoiceTitle);
                             record.setNewInvoiceType(vatInvoiceType);
                             record.setNewTaxNo(newTaxNo);
@@ -970,9 +924,9 @@ public class ExchangeInvoiceServiceImpl extends BaseService implements ExchangeI
                 Tenant tenant = new Tenant();
                 tenant.setShopId(record.getShopid());
                 try {
-                    //修改成功，调用订单修改接口
+                    //修改成功，调用订单修改接口 TODO
                     InvoiceChangeApi invoiceChangeApi = new InvoiceChangeApi();
-                    invoiceChangeApi.setOrderId(Long.parseLong(orderCode));
+                    /*invoiceChangeApi.setOrderId(Long.parseLong(orderCode));
                     invoiceChangeApi.setOrderStatus(1);
                     invoiceChangeApi.setTitle(record.getNewInvoiceTitle());
                     invoiceChangeApi.setTaxpayerIdentity(record.getNewTaxNo());
@@ -997,7 +951,7 @@ public class ExchangeInvoiceServiceImpl extends BaseService implements ExchangeI
                     invoiceChangeApi.setIsNeedMerge(0);
                     if (exchangeType==4 || exchangeType==5 || exchangeType==6){
                         invoiceChangeApi.setZid(record.getNewInvoiceId()+"");
-                    }
+                    }*/
                     LOGGER.info("BTCP通知=修改订单参数==" + JacksonUtil.toJson(invoiceChangeApi));
                     RemoteResult remoteResult1 = vatApiOrderCenter.updateInvoice(invoiceChangeApi);
                     LOGGER.info("BTCP通知=修改订单返回值=="+JacksonUtil.toJson(remoteResult1));
@@ -1087,35 +1041,6 @@ public class ExchangeInvoiceServiceImpl extends BaseService implements ExchangeI
                 }catch (Exception e){
                     ERRORLOGGER.error("BTCP回调===修改增票信息出现异常==" + orderCode+"=="+applyId+"=="+e.getMessage(),e);
                 }
-                /*try {
-                    //修改orderInvoice
-                    OrderInvoice orderInvoice = new OrderInvoice();
-                    orderInvoice.setOrderid(Long.parseLong(orderCode));
-                    if (record.getNewInvoiceType()==3){
-                        orderInvoice.setType(1);//0：电子票 1：普票 2：增票
-                    }else if (record.getNewInvoiceType()==2){
-                        orderInvoice.setType(2);
-                    }
-                    orderInvoice.setTitle(record.getNewInvoiceTitle());
-                    orderInvoice.setUnits(record.getNewType()+"");
-                    orderInvoice.setTaxpayeridentity(record.getNewTaxNo());
-                    orderInvoice.setRegisteraddress(record.getNewAddress());
-                    orderInvoice.setRegisterphone(record.getNewPhone());
-                    orderInvoice.setDepositbank(record.getNewBankName());
-                    orderInvoice.setBankno(record.getNewBankNo());
-                    orderInvoice.setZid(record.getNewInvoiceId()+"");
-                    orderInvoice.setUpdatetime(date);
-                    orderInvoice.setFlag(1);//0:不可修改 1：可修改
-
-                    int i = orderInvoiceMapper.updateByOrderId(orderInvoice);
-                    if (i<=0){
-                        ERRORLOGGER.error("换普票成功，修改orderInvoice失败！=="+i+"=="+orderCode);
-                    }else {
-                        LOGGER.info("换普票成功，修改orderInvoice成功！=="+i+"=="+orderCode);
-                    }
-                }catch (Exception e){
-                    ERRORLOGGER.error("换普票，修改orderInvoice出现异常！"+orderCode+"=="+e.getMessage(),e);
-                }*/
             }else {
                 //换票失败
                 try {
