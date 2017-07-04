@@ -31,6 +31,6 @@ public interface InvoiceShopMapper {
 
     public int editInvoiceIsDefault(@Param("lenovoid")String lenovoid);
 
-    public int validationInvoice(@Param("lenovoid")String lenovoid,@Param("customerName")String customerName,@Param("taxNo")String taxNo);
+    public int validationInvoice(@Param("lenovoid")String lenovoid,@Param("invoiceType")int invoiceType,@Param("customerName")String customerName,@Param("taxNo")String taxNo);
 
 }

@@ -10,6 +10,8 @@
     <id column="PayManType" property="payManType"/>
     <id column="PayMan" property="payMan"/>
     <id column="TaxNo" property="taxNo"/>
+    <id column="taxNoType" property="taxNoType"/>
+    <id column="companyType" property="companyType"/>
     <id column="BankName" property="bankName"/>
     <id column="AccountNo" property="accountNo"/>
     <id column="SubAreaCode" property="subAreaCode"/>
@@ -47,6 +49,8 @@
     <id column="PayManType" property="payManType"/>
     <id column="PayMan" property="payMan"/>
     <id column="TaxNo" property="taxNo"/>
+    <id column="taxNoType" property="taxNoType"/>
+    <id column="companyType" property="companyType"/>
     <id column="BankName" property="bankName"/>
     <id column="AccountNo" property="accountNo"/>
     <id column="SubAreaCode" property="subAreaCode"/>
@@ -91,6 +95,8 @@
         PayManType,
         PayMan,
         TaxNo,
+        taxNoType,
+        companyType,
         BankName,
         AccountNo,
         SubAreaCode,
@@ -122,6 +128,8 @@
         #{payManType},
         #{payMan},
         #{taxNo},
+        #{taxNoType},
+        #{companyType},
         #{bankName},
         #{accountNo},
         #{subAreaCode},
@@ -237,6 +245,13 @@
         updateBy=#{updateBy},
       </if>
 
+      <if test="taxNoType != null and taxNoType!=''">
+        taxNoType= #{taxNoType},
+      </if>
+      <if test="companyType != null">
+        companyType=#{companyType},
+      </if>
+
     </set>
   </sql>
 
@@ -286,6 +301,8 @@
     PayManType,
     PayMan,
     TaxNo,
+    taxNoType,
+    companyType,
     BankName,
     AccountNo,
     SubAreaCode,
@@ -318,6 +335,8 @@
     #{payManType},
     #{payMan},
     #{taxNo},
+    #{taxNoType},
+    #{companyType},
     #{bankName},
     #{accountNo},
     #{subAreaCode},
@@ -348,6 +367,13 @@
   </update>
 
   <select id="validationInvoice" resultType="java.lang.Integer">
-    SELECT count(1) FROM memberinvoiceinfoes  WHERE  LenovoID=#{lenovoid} and (CustomerName=#{customerName} OR TaxNo=#{taxNo})
+    SELECT count(1) FROM memberinvoiceinfoes  WHERE LenovoID=#{lenovoid}
+    <if test="taxNo != null and taxNo!=''" >
+      AND  (CustomerName=#{customerName} OR TaxNo=#{taxNo})
+    </if>
+
+    <if test="taxNo == null or taxNo==''" >
+      AND  CustomerName=#{customerName}
+    </if>
   </select>
 </mapper>
