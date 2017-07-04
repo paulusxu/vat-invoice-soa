@@ -1069,6 +1069,7 @@ public class ExchangeInvoiceServiceImpl extends BaseService implements ExchangeI
         return remoteResult;
     }
 
+
     //换增票校验接口，如果存在，回显增票信息
     @Override
     public RemoteResult<GetVatInvoiceInfoResult> ifVatInvoiceExist(String taxNO,String orderCode) {
