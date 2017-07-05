@@ -113,7 +113,7 @@
     <!--订单抛单后 订单推送 修改发票和订单映射中，订单状态为已抛单-->
     <bean id="kafkaConsumerOptions_invoice_order" class="com.lenovo.kafka.api.core.factory.KafkaConsumerOptions">
         <property name="connectionZk" value="${connectionZk}" />
-        <property name="groupName" value="${groupName}" />
+        <property name="groupName" value="${updateOrderStatus_groupName}" />
         <property name="zkSessionTimeout" value="${zkSessionTimeout}" />
         <property name="zkSyncTime" value="${zkSyncTime}" />
         <property name="autoCommitInterval" value="${autoCommitInterval}" />
@@ -136,7 +136,7 @@
     <!--订单抛单后 订单推送 用来完善修改发票记录的BTCP号-->
     <bean id="completeExchangeInvoiceRecord" class="com.lenovo.kafka.api.core.factory.KafkaConsumerOptions">
         <property name="connectionZk" value="${connectionZk}" />
-        <property name="groupName" value="${updateOrderStatus_groupName}" />
+        <property name="groupName" value="${record_groupName}" />
         <property name="zkSessionTimeout" value="${zkSessionTimeout}" />
         <property name="zkSyncTime" value="${zkSyncTime}" />
         <property name="autoCommitInterval" value="${autoCommitInterval}" />
