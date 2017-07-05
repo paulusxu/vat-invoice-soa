@@ -212,7 +212,7 @@ public class CommonInvoiceServiceImpl extends BaseService implements CommonInvoi
             String taxno = vatInvoice.getTaxno();
             Integer custType = vatInvoice.getCustType();
             Integer taxNoType = vatInvoice.getTaxNoType();
-            if (isNull(id,checkBy,customername,taxno,custType,taxNoType)){
+            if (isNull(id,checkBy,customername,custType,taxNoType)||(custType==1&&taxNoType!=3&&isNull(taxno))||(custType==1&&taxNoType==3&&isNotNull(taxno))){
                 remoteResult.setResultCode(InvoiceResultCode.PARAMSFAIL);
                 remoteResult.setResultMsg("必填参数为空！");
                 LOGGER.info("checkInvoice==返回值==" + JacksonUtil.toJson(remoteResult));
