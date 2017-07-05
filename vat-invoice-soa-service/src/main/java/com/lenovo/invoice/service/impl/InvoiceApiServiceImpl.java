@@ -1031,19 +1031,22 @@ public class InvoiceApiServiceImpl extends BaseService implements InvoiceApiServ
             List<VatInvoice> listVatInvoice = vatInvoiceMapper.getAutoCheckInvoice();
             for (VatInvoice vatInvoice : listVatInvoice) {
                 String customername = vatInvoice.getCustomername();
-                String taxNo = vatInvoice.getTaxno();
-                String autoTaxNo = AutoCheckInvoiceUtil.getTaxNo(customername);
-                if (Strings.isNullOrEmpty(autoTaxNo)) {
-                    //自动审核失败
-                    vatInvoiceMapper.updateAutoIsCheck(vatInvoice.getId(), 4);
-                } else {
-                    if (!autoTaxNo.equals(taxNo)) {
-                        vatInvoice.setTaxno(autoTaxNo);
-                        vatInvoiceMapper.updateVatInvoice(vatInvoice);
-                    }
-                    long rows = vatInvoiceMapper.updateAutoIsCheck(vatInvoice.getId(), 1);
-                    if (rows > 0) {
-                        commonInvoiceService.deleteTheSameTitleInvoice(customername, vatInvoice.getId());
+                if (!listNotCheck.contains(customername)) {
+                    String taxNo = vatInvoice.getTaxno();
+                    String autoTaxNo = AutoCheckInvoiceUtil.getTaxNo(customername);
+                    if (Strings.isNullOrEmpty(autoTaxNo)) {
+                        //自动审核失败
+                        vatInvoiceMapper.updateAutoIsCheck(vatInvoice.getId(), 4);
+                    } else {
+                        if (!autoTaxNo.equals(taxNo)) {
+                            vatInvoice.setTaxno(autoTaxNo);
+                            vatInvoiceMapper.updateVatInvoice(vatInvoice);
+                        }
+                        long rows = vatInvoiceMapper.updateAutoIsCheck(vatInvoice.getId(), 1);
+                        if (rows > 0) {
+                            listNotCheck.add(customername);
+                            commonInvoiceService.deleteTheSameTitleInvoice(customername, vatInvoice.getId());
+                        }
                     }
                 }
             }
