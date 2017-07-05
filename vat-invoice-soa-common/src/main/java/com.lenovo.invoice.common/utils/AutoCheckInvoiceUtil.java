@@ -3,7 +3,6 @@ package com.lenovo.invoice.common.utils;
 import com.alibaba.fastjson.JSONObject;
 import com.google.common.collect.Maps;
 import com.lenovo.invoice.common.utils.math.*;
-import com.lenovo.invoice.common.utils.math.HttpUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

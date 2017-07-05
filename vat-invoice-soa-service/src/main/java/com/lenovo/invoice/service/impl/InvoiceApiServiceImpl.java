@@ -1024,7 +1024,7 @@ public class InvoiceApiServiceImpl extends BaseService implements InvoiceApiServ
             for (VatInvoice vatInvoice : listVatInvoice) {
                 String customername=vatInvoice.getCustomername();
                 String taxNo=vatInvoice.getTaxno();
-                AutoCheckInvoiceUtil.getTaxNo(customername);
+                String autoTaxNo=AutoCheckInvoiceUtil.getTaxNo(customername);
 
 
             }
