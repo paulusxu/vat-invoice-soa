@@ -51,7 +51,13 @@ public class InvoiceShopApiServiceImpl implements InvoiceShopApiService {
                 logger.info("synInvoice返回参数>>" + JacksonUtil.toJson(remoteResult));
                 return remoteResult;
             }
-
+            if(StringUtils.isEmpty(invoiceShop.getTaxNoType())&&StringUtils.isNotEmpty(invoiceShop.getTaxNo())) {
+                if (invoiceShop.getTaxNo().length() == 15 || invoiceShop.getTaxNo().length() == 20) {
+                    invoiceShop.setTaxNoType("0");
+                } else if (invoiceShop.getTaxNo().length() == 18) {
+                    invoiceShop.setTaxNoType("1");
+                }
+            }
             InvoiceShopModifyLog invoiceShopModifyLog = new InvoiceShopModifyLog();
             ConvertUtils.register(new DateConverter(null), java.util.Date.class);
             ConvertUtils.register(new IntegerConverter(null), java.lang.Integer.class);
@@ -241,6 +247,13 @@ public class InvoiceShopApiServiceImpl implements InvoiceShopApiService {
                 remoteResult.setResultMsg("参数错误！");
                 logger.info("synInvoicePersonalCenter返回参数>>" + JacksonUtil.toJson(remoteResult));
                 return remoteResult;
+            }
+            if(StringUtils.isEmpty(invoiceShop.getTaxNoType())&&StringUtils.isNotEmpty(invoiceShop.getTaxNo())) {
+                if (invoiceShop.getTaxNo().length() == 15 || invoiceShop.getTaxNo().length() == 20) {
+                    invoiceShop.setTaxNoType("0");
+                } else if (invoiceShop.getTaxNo().length() == 18) {
+                    invoiceShop.setTaxNoType("1");
+                }
             }
             InvoiceShopModifyLog invoiceShopModifyLog = new InvoiceShopModifyLog();
             ConvertUtils.register(new DateConverter(null), java.util.Date.class);
