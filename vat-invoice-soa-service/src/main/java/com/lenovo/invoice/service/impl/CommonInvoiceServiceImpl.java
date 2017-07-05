@@ -218,6 +218,8 @@ public class CommonInvoiceServiceImpl extends BaseService implements CommonInvoi
                 LOGGER.info("checkInvoice==返回值==" + JacksonUtil.toJson(remoteResult));
                 return remoteResult;
             }
+            customername = customername.replace(")","）").replace("(","（");
+            vatInvoice.setCustomername(customername);
             //判断是否存在已审核过的相同发票
             vatInvoice.setIscheck(1);
             vatInvoice.setShopid(1);
@@ -322,6 +324,8 @@ public class CommonInvoiceServiceImpl extends BaseService implements CommonInvoi
                 LOGGER.info("updateInvoice==返回值==" + com.lenovo.invoice.common.utils.JacksonUtil.toJson(remoteResult));
                 return remoteResult;
             }
+            customername = customername.replace(")","）").replace("(","（");
+            vatInvoice.setCustomername(customername);
             if (taxNoType==3){
                 //需要判断是否已存在该发票
                 vatInvoice.setShopid(1);
@@ -483,6 +487,8 @@ public class CommonInvoiceServiceImpl extends BaseService implements CommonInvoi
                 LOGGER.info("saveInvoice==返回值==" + JacksonUtil.toJson(remoteResult));
                 return remoteResult;
             }
+            customername = customername.replace(")","）").replace("(","（");
+            vatInvoice.setCustomername(customername);
             if (custType==1&&taxNoType!=3){
                 //验证位数，转大写
                 Pattern pattern;
@@ -555,6 +561,11 @@ public class CommonInvoiceServiceImpl extends BaseService implements CommonInvoi
         LOGGER.info("getInvoiceByTitle==参数=="+JacksonUtil.toJson(vatInvoice));
         RemoteResult<VatInvoice> remoteResult = new RemoteResult<VatInvoice>();
         try {
+            String customername = vatInvoice.getCustomername();
+            if (customername!=null){
+                customername = customername.replace(")","）").replace("(","（");
+                vatInvoice.setCustomername(customername);
+            }
             vatInvoice.setShopid(tenant.getShopId());
             VatInvoice invoiceByTitle = commonInvoiceMapper.getInvoiceByTitle(vatInvoice);
             if (invoiceByTitle==null){
@@ -595,6 +606,8 @@ public class CommonInvoiceServiceImpl extends BaseService implements CommonInvoi
                 LOGGER.info("addInvoice==返回值==" + JacksonUtil.toJson(remoteResult));
                 return remoteResult;
             }
+            customername = customername.replace(")","）").replace("(","（");
+            vatInvoice.setCustomername(customername);
             if (custType==1&&taxNoType!=3){
                 //验证位数，转大写
                 Pattern pattern;
