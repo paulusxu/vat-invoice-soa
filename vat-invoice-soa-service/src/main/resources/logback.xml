@@ -155,6 +155,19 @@
         <appender-ref ref="updateZidAppender" />
     </logger>
 
+    <!--自动审核普票-->
+    <appender name="autoCheckInvoiceAppender" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>${log.path}/autoCheckInvoice.%d{yyyy-MM-dd}.log</fileNamePattern>
+        </rollingPolicy>
+        <encoder>
+            <pattern>[%d{yyyy-MM-dd HH:mm:ss} %-5p] projectName : vat-invoice-soa %X{elk_leId} %X{elk_lenovoId} %X{elk_requestId} %X{ip} [%thread] %-5level %logger{5} - %msg%n</pattern>
+        </encoder>
+    </appender>
+    <logger name="com.lenovo.invoice.worker.AutoCheckInvoice" level="info" additivity="false">
+        <appender-ref ref="autoCheckInvoiceAppender" />
+    </logger>
+
 
     <appender name="throwStatusAppender" class="ch.qos.logback.core.rolling.RollingFileAppender">
         <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">

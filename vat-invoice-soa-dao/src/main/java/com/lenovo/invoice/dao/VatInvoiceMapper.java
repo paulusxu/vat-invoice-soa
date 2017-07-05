@@ -52,4 +52,6 @@ public interface VatInvoiceMapper {
 
     VatInvoice getVatInvoiceByZid(@Param("zid") String zid,@Param("shopid") String shopid);
 
+    List<VatInvoice> getAutoCheckInvoice();
+
 }

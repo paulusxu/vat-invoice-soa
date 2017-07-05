@@ -4,10 +4,7 @@ import com.alibaba.dubbo.common.utils.CollectionUtils;
 import com.google.common.base.Strings;
 import com.lenovo.invoice.api.InvoiceApiService;
 import com.lenovo.invoice.common.CacheConstant;
-import com.lenovo.invoice.common.utils.ErrorUtils;
-import com.lenovo.invoice.common.utils.JacksonUtil;
-import com.lenovo.invoice.common.utils.O2oFaIdUtil;
-import com.lenovo.invoice.common.utils.PropertiesConfig;
+import com.lenovo.invoice.common.utils.*;
 import com.lenovo.invoice.dao.MemberVatInvoiceMapper;
 import com.lenovo.invoice.dao.VatInvoiceMapper;
 import com.lenovo.invoice.dao.VathrowBtcpMapper;
@@ -54,6 +51,7 @@ public class InvoiceApiServiceImpl extends BaseService implements InvoiceApiServ
     private static final Logger LOGGER_BTCP = LoggerFactory.getLogger("com.lenovo.invoice.service.impl.throwBtcp");
     private static final Logger LOGGER_UPDATEZID = LoggerFactory.getLogger("com.lenovo.invoice.service.impl.updateZid");
     private static final Logger LOGGER_THROWSTATUS = LoggerFactory.getLogger("com.lenovo.invoice.customer.order.throwStatus");
+    private static final Logger LOGGER_AUTOCHECKINVOICE = LoggerFactory.getLogger("com.lenovo.invoice.worker.AutoCheckInvoice");
 
 
     @Autowired
@@ -261,13 +259,13 @@ public class InvoiceApiServiceImpl extends BaseService implements InvoiceApiServ
 
     @Override
     public int updateThrowingStatus(String orderCode, int status) {
-        LOGGER_THROWSTATUS.info("ThrowStatusMessageCustomer Start:{{},{}",orderCode,status);
+        LOGGER_THROWSTATUS.info("ThrowStatusMessageCustomer Start:{{},{}", orderCode, status);
         int rows = 0;
         try {
             rows = vathrowBtcpMapper.updateThrowingStatus(orderCode, status);
             LOGGER.info("ThrowStatusMessageCustomer End:{},{}", orderCode, rows);
         } catch (Exception e) {
-            LOGGER_THROWSTATUS.error(e.getMessage(),e);
+            LOGGER_THROWSTATUS.error(e.getMessage(), e);
         }
         return rows;
     }
@@ -301,7 +299,7 @@ public class InvoiceApiServiceImpl extends BaseService implements InvoiceApiServ
             LOGGER_BTCP.info("btcpSyncVatInvoice:{}", JacksonUtil.toJson(remoteResult));
             if (remoteResult.isSuccess()) {
                 Main main = remoteResult.getT();
-                orderId=main.getId();
+                orderId = main.getId();
 
                 InvoiceReviewParam invoiceReviewParam = new InvoiceReviewParam();
                 invoiceReviewParam.setOrderId(orderId);
@@ -423,7 +421,7 @@ public class InvoiceApiServiceImpl extends BaseService implements InvoiceApiServ
                 remoteResult.setSuccess(true);
                 remoteResult.setResultCode(ErrorUtils.INVOICE_SUCCESS);
                 remoteResult.setT(parseGetVatInvoiceInfoResult(vatInvoice, lenovoId));
-            }else {
+            } else {
                 remoteResult.setResultCode(ErrorUtils.ERR_CODE_VATINVOICE_NOT_EXIST);
                 remoteResult.setResultMsg("增票信息不存在");
             }
@@ -903,9 +901,9 @@ public class InvoiceApiServiceImpl extends BaseService implements InvoiceApiServ
     }
 
     @Override
-    public RemoteResult<Boolean> throwVatInvoice2BTCP(String zids,String orderCodes) {
+    public RemoteResult<Boolean> throwVatInvoice2BTCP(String zids, String orderCodes) {
         RemoteResult<Boolean> remoteResult = new RemoteResult<Boolean>(false);
-        LOGGER_BTCP.info("ThrowVatInvoice2BTCP zid:{},orderCodes", zids,orderCodes);
+        LOGGER_BTCP.info("ThrowVatInvoice2BTCP zid:{},orderCodes", zids, orderCodes);
         try {
             if (!Strings.isNullOrEmpty(orderCodes)) {
                 List<VathrowBtcp> btcpList = vathrowBtcpMapper.getVatInvoice2BtcpListByOrderCode(orderCodes);
@@ -913,7 +911,7 @@ public class InvoiceApiServiceImpl extends BaseService implements InvoiceApiServ
                     vatInvoiceService.throwBTCP(btcpList);
                 }
             }
-            if(!Strings.isNullOrEmpty(zids)){
+            if (!Strings.isNullOrEmpty(zids)) {
                 String[] ids = zids.split(",");
                 for (int i = 0; i < ids.length; i++) {
                     String zid = ids[i];
@@ -1018,28 +1016,45 @@ public class InvoiceApiServiceImpl extends BaseService implements InvoiceApiServ
         return result;
     }
 
+    @Override
+    public void autoCheckInvoice() {
+        try {
+            //获取待处理列表
+            List<VatInvoice> listVatInvoice = vatInvoiceMapper.getAutoCheckInvoice();
+            for (VatInvoice vatInvoice : listVatInvoice) {
+                String customername=vatInvoice.getCustomername();
+                String taxNo=vatInvoice.getTaxno();
+                AutoCheckInvoiceUtil.getTaxNo(customername);
+
+
+            }
+        } catch (Exception e) {
+            LOGGER_AUTOCHECKINVOICE.error(e.getMessage(), e);
+        }
+    }
+
 
     public Payment getPaymentType(GetCiParam getCiParam, Tenant tenant) {
         if (getCiParam.getSalesType() == 98) {
-            Payment payment=new Payment();
+            Payment payment = new Payment();
             payment.setDefaultType(PaymentType.ZXZF);
-            payment.setPaymentTypes(Arrays.asList(new PaymentType[]{PaymentType.ZXZF,PaymentType.HDFK}));
+            payment.setPaymentTypes(Arrays.asList(new PaymentType[]{PaymentType.ZXZF, PaymentType.HDFK}));
             return payment;
         }
         if (tenant.getShopId() == 8) {
-            if ((getCiParam.getFaDatas().size() == 1 && getCiParam.getFaDatas().get(0).getFatype() == 7)||getCiParam.getBigDecimal().doubleValue() > 50000) {//只有一个fa并且faType=SMB_ZY_ALL()直营总代  ：线下转账并默认
-                Payment payment=new Payment();
+            if ((getCiParam.getFaDatas().size() == 1 && getCiParam.getFaDatas().get(0).getFatype() == 7) || getCiParam.getBigDecimal().doubleValue() > 50000) {//只有一个fa并且faType=SMB_ZY_ALL()直营总代  ：线下转账并默认
+                Payment payment = new Payment();
                 payment.setDefaultType(PaymentType.XXZZ);
                 payment.setPaymentTypes(Arrays.asList(new PaymentType[]{PaymentType.XXZZ}));
                 return payment;
             }
-            Payment payment=new Payment();
+            Payment payment = new Payment();
             payment.setDefaultType(PaymentType.XXZZ);
             payment.setPaymentTypes(Arrays.asList(new PaymentType[]{PaymentType.XXZZ, PaymentType.ZXZF}));
             return payment;
         }
 
-        Payment payment=new Payment();
+        Payment payment = new Payment();
         payment.setDefaultType(PaymentType.ZXZF);
         payment.setPaymentTypes(Arrays.asList(new PaymentType[]{PaymentType.ZXZF}));
         return payment;
