@@ -40,12 +40,32 @@
                     <artifactId>vat-invoice-api</artifactId>
                     <groupId>com.lenovo.dtc.buy.invoice</groupId>
                 </exclusion>
+
+                <exclusion>
+                    <groupId>com.lenovo.m2.ordercenter.soa</groupId>
+                    <artifactId>ordercenter-api</artifactId>
+                </exclusion>
             </exclusions>
         </dependency>
         <dependency>
             <groupId>com.lenovo</groupId>
             <artifactId>order-center-domain</artifactId>
             <version>3.0.0</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>com.lenovo</groupId>
+                    <artifactId>lenovo-product-redis</artifactId>
+                </exclusion>
+                <exclusion>
+                    <artifactId>vat-invoice-api</artifactId>
+                    <groupId>com.lenovo.dtc.buy.invoice</groupId>
+                </exclusion>
+
+                <exclusion>
+                    <groupId>com.lenovo.m2.ordercenter.soa</groupId>
+                    <artifactId>ordercenter-api</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
 
     </dependencies>
