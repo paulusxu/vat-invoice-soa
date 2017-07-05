@@ -34,6 +34,7 @@ public class AutoCheckInvoiceUtil {
             JSONObject jsonObject = JSONObject.parseObject(result);
             jsonObject = jsonObject.getJSONObject("data");
             resultStr=jsonObject.getString("creditCode");
+            logger.info("AutoCheckInvoiceUtil :{},{}",entName,result);
         }catch (Exception e){
             logger.error(e.getMessage(),e);
         }

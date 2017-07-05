@@ -2,9 +2,11 @@ package com.lenovo.invoice.service.impl;
 
 import com.alibaba.dubbo.common.utils.CollectionUtils;
 import com.google.common.base.Strings;
+import com.lenovo.invoice.api.CommonInvoiceService;
 import com.lenovo.invoice.api.InvoiceApiService;
 import com.lenovo.invoice.common.CacheConstant;
 import com.lenovo.invoice.common.utils.*;
+import com.lenovo.invoice.dao.ChangeInvoiceHistoryMapper;
 import com.lenovo.invoice.dao.MemberVatInvoiceMapper;
 import com.lenovo.invoice.dao.VatInvoiceMapper;
 import com.lenovo.invoice.dao.VathrowBtcpMapper;
@@ -78,6 +80,10 @@ public class InvoiceApiServiceImpl extends BaseService implements InvoiceApiServ
     private OrderInvoiceService orderInvoiceService;
     @Autowired
     private OrderDetailService orderDetailService;
+    @Autowired
+    private CommonInvoiceService commonInvoiceService;
+    @Autowired
+    private ChangeInvoiceHistoryMapper changeInvoiceHistoryMapper;
 
     @Override
     public String getType(String faid, String faType) {
@@ -1019,14 +1025,27 @@ public class InvoiceApiServiceImpl extends BaseService implements InvoiceApiServ
     @Override
     public void autoCheckInvoice() {
         try {
+            //以防重复审核
+            List<String> listNotCheck = new ArrayList<String>();
             //获取待处理列表
             List<VatInvoice> listVatInvoice = vatInvoiceMapper.getAutoCheckInvoice();
             for (VatInvoice vatInvoice : listVatInvoice) {
-                String customername=vatInvoice.getCustomername();
-                String taxNo=vatInvoice.getTaxno();
-                String autoTaxNo=AutoCheckInvoiceUtil.getTaxNo(customername);
-
-
+                String customername = vatInvoice.getCustomername();
+                String taxNo = vatInvoice.getTaxno();
+                String autoTaxNo = AutoCheckInvoiceUtil.getTaxNo(customername);
+                if (Strings.isNullOrEmpty(autoTaxNo)) {
+                    //自动审核失败
+                    vatInvoiceMapper.updateAutoIsCheck(vatInvoice.getId(), 4);
+                } else {
+                    if (!autoTaxNo.equals(taxNo)) {
+                        vatInvoice.setTaxno(autoTaxNo);
+                        vatInvoiceMapper.updateVatInvoice(vatInvoice);
+                    }
+                    long rows = vatInvoiceMapper.updateAutoIsCheck(vatInvoice.getId(), 1);
+                    if (rows > 0) {
+                        commonInvoiceService.deleteTheSameTitleInvoice(customername, vatInvoice.getId());
+                    }
+                }
             }
         } catch (Exception e) {
             LOGGER_AUTOCHECKINVOICE.error(e.getMessage(), e);
