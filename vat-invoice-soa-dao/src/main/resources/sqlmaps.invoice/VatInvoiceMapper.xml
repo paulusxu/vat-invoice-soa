@@ -176,6 +176,10 @@
     UPDATE vatinvoice set isvalid=1 WHERE id=#{zid} and isvalid=0
   </update>
 
+  <update id="updateAutoIsCheck">
+    UPDATE vatinvoice set isCheck=#{type} WHERE id=#{id}
+  </update>
+
   <update id="updateVatInvoiceIsvalid">
     UPDATE vatinvoice SET isvalid=1 WHERE id=#{zid} AND isvalid=0 AND shopid=#{shopid}
   </update>
