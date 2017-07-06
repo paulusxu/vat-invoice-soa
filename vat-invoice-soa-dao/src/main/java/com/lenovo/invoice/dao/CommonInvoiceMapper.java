@@ -53,7 +53,7 @@ public interface CommonInvoiceMapper {
     //根据发票税号，判断是否有已审核过的该税号
     public VatInvoice invoiceTaxNoIsExist(String taxno);
 
-    //查询该抬头的所有未审核发票
+    //查询该抬头的所有发票
     public List<VatInvoice> getAllInvoiceByTitle(String customername);
 
     //伪删除这张发票
