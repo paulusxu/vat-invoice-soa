@@ -1039,8 +1039,14 @@ public class InvoiceApiServiceImpl extends BaseService implements InvoiceApiServ
                         vatInvoiceMapper.updateAutoIsCheck(vatInvoice.getId(), 4);
                     } else {
                         if (!autoTaxNo.equals(taxNo)) {
+                            //设置history表
+                            changeInvoiceHistoryMapper.insertChangeInvoiceHistory(new ChangeInvoiceHistory(vatInvoice.getId(),vatInvoice.getCustomername(),vatInvoice.getTaxno(),autoTaxNo));
                             vatInvoice.setTaxno(autoTaxNo);
-                            vatInvoiceMapper.updateVatInvoice(vatInvoice);
+                            int len = autoTaxNo.length();
+                            //识别码类型，1是15、20位，2是18位，3是无
+                            vatInvoice.setTaxNoType(len == 15 || len == 20 ? 1 : 2);
+                            vatInvoice.setCheckBy("admin_check");
+                            vatInvoiceMapper.updateVatInvoiceAutoCheck(vatInvoice);
                         }
                         long rows = vatInvoiceMapper.updateAutoIsCheck(vatInvoice.getId(), 1);
                         if (rows > 0) {
