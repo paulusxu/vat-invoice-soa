@@ -8,6 +8,8 @@ import com.lenovo.m2.arch.framework.domain.PageQuery;
 import com.lenovo.m2.arch.framework.domain.RemoteResult;
 import com.lenovo.m2.arch.framework.domain.Tenant;
 
+import java.util.List;
+
 /**
  * Created by admin on 2017/3/16.
  */
@@ -62,5 +64,8 @@ public interface CommonInvoiceService {
 
     //审核成功，将相同抬头的其他未审核发票废弃，添加映射
     public void deleteTheSameTitleInvoice(String customername,Long id);
+
+    //查询该用户使用过的所有已审核公司普票和电票Lenovo，epp
+    public RemoteResult<List<VatInvoice>> getInvoiceByUser(String lenovoId,Tenant tenant);
 
 }
