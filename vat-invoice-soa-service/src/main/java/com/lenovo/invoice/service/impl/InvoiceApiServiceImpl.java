@@ -1042,7 +1042,7 @@ public class InvoiceApiServiceImpl extends BaseService implements InvoiceApiServ
             return payment;
         }
 
-        if(tenant.getShopId() == 15&&"on".equals(getInvoiceTypes.getHuiShangZF())){//惠商
+        if(tenant.getShopId() == 14&&"on".equals(getInvoiceTypes.getHuiShangZF())){//惠商
             Payment payment=new Payment();
             payment.setDefaultType(PaymentType.ZXZF);
             payment.setPaymentTypes(Arrays.asList(new PaymentType[]{PaymentType.ZXZF,PaymentType.XXZZ}));
