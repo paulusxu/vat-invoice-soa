@@ -36,6 +36,9 @@ public interface CommonInvoiceMapper {
     //审核通过，修改发票状态，后台审核使用
     public int updateInvoiceIsCheck(VatInvoice vatInvoice);
 
+    //审核拒绝，修改发票状态，后台审核使用
+    public int updateInvoiceIsRefuse(VatInvoice vatInvoice);
+
     //订单支付后，将发票修改为有效状态
     public int updateInvoiceIsValid(Long id);
 

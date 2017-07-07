@@ -31,6 +31,9 @@ public interface CommonInvoiceService {
     //后台审核通过接口
     public RemoteResult checkInvoice(VatInvoice vatInvoice);
 
+    //后台审核拒绝接口
+    public RemoteResult refuseInvoice(VatInvoice vatInvoice);
+
     //后台修改发票信息接口
     public RemoteResult updateInvoice(VatInvoice vatInvoice);
 

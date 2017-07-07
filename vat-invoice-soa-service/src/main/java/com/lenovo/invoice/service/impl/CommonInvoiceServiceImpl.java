@@ -313,6 +313,39 @@ public class CommonInvoiceServiceImpl extends BaseService implements CommonInvoi
         return remoteResult;
     }
 
+    @Override
+    public RemoteResult refuseInvoice(VatInvoice vatInvoice) {
+        LOGGER.info("refuseInvoice==参数=="+JacksonUtil.toJson(vatInvoice));
+        RemoteResult remoteResult = new RemoteResult();
+        try {
+            Long id = vatInvoice.getId();
+            String checkBy = vatInvoice.getCheckBy();
+            String remark = vatInvoice.getRemark();
+            if (isNull(id,checkBy,remark)){
+                remoteResult.setResultCode(InvoiceResultCode.PARAMSFAIL);
+                remoteResult.setResultMsg("必填参数为空！");
+                LOGGER.info("refuseInvoice==返回值==" + JacksonUtil.toJson(remoteResult));
+                return remoteResult;
+            }
+            int i = commonInvoiceMapper.updateInvoiceIsRefuse(vatInvoice);
+            if (i==0){
+                remoteResult.setResultCode(InvoiceResultCode.INVOICECHECKUPDATEFAIL);
+                remoteResult.setResultMsg("审核状态修改失败！");
+                LOGGER.info("refuseInvoice==返回值==" + JacksonUtil.toJson(remoteResult));
+                return remoteResult;
+            }
+            remoteResult.setSuccess(true);
+            remoteResult.setResultCode(InvoiceResultCode.SUCCESS);
+            remoteResult.setResultMsg("审核拒绝成功！");
+        }catch (Exception e){
+            remoteResult.setResultCode(InvoiceResultCode.FAIL);
+            remoteResult.setResultMsg("系统异常");
+            LOGGER.error(e.getMessage(),e);
+        }
+        LOGGER.info("refuseInvoice==返回值=="+ JacksonUtil.toJson(remoteResult));
+        return remoteResult;
+    }
+
     //后台修改发票信息接口
     @Override
     public RemoteResult updateInvoice(VatInvoice vatInvoice) {

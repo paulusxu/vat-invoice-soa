@@ -87,6 +87,13 @@
     WHERE Id=#{id} AND isDelete=0
   </update>
 
+  <!--审核拒绝，修改发票状态-->
+  <update id="updateInvoiceIsRefuse" parameterType="com.lenovo.invoice.domain.VatInvoice">
+    UPDATE vatinvoice
+    set isCheck=3,checkBy=#{checkBy},checkTime=now(),UpdateTime=now(),remark=#{remark}
+    WHERE Id=#{id} AND isDelete=0
+  </update>
+
   <!--订单支付后，将发票修改为有效状态-->
   <update id="updateInvoiceIsValid">
     UPDATE vatinvoice set isvalid=1,UpdateTime=now() WHERE Id=#{id} AND isDelete=0
