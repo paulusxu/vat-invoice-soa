@@ -18,6 +18,18 @@ public class PropertiesConfig implements ILeconfUpdate{
 	@Value(value = "on")
 	private String openZy = "on";
 
+	@Value(value = "off")
+	private String huiShangZF = "off";
+
+
+	@LeconfFileItem(name = "huiShangZF")
+	public String getHuiShangZF() {
+		return huiShangZF;
+	}
+	public void setHuiShangZF(String huiShangZF) {
+		this.huiShangZF = huiShangZF;
+	}
+
 	@LeconfFileItem(name = "openO2O")
 	public String getOpenO2O() {
 		return openO2O;
