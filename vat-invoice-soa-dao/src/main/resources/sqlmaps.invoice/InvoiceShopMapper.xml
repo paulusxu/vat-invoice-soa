@@ -262,16 +262,16 @@
   </update>
 
   <delete id="delInvoiceShop">
-    DELETE from memberinvoiceinfoes WHERE id in(${ids}) and LenovoID=#{lenovoID}
+    DELETE from memberinvoiceinfoes WHERE id in(${ids}) and LenovoID=#{lenovoID} and disable=0
   </delete>
 
 
   <select id="queryInvoiceShop" resultMap="InvoiceShopMap">
-      SELECT * FROM  memberinvoiceinfoes WHERE LenovoID=#{lenovoid} ORDER BY id DESC
+      SELECT * FROM  memberinvoiceinfoes WHERE LenovoID=#{lenovoid} and disable=0 ORDER BY id DESC
   </select>
 
   <select id="queryInvoiceForId" resultMap="InvoiceShopMap">
-    SELECT * FROM  memberinvoiceinfoes WHERE id=#{invoiceId}
+    SELECT * FROM  memberinvoiceinfoes WHERE id=#{invoiceId} and disable=0
     <if test="lenovoid != null and lenovoid!=''">
         and LenovoID=#{lenovoid}
     </if>
@@ -286,7 +286,7 @@
   </update>
 
   <select id="getIdByUUID" resultType="java.lang.Integer">
-      SELECT id from memberinvoiceinfoes WHERE UUID=#{uuid} limit 1
+      SELECT id from memberinvoiceinfoes WHERE UUID=#{uuid} and disable=0 limit 1
   </select>
 
 
@@ -363,11 +363,11 @@
   </insert>
 
   <update id="editInvoiceIsDefault">
-    UPDATE memberinvoiceinfoes set IsDefault=0 WHERE LenovoID=#{lenovoid} and IsDefault=1
+    UPDATE memberinvoiceinfoes set IsDefault=0 WHERE LenovoID=#{lenovoid} and IsDefault=1 and disable=0
   </update>
 
   <select id="validationInvoice" resultType="java.lang.Integer">
-    SELECT count(1) FROM memberinvoiceinfoes  WHERE LenovoID=#{lenovoid}
+    SELECT count(1) FROM memberinvoiceinfoes  WHERE LenovoID=#{lenovoid} and disable=0
     <if test="taxNo != null and taxNo!=''" >
       AND  (CustomerName=#{customerName} OR TaxNo=#{taxNo})
     </if>
