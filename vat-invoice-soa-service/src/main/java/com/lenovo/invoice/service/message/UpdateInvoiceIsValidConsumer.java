@@ -87,8 +87,8 @@ public class UpdateInvoiceIsValidConsumer {
                             String zip = ma.getDeliveryAddress().getZip();
                             //添加发票和订单的映射表记录
                             try {
-                                if (invoice!=null && custType==1 && taxNoType!=3 && shopId!=14){
-                                    //只保存带税号的记录
+                                if (invoice!=null && custType==1 && shopId!=14){
+                                    //只保存公司的记录
                                     InvoiceOrder invoiceOrder = new InvoiceOrder();
                                     invoiceOrder.setInvoiceId(Long.parseLong(invoiceId));
                                     invoiceOrder.setOrderCode(orderCode);
@@ -122,12 +122,14 @@ public class UpdateInvoiceIsValidConsumer {
                             //置为有效后，判断是否是需要审核的，且未审核的，如果是，发邮件通知客服
                             try {
                                 Integer ischeck = invoice.getIscheck();
-                                if (invoice!=null && ischeck==0 && custType==1 && taxNoType!=3 && shopId!=14){
+                                if (invoice!=null && ischeck==0 && custType==1 && shopId!=14){
                                     //未审核，发邮件
                                     //拼邮件1.下单账号，2.发票抬头，3.识别码类型，4.税号，5.发票类型，6.订单号，7.收货人，8.收货电话。税务登记证（15位）统一社会信用代码（18位）
                                     String taxNoTypeStr;
                                     if (taxNoType==1){
                                         taxNoTypeStr = "税务登记证（15位）";
+                                    }else if (taxNoType==3){
+                                        taxNoTypeStr = "无（政府机构，事业单位，非企业单位）";
                                     }else {
                                         taxNoTypeStr = "统一社会信用代码（18位）";
                                     }
