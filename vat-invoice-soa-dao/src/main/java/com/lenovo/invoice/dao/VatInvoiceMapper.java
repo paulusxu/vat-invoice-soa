@@ -17,7 +17,6 @@ public interface VatInvoiceMapper {
     long insertVatInvoiceInfo(VatInvoice vatInvoice);
 
     long updateVatInvoice(VatInvoice vatInvoice);
-    long updateVatInvoiceAutoCheck(VatInvoice vatInvoice);
 
     long updateVatInvoiceAutoCheck(VatInvoice vatInvoice);
 

@@ -1037,7 +1037,9 @@ public class InvoiceApiServiceImpl extends BaseService implements InvoiceApiServ
                     String autoTaxNo = AutoCheckInvoiceUtil.getTaxNo(customername);
                     if (Strings.isNullOrEmpty(autoTaxNo)) {
                         //自动审核失败
-                        vatInvoiceMapper.updateAutoIsCheck(vatInvoice.getId(), 4);
+                        vatInvoice.setCheckBy("admin_check");
+                        vatInvoice.setIscheck(4);
+                        vatInvoiceMapper.updateVatInvoiceAutoCheck(vatInvoice);
                     } else {
                         if (!autoTaxNo.equals(taxNo)) {
                             //设置history表
@@ -1047,13 +1049,14 @@ public class InvoiceApiServiceImpl extends BaseService implements InvoiceApiServ
                             //识别码类型，1是15、20位，2是18位，3是无
                             vatInvoice.setTaxNoType(len == 15 || len == 20 ? 1 : 2);
                             vatInvoice.setCheckBy("admin_check");
-                            vatInvoiceMapper.updateVatInvoiceAutoCheck(vatInvoice);
+                            vatInvoice.setIscheck(1);
+                            long rows=vatInvoiceMapper.updateVatInvoiceAutoCheck(vatInvoice);
+                            if (rows > 0) {
+                                listNotCheck.add(customername);
+                                commonInvoiceService.deleteTheSameTitleInvoice(customername, vatInvoice.getId());
+                            }
                         }
-                        long rows = vatInvoiceMapper.updateAutoIsCheck(vatInvoice.getId(), 1);
-                        if (rows > 0) {
-                            listNotCheck.add(customername);
-                            commonInvoiceService.deleteTheSameTitleInvoice(customername, vatInvoice.getId());
-                        }
+
                     }
                 }
             }
