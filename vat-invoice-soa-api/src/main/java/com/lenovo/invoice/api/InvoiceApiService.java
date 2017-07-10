@@ -84,5 +84,7 @@ public interface InvoiceApiService {
 
     //自动审核普票
     void autoCheckInvoice();
+    
+
 
 }
