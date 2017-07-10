@@ -18,6 +18,8 @@ public interface VatInvoiceMapper {
 
     long updateVatInvoice(VatInvoice vatInvoice);
 
+    long updateVatInvoiceAutoCheck(VatInvoice vatInvoice);
+
     VatInvoice getVatInvoiceInfoById(long id);
 
     long updateVatInvoiceCheckState(@Param("id") String id, @Param("state") int state);

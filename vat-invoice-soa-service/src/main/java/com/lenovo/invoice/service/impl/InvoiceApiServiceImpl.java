@@ -1041,7 +1041,7 @@ public class InvoiceApiServiceImpl extends BaseService implements InvoiceApiServ
                     } else {
                         if (!autoTaxNo.equals(taxNo)) {
                             vatInvoice.setTaxno(autoTaxNo);
-                            vatInvoiceMapper.updateVatInvoice(vatInvoice);
+                            vatInvoiceMapper.updateVatInvoiceAutoCheck(vatInvoice);
                         }
                         long rows = vatInvoiceMapper.updateAutoIsCheck(vatInvoice.getId(), 1);
                         if (rows > 0) {
