@@ -1025,6 +1025,7 @@ public class InvoiceApiServiceImpl extends BaseService implements InvoiceApiServ
     @Override
     public void autoCheckInvoice() {
         try {
+            LOGGER_AUTOCHECKINVOICE.info("AutoCheckInvoice Start:");
             //以防重复审核
             List<String> listNotCheck = new ArrayList<String>();
             //获取待处理列表
