@@ -20,6 +20,8 @@ public class TestHttps extends BaseManagerTestCase {
     @Autowired
     private VathrowBtcpMapper vathrowBtcpMapper;
 
+
+
     @Test
     public void run() {
         VathrowBtcp vathrowBtcp = vathrowBtcpMapper.getVatInvoiceByOrderCode("13426105");
