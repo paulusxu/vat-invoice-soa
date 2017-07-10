@@ -2,12 +2,11 @@ package com.lenovo.invoice.service.impl;
 
 import com.alibaba.dubbo.common.utils.CollectionUtils;
 import com.google.common.base.Strings;
+import com.lenovo.invoice.api.CommonInvoiceService;
 import com.lenovo.invoice.api.InvoiceApiService;
 import com.lenovo.invoice.common.CacheConstant;
-import com.lenovo.invoice.common.utils.ErrorUtils;
-import com.lenovo.invoice.common.utils.JacksonUtil;
-import com.lenovo.invoice.common.utils.O2oFaIdUtil;
-import com.lenovo.invoice.common.utils.PropertiesConfig;
+import com.lenovo.invoice.common.utils.*;
+import com.lenovo.invoice.dao.ChangeInvoiceHistoryMapper;
 import com.lenovo.invoice.dao.MemberVatInvoiceMapper;
 import com.lenovo.invoice.dao.VatInvoiceMapper;
 import com.lenovo.invoice.dao.VathrowBtcpMapper;
@@ -54,6 +53,7 @@ public class InvoiceApiServiceImpl extends BaseService implements InvoiceApiServ
     private static final Logger LOGGER_BTCP = LoggerFactory.getLogger("com.lenovo.invoice.service.impl.throwBtcp");
     private static final Logger LOGGER_UPDATEZID = LoggerFactory.getLogger("com.lenovo.invoice.service.impl.updateZid");
     private static final Logger LOGGER_THROWSTATUS = LoggerFactory.getLogger("com.lenovo.invoice.customer.order.throwStatus");
+    private static final Logger LOGGER_AUTOCHECKINVOICE = LoggerFactory.getLogger("com.lenovo.invoice.worker.AutoCheckInvoice");
 
 
     @Autowired
@@ -80,6 +80,10 @@ public class InvoiceApiServiceImpl extends BaseService implements InvoiceApiServ
     private OrderInvoiceService orderInvoiceService;
     @Autowired
     private OrderDetailService orderDetailService;
+    @Autowired
+    private CommonInvoiceService commonInvoiceService;
+    @Autowired
+    private ChangeInvoiceHistoryMapper changeInvoiceHistoryMapper;
 
     @Override
     public String getType(String faid, String faType) {
@@ -267,7 +271,7 @@ public class InvoiceApiServiceImpl extends BaseService implements InvoiceApiServ
             rows = vathrowBtcpMapper.updateThrowingStatus(orderCode, status);
             LOGGER.info("ThrowStatusMessageCustomer End:{},{}", orderCode, rows);
         } catch (Exception e) {
-            LOGGER_THROWSTATUS.error(e.getMessage(),e);
+            LOGGER_THROWSTATUS.error(e.getMessage(), e);
         }
         return rows;
     }
@@ -301,7 +305,7 @@ public class InvoiceApiServiceImpl extends BaseService implements InvoiceApiServ
             LOGGER_BTCP.info("btcpSyncVatInvoice:{}", JacksonUtil.toJson(remoteResult));
             if (remoteResult.isSuccess()) {
                 Main main = remoteResult.getT();
-                orderId=main.getId();
+                orderId = main.getId();
 
                 InvoiceReviewParam invoiceReviewParam = new InvoiceReviewParam();
                 invoiceReviewParam.setOrderId(orderId);
@@ -1018,6 +1022,38 @@ public class InvoiceApiServiceImpl extends BaseService implements InvoiceApiServ
         return result;
     }
 
+    @Override
+    public void autoCheckInvoice() {
+        try {
+            //以防重复审核
+            List<String> listNotCheck = new ArrayList<String>();
+            //获取待处理列表
+            List<VatInvoice> listVatInvoice = vatInvoiceMapper.getAutoCheckInvoice();
+            for (VatInvoice vatInvoice : listVatInvoice) {
+                String customername = vatInvoice.getCustomername();
+                if (!listNotCheck.contains(customername)) {
+                    String taxNo = vatInvoice.getTaxno();
+                    String autoTaxNo = AutoCheckInvoiceUtil.getTaxNo(customername);
+                    if (Strings.isNullOrEmpty(autoTaxNo)) {
+                        //自动审核失败
+                        vatInvoiceMapper.updateAutoIsCheck(vatInvoice.getId(), 4);
+                    } else {
+                        if (!autoTaxNo.equals(taxNo)) {
+                            vatInvoice.setTaxno(autoTaxNo);
+                            vatInvoiceMapper.updateVatInvoice(vatInvoice);
+                        }
+                        long rows = vatInvoiceMapper.updateAutoIsCheck(vatInvoice.getId(), 1);
+                        if (rows > 0) {
+                            listNotCheck.add(customername);
+                            commonInvoiceService.deleteTheSameTitleInvoice(customername, vatInvoice.getId());
+                        }
+                    }
+                }
+            }
+        } catch (Exception e) {
+            LOGGER_AUTOCHECKINVOICE.error(e.getMessage(), e);
+        }
+    }
 
     public Payment getPaymentType(GetCiParam getCiParam, Tenant tenant) {
         if (tenant.getShopId() == 9) {

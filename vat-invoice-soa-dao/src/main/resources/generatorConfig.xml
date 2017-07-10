@@ -37,7 +37,7 @@
             <property name="enableSubPckages" value="true" />
         </javaClientGenerator>
 
-        <table tableName="orderinvoice" domainObjectName="OrderInvoice" enableSelectByExample="true" enableDeleteByExample="true"
+        <table tableName="change_invoice_history" domainObjectName="ChangeInvoiceHistory" enableSelectByExample="true" enableDeleteByExample="true"
                enableCountByExample="true" enableUpdateByExample="true">
         </table>
 

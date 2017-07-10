@@ -60,5 +60,7 @@ public interface CommonInvoiceService {
     //删除废弃发票和有效发票的映射
     public RemoteResult deleteInvoiceToInvoice(Long id,Tenant tenant);
 
+    //审核成功，将相同抬头的其他未审核发票废弃，添加映射
+    public void deleteTheSameTitleInvoice(String customername,Long id);
 
 }

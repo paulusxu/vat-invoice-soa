@@ -82,6 +82,7 @@ public interface InvoiceApiService {
 
     RemoteResult<ConfigurationInformation> getConfigurationInformation(GetCiParam getCiParam, Tenant tenant);
 
-
+    //自动审核普票
+    void autoCheckInvoice();
 
 }

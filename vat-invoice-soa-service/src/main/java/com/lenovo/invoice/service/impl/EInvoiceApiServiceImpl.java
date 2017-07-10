@@ -1,12 +1,12 @@
 package com.lenovo.invoice.service.impl;
 
 import com.lenovo.invoice.api.EInvoiceApiService;
-import com.lenovo.invoice.common.utils.HttpUtil;
 import com.lenovo.invoice.common.utils.PropertiesUtil;
 import com.lenovo.m2.arch.framework.domain.RemoteResult;
 import com.lenovo.m2.arch.tool.util.StringUtils;
 import com.lenovo.m2.ordercenter.soa.api.constant.ResultCode;
 import com.lenovo.m2.ordercenter.soa.domain.BaseInfo;
+import com.lenovo.my.common.utils.HttpUtil;
 import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
