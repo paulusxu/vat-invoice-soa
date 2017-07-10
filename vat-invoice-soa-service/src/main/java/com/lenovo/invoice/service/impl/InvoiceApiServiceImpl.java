@@ -265,7 +265,7 @@ public class InvoiceApiServiceImpl extends BaseService implements InvoiceApiServ
 
     @Override
     public int updateThrowingStatus(String orderCode, int status) {
-        LOGGER_THROWSTATUS.info("ThrowStatusMessageCustomer Start:{{},{}",orderCode,status);
+        LOGGER_THROWSTATUS.info("ThrowStatusMessageCustomer Start:{{},{}", orderCode, status);
         int rows = 0;
         try {
             rows = vathrowBtcpMapper.updateThrowingStatus(orderCode, status);
@@ -427,7 +427,7 @@ public class InvoiceApiServiceImpl extends BaseService implements InvoiceApiServ
                 remoteResult.setSuccess(true);
                 remoteResult.setResultCode(ErrorUtils.INVOICE_SUCCESS);
                 remoteResult.setT(parseGetVatInvoiceInfoResult(vatInvoice, lenovoId));
-            }else {
+            } else {
                 remoteResult.setResultCode(ErrorUtils.ERR_CODE_VATINVOICE_NOT_EXIST);
                 remoteResult.setResultMsg("增票信息不存在");
             }
@@ -907,9 +907,9 @@ public class InvoiceApiServiceImpl extends BaseService implements InvoiceApiServ
     }
 
     @Override
-    public RemoteResult<Boolean> throwVatInvoice2BTCP(String zids,String orderCodes) {
+    public RemoteResult<Boolean> throwVatInvoice2BTCP(String zids, String orderCodes) {
         RemoteResult<Boolean> remoteResult = new RemoteResult<Boolean>(false);
-        LOGGER_BTCP.info("ThrowVatInvoice2BTCP zid:{},orderCodes", zids,orderCodes);
+        LOGGER_BTCP.info("ThrowVatInvoice2BTCP zid:{},orderCodes", zids, orderCodes);
         try {
             if (!Strings.isNullOrEmpty(orderCodes)) {
                 List<VathrowBtcp> btcpList = vathrowBtcpMapper.getVatInvoice2BtcpListByOrderCode(orderCodes);
@@ -917,7 +917,7 @@ public class InvoiceApiServiceImpl extends BaseService implements InvoiceApiServ
                     vatInvoiceService.throwBTCP(btcpList);
                 }
             }
-            if(!Strings.isNullOrEmpty(zids)){
+            if (!Strings.isNullOrEmpty(zids)) {
                 String[] ids = zids.split(",");
                 for (int i = 0; i < ids.length; i++) {
                     String zid = ids[i];
@@ -1040,7 +1040,13 @@ public class InvoiceApiServiceImpl extends BaseService implements InvoiceApiServ
                         vatInvoiceMapper.updateAutoIsCheck(vatInvoice.getId(), 4);
                     } else {
                         if (!autoTaxNo.equals(taxNo)) {
+                            //设置history表
+                            changeInvoiceHistoryMapper.insertChangeInvoiceHistory(new ChangeInvoiceHistory(vatInvoice.getId(),vatInvoice.getCustomername(),vatInvoice.getTaxno(),autoTaxNo));
                             vatInvoice.setTaxno(autoTaxNo);
+                            int len = autoTaxNo.length();
+                            //识别码类型，1是15、20位，2是18位，3是无
+                            vatInvoice.setTaxNoType(len == 15 || len == 20 ? 1 : 2);
+                            vatInvoice.setCheckBy("admin_check");
                             vatInvoiceMapper.updateVatInvoiceAutoCheck(vatInvoice);
                         }
                         long rows = vatInvoiceMapper.updateAutoIsCheck(vatInvoice.getId(), 1);
@@ -1061,19 +1067,19 @@ public class InvoiceApiServiceImpl extends BaseService implements InvoiceApiServ
             return new Payment();
         }
         if (getCiParam.getSalesType() == 98) {
-            Payment payment=new Payment();
+            Payment payment = new Payment();
             payment.setDefaultType(PaymentType.ZXZF);
-            payment.setPaymentTypes(Arrays.asList(new PaymentType[]{PaymentType.ZXZF,PaymentType.HDFK}));
+            payment.setPaymentTypes(Arrays.asList(new PaymentType[]{PaymentType.ZXZF, PaymentType.HDFK}));
             return payment;
         }
         if (tenant.getShopId() == 8) {
-            if ((getCiParam.getFaDatas().size() == 1 && getCiParam.getFaDatas().get(0).getFatype() == 7)||getCiParam.getBigDecimal().doubleValue() > 50000) {//只有一个fa并且faType=SMB_ZY_ALL()直营总代  ：线下转账并默认
-                Payment payment=new Payment();
+            if ((getCiParam.getFaDatas().size() == 1 && getCiParam.getFaDatas().get(0).getFatype() == 7) || getCiParam.getBigDecimal().doubleValue() > 50000) {//只有一个fa并且faType=SMB_ZY_ALL()直营总代  ：线下转账并默认
+                Payment payment = new Payment();
                 payment.setDefaultType(PaymentType.XXZZ);
                 payment.setPaymentTypes(Arrays.asList(new PaymentType[]{PaymentType.XXZZ}));
                 return payment;
             }
-            Payment payment=new Payment();
+            Payment payment = new Payment();
             payment.setDefaultType(PaymentType.XXZZ);
             payment.setPaymentTypes(Arrays.asList(new PaymentType[]{PaymentType.XXZZ, PaymentType.ZXZF}));
             return payment;

@@ -10,6 +10,7 @@ import org.slf4j.LoggerFactory;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
+import java.util.Map;
 
 /**
  * Created by mayan3 on 2017/7/3.
@@ -78,6 +79,54 @@ public class HttpUtil {
         
         return res;
 	}
+
+
+    public static String GetRequest(String url, Map<String, String> params) {
+        HttpClient client = new HttpClient();
+        client.getHttpConnectionManager().getParams().setConnectionTimeout(3000);
+        client.getHttpConnectionManager().getParams().setSoTimeout(20000);
+        client.getHttpConnectionManager().getParams().setDefaultMaxConnectionsPerHost(100);
+        client.getHttpConnectionManager().getParams().setMaxTotalConnections(500);
+        String res = null;
+        // Create a method instance.
+        GetMethod method = null;
+        try {
+            method = new GetMethod(url);
+            method.getParams().setParameter(HttpMethodParams.RETRY_HANDLER, new DefaultHttpMethodRetryHandler(3, false));
+            method.getParams().setParameter(HttpMethodParams.HTTP_CONTENT_CHARSET, "UTF-8");
+
+            if (params!=null){
+                HttpMethodParams methodParams = new HttpMethodParams();
+                for (String s : params.keySet()) {
+                    methodParams.setParameter(s,params.get(s));
+                }
+                method.setParams(methodParams);
+            }
+
+            // Execute the method.
+            int statusCode = client.executeMethod(method);
+            if (statusCode == HttpStatus.SC_OK) {
+                BufferedReader reader = new BufferedReader(new InputStreamReader(method.getResponseBodyAsStream()));
+
+                StringBuffer stringBuffer = new StringBuffer();
+                String str = "";
+                while((str = reader.readLine())!=null){
+                    stringBuffer.append(str);
+                }
+                res = stringBuffer.toString();
+            } else {
+                logger.info("Response Code: " + statusCode);
+            }
+        } catch (Exception e) {
+            logger.error("url=" + url + "\r\n", e);
+        } finally {
+            if(method != null) {
+                method.releaseConnection();
+            }
+        }
+
+        return res;
+    }
 	
 	
 }

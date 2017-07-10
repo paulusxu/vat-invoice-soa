@@ -145,7 +145,7 @@
   <select id="getAutoCheckInvoice" resultMap="BaseResultMap" >
     select
     <include refid="Base_Column_List" />
-    from vatinvoice WHERE invoiceType IN(1,3) AND isCheck=0 AND ShopId IN(1,3) AND custType=1
+    from vatinvoice WHERE invoiceType IN(1,3) AND isCheck=0 AND ShopId IN(1,3) AND custType=1 AND isvalid=1
   </select>
 
   <select id="getVatInvoiceInfoById" resultMap="BaseResultMap" >
@@ -214,6 +214,15 @@
     isNeedMerge=#{isNeedMerge,jdbcType=INTEGER},
     ShardedBy=#{shardedby},
     ShardedTime=#{shardedtime}
+    WHERE id=#{id}
+  </update>
+
+  <update id="updateVatInvoiceAutoCheck" parameterType="com.lenovo.invoice.domain.VatInvoice" >
+    UPDATE vatinvoice set
+    TaxNo=#{taxno},
+    taxNoType=#{taxNoType},
+    checkTime=now(),
+    checkBy=#{checkBy}
     WHERE id=#{id}
   </update>
 
