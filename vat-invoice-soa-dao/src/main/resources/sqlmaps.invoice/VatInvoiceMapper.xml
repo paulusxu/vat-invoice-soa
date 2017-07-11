@@ -224,7 +224,7 @@
     checkTime=now(),
     checkBy=#{checkBy},
     UpdateTime=now(),
-    isCheck=#{type}
+    isCheck=#{ischeck}
     WHERE id=#{id}
   </update>
 
