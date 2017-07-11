@@ -25,6 +25,13 @@
     <result column="storesid" property="storesid"/>
     <result column="type" property="type"/>
     <result column="isvalid" property="isvalid" jdbcType="BIT" />
+    <result column="taxNoType" property="taxNoType" jdbcType="BIT" />
+    <result column="custType" property="custType" jdbcType="BIT" />
+    <result column="invoiceType" property="invoiceType" jdbcType="BIT" />
+    <result column="checkBy" property="checkBy" jdbcType="VARCHAR" />
+    <result column="checkTime" property="checkTime" jdbcType="TIMESTAMP" />
+    <result column="remark" property="remark" jdbcType="VARCHAR" />
+    <result column="isDelete" property="isDelete" jdbcType="BIT" />
   </resultMap>
 
 

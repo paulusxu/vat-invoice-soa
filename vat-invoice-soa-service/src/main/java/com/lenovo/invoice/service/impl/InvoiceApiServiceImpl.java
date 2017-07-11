@@ -1043,18 +1043,18 @@ public class InvoiceApiServiceImpl extends BaseService implements InvoiceApiServ
                     } else {
                         if (!autoTaxNo.equals(taxNo)) {
                             //设置history表
-                            changeInvoiceHistoryMapper.insertChangeInvoiceHistory(new ChangeInvoiceHistory(vatInvoice.getId(),vatInvoice.getCustomername(),vatInvoice.getTaxno(),autoTaxNo));
+                            changeInvoiceHistoryMapper.insertChangeInvoiceHistory(new ChangeInvoiceHistory(vatInvoice.getId(), vatInvoice.getCustomername(), vatInvoice.getTaxno(), autoTaxNo));
                             vatInvoice.setTaxno(autoTaxNo);
                             int len = autoTaxNo.length();
                             //识别码类型，1是15、20位，2是18位，3是无
                             vatInvoice.setTaxNoType(len == 15 || len == 20 ? 1 : 2);
-                            vatInvoice.setCheckBy("admin_check");
-                            vatInvoice.setIscheck(1);
-                            long rows=vatInvoiceMapper.updateVatInvoiceAutoCheck(vatInvoice);
-                            if (rows > 0) {
-                                listNotCheck.add(customername);
-                                commonInvoiceService.deleteTheSameTitleInvoice(customername, vatInvoice.getId());
-                            }
+                        }
+                        vatInvoice.setCheckBy("admin_check");
+                        vatInvoice.setIscheck(1);
+                        long rows = vatInvoiceMapper.updateVatInvoiceAutoCheck(vatInvoice);
+                        if (rows > 0) {
+                            listNotCheck.add(customername);
+                            commonInvoiceService.deleteTheSameTitleInvoice(customername, vatInvoice.getId());
                         }
 
                     }
@@ -1088,14 +1088,14 @@ public class InvoiceApiServiceImpl extends BaseService implements InvoiceApiServ
             return payment;
         }
 
-        if(tenant.getShopId() == 14&&"on".equals(getInvoiceTypes.getHuiShangZF())){//惠商
-            Payment payment=new Payment();
+        if (tenant.getShopId() == 14 && "on".equals(getInvoiceTypes.getHuiShangZF())) {//惠商
+            Payment payment = new Payment();
             payment.setDefaultType(PaymentType.ZXZF);
-            payment.setPaymentTypes(Arrays.asList(new PaymentType[]{PaymentType.ZXZF,PaymentType.XXZZ}));
+            payment.setPaymentTypes(Arrays.asList(new PaymentType[]{PaymentType.ZXZF, PaymentType.XXZZ}));
             return payment;
         }
 
-        Payment payment=new Payment();
+        Payment payment = new Payment();
         payment.setDefaultType(PaymentType.ZXZF);
         payment.setPaymentTypes(Arrays.asList(new PaymentType[]{PaymentType.ZXZF}));
         return payment;
@@ -1142,9 +1142,9 @@ public class InvoiceApiServiceImpl extends BaseService implements InvoiceApiServ
         zyFaTye.add(3);
         if (zyFaTye.contains(fatype)) {//直营 fatypes.contains(0/3)
             if (openZy.equals("on")) {
-                return new InvoiceList(Arrays.asList(new InvoiceType[]{InvoiceType.DZFP, InvoiceType.PTFP}), Arrays.asList(new InvoiceType[]{InvoiceType.PTFP, InvoiceType.ZZFP,InvoiceType.DZFP}));
+                return new InvoiceList(Arrays.asList(new InvoiceType[]{InvoiceType.DZFP, InvoiceType.PTFP}), Arrays.asList(new InvoiceType[]{InvoiceType.PTFP, InvoiceType.ZZFP, InvoiceType.DZFP}));
             } else {
-                return new InvoiceList(Arrays.asList(new InvoiceType[]{InvoiceType.DZFP}), Arrays.asList(new InvoiceType[]{InvoiceType.ZZFP,InvoiceType.DZFP}));
+                return new InvoiceList(Arrays.asList(new InvoiceType[]{InvoiceType.DZFP}), Arrays.asList(new InvoiceType[]{InvoiceType.ZZFP, InvoiceType.DZFP}));
             }
         }
         if (shopId == 15 || fatype == 5) {
