@@ -31,7 +31,7 @@
   <sql id="Base_Column_List" >
     Id, CustomerName, TaxNo, BankName, AccountNo, Address, PhoneNo, BTCPSO, isCheck, 
     IsThrowing, CreateTime, CreateBy, UpdateTime, UpdateBy, IsShared, isNeedMerge, ShopId,
-    ShardedBy, ShardedTime,faid,storesid,type,isvalid
+    ShardedBy, ShardedTime,faid,storesid,type,isvalid,taxNoType,custType,invoiceType,checkBy,checkTime,remark,isDelete
   </sql>
 
   <delete id="deleteVatInvoice" parameterType="java.lang.Long">
