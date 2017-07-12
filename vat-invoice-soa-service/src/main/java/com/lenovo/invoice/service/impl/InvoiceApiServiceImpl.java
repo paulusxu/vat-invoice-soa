@@ -399,7 +399,7 @@ public class InvoiceApiServiceImpl extends BaseService implements InvoiceApiServ
                         remoteResult.setResultMsg("未找到映射，用户:" + lenovoId + "未曾保存过" + customername + ":" + taxno + "增票");
                         return remoteResult;
                     }
-                    LOGGER.error("####:" + JacksonUtil.toJson(memberVatInvoiceList));
+                    LOGGER.info("####:" + JacksonUtil.toJson(memberVatInvoiceList));
                     for (MemberVatInvoice memberVatInvoice1 : memberVatInvoiceList) {
                         long zid = memberVatInvoice1.getInvoiceinfoid();
                         VatInvoice tVatInvoice = vatInvoiceMapper.getVatInvoiceInfoById(zid);
