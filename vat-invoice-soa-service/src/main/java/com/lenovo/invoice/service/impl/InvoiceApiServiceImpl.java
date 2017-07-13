@@ -197,9 +197,9 @@ public class InvoiceApiServiceImpl extends BaseService implements InvoiceApiServ
                 remoteResultInvoice = orderDetailService.getInvoiceByOrderId(orderId);
                 if (remoteResultInvoice.isSuccess()) {
                     Invoice invoice = remoteResultInvoice.getT();//发票类型1:电子票2:增票3:普票
+                    LOGGER.info("makeUpVatInvocie invoice{}:", JacksonUtil.toJson(invoice));
                     if (invoice != null && invoice.getType() == 2) {
-                        LOGGER.info("makeUpVatInvocie invoice:", JacksonUtil.toJson(invoice));
-                        vathrowBtcp.setOrderStatus(2);
+                        vathrowBtcp.setOrderStatus(3);
                         vathrowBtcp.setOrderCode(orderCode);
                         vathrowBtcp.setZid(invoice.getZid());
                         //初始化
@@ -210,7 +210,8 @@ public class InvoiceApiServiceImpl extends BaseService implements InvoiceApiServ
                             //获取订单相关信息
                             remoteResultMain = orderDetailService.getMainById(orderId);
                             remoteResultDeliveryAddress = orderDetailService.getDeliveryAddressByOrderId(orderId, 1);//1代表是发票地址，0代表是货的地址
-
+                            LOGGER.info("remoteResultMain:{}",JacksonUtil.toJson(remoteResultMain));
+                            LOGGER.info("remoteResultDeliveryAddress:{}",JacksonUtil.toJson(remoteResultDeliveryAddress));
                             if (remoteResultMain.isSuccess() && remoteResultDeliveryAddress.isSuccess()) {
                                 Main main = remoteResultMain.getT();
                                 if (main != null) {

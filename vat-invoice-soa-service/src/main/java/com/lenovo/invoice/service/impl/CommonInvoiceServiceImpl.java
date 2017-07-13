@@ -685,7 +685,7 @@ public class CommonInvoiceServiceImpl extends BaseService implements CommonInvoi
                     return remoteResult;
                 }else {
                     remoteResult.setT(vatInvoice);
-                    try {
+                    /*try {
                         //添加用户使用发票的记录，只添加Lenovo和epp，公司普票和电票
                         if ((shopid==1||shopid==3)&&custType==1){
                             InvoiceToUser params = new InvoiceToUser();
@@ -697,11 +697,11 @@ public class CommonInvoiceServiceImpl extends BaseService implements CommonInvoi
                         }
                     }catch (Exception e){
                         LOGGER.error(e.getMessage(),e);
-                    }
+                    }*/
                 }
             }else {
                 remoteResult.setT(invoiceIsExist);
-                try {
+                /*try {
                     //添加用户使用发票的记录，只添加Lenovo和epp，公司普票和电票
                     if ((shopid==1||shopid==3)&&custType==1){
                         InvoiceToUser params = new InvoiceToUser();
@@ -713,7 +713,7 @@ public class CommonInvoiceServiceImpl extends BaseService implements CommonInvoi
                     }
                 }catch (Exception e){
                     LOGGER.error(e.getMessage(),e);
-                }
+                }*/
             }
             remoteResult.setSuccess(true);
             remoteResult.setResultCode(InvoiceResultCode.SUCCESS);
