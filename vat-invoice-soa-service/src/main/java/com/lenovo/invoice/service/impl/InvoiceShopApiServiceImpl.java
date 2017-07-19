@@ -58,6 +58,14 @@ public class InvoiceShopApiServiceImpl implements InvoiceShopApiService {
                     invoiceShop.setTaxNoType("1");
                 }
             }
+            if (invoiceShop.getSynType() == 1) {
+                if (StringUtils.isEmpty(invoiceShop.getPayMan())) {
+                    invoiceShop.setPayMan(invoiceShop.getCustomerName());
+                }
+                if (invoiceShop.getPayManType() == null) {
+                    invoiceShop.setPayManType(invoiceShop.getCompanyType());
+                }
+            }
             InvoiceShopModifyLog invoiceShopModifyLog = new InvoiceShopModifyLog();
             ConvertUtils.register(new DateConverter(null), java.util.Date.class);
             ConvertUtils.register(new IntegerConverter(null), java.lang.Integer.class);
@@ -256,6 +264,14 @@ public class InvoiceShopApiServiceImpl implements InvoiceShopApiService {
                     invoiceShop.setTaxNoType("1");
                 }
             }
+            if (invoiceShop.getSynType() == 1) {
+                if (StringUtils.isEmpty(invoiceShop.getPayMan())) {
+                    invoiceShop.setPayMan(invoiceShop.getCustomerName());
+                }
+                if (invoiceShop.getPayManType() == null) {
+                    invoiceShop.setPayManType(invoiceShop.getCompanyType());
+                }
+            }
             InvoiceShopModifyLog invoiceShopModifyLog = new InvoiceShopModifyLog();
             ConvertUtils.register(new DateConverter(null), java.util.Date.class);
             ConvertUtils.register(new IntegerConverter(null), java.lang.Integer.class);
@@ -268,7 +284,7 @@ public class InvoiceShopApiServiceImpl implements InvoiceShopApiService {
             if (invoiceShop.getSynType() == 1) {
                 //判断customername,taxno 是否有单独存在的
                 //个人开抬头为个人忽略验证
-                if(invoiceShop.getCompanyType()==0&&"个人".equals(invoiceShop.getCustomerName())){
+                if(invoiceShop.getCompanyType() == 0 && "个人".equals(invoiceShop.getCustomerName())){
                     invoiceShop.setApprovalStatus(2);
                     invoiceShopModifyLog.setApprovalStatus(2);
                 }else {
