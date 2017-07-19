@@ -84,6 +84,8 @@ public class InvoiceApiServiceImpl extends BaseService implements InvoiceApiServ
     private CommonInvoiceService commonInvoiceService;
     @Autowired
     private ChangeInvoiceHistoryMapper changeInvoiceHistoryMapper;
+    @Autowired
+    private EmailUtil emailUtil;
 
     @Override
     public String getType(String faid, String faType) {
@@ -210,8 +212,8 @@ public class InvoiceApiServiceImpl extends BaseService implements InvoiceApiServ
                             //获取订单相关信息
                             remoteResultMain = orderDetailService.getMainById(orderId);
                             remoteResultDeliveryAddress = orderDetailService.getDeliveryAddressByOrderId(orderId, 1);//1代表是发票地址，0代表是货的地址
-                            LOGGER.info("remoteResultMain:{}",JacksonUtil.toJson(remoteResultMain));
-                            LOGGER.info("remoteResultDeliveryAddress:{}",JacksonUtil.toJson(remoteResultDeliveryAddress));
+                            LOGGER.info("remoteResultMain:{}", JacksonUtil.toJson(remoteResultMain));
+                            LOGGER.info("remoteResultDeliveryAddress:{}", JacksonUtil.toJson(remoteResultDeliveryAddress));
                             if (remoteResultMain.isSuccess() && remoteResultDeliveryAddress.isSuccess()) {
                                 Main main = remoteResultMain.getT();
                                 if (main != null) {
@@ -1040,7 +1042,31 @@ public class InvoiceApiServiceImpl extends BaseService implements InvoiceApiServ
                         //自动审核失败
                         vatInvoice.setCheckBy("admin_check");
                         vatInvoice.setIscheck(4);
-                        vatInvoiceMapper.updateVatInvoiceAutoCheck(vatInvoice);
+                        long rows = vatInvoiceMapper.updateVatInvoiceAutoCheck(vatInvoice);
+                        if (rows > 0) {
+                            //未自动审核成功，发邮件
+                            //拼邮件1.下单账号，2.发票抬头，3.识别码类型，4.税号，5.发票类型，6.订单号，7.收货人，8.收货电话。税务登记证（15位）统一社会信用代码（18位）
+                            Integer taxNoType = vatInvoice.getTaxNoType();
+                            String taxNoTypeStr;
+                            if (taxNoType == 1) {
+                                taxNoTypeStr = "税务登记证（15位）";
+                            } else if (taxNoType == 3) {
+                                taxNoTypeStr = "无（政府机构，事业单位，非企业单位）";
+                            } else {
+                                taxNoTypeStr = "统一社会信用代码（18位）";
+                            }
+                            String typeStr;
+                            Integer type=vatInvoice.getInvoiceType();
+                            if (type == 0) {
+                                typeStr = "电子票";
+                            } else {
+                                typeStr = "普通发票";
+                            }
+                            String content = "您好，有待审核发票请您尽快去审核，信息如下："  + "发票抬头:" + vatInvoice.getCustomername()
+                                    + ";识别码类型:" + taxNoTypeStr + ";税号:" + vatInvoice.getTaxno() + ";发票类型:" + typeStr  + "。";
+                            String title = "发票审核";
+                            emailUtil.sendEmail(title, content);
+                        }
                     } else {
                         if (!autoTaxNo.equals(taxNo)) {
                             //设置history表
