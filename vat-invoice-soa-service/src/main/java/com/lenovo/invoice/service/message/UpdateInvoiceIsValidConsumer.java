@@ -120,34 +120,34 @@ public class UpdateInvoiceIsValidConsumer {
                                 LOGGER.info("添加发票和订单的映射表记录出现异常=="+e.getMessage(),e);
                             }
                             //置为有效后，判断是否是需要审核的，且未审核的，如果是，发邮件通知客服
-                            try {
-                                Integer ischeck = invoice.getIscheck();
-                                if (invoice!=null && ischeck==0 && custType==1 && shopId!=14){
-                                    //未审核，发邮件
-                                    //拼邮件1.下单账号，2.发票抬头，3.识别码类型，4.税号，5.发票类型，6.订单号，7.收货人，8.收货电话。税务登记证（15位）统一社会信用代码（18位）
-                                    String taxNoTypeStr;
-                                    if (taxNoType==1){
-                                        taxNoTypeStr = "税务登记证（15位）";
-                                    }else if (taxNoType==3){
-                                        taxNoTypeStr = "无（政府机构，事业单位，非企业单位）";
-                                    }else {
-                                        taxNoTypeStr = "统一社会信用代码（18位）";
-                                    }
-                                    String typeStr;
-                                    if (type==0){
-                                        typeStr = "电子票";
-                                    }else {
-                                        typeStr = "普通发票";
-                                    }
-                                    String content = "您好，有待审核发票请您尽快去审核，信息如下：下单账号:"+memberCode+";发票抬头:"+invoice.getCustomername()
-                                            +";识别码类型:"+taxNoTypeStr+";税号:"+invoice.getTaxno()+";发票类型:"+typeStr+";订单号:"+orderCode
-                                            +";收货人:"+name+";收货电话:"+mobile+"。";
-                                    String title = "发票审核";
-                                    emailUtil.sendEmail(title,content);
-                                }
-                            }catch (Exception e){
-                                LOGGER.info("审核发票发邮件出现异常=="+e.getMessage(),e);
-                            }
+//                            try {
+//                                Integer ischeck = invoice.getIscheck();
+//                                if (invoice!=null && ischeck==0 && custType==1 && shopId!=14){
+//                                    //未审核，发邮件
+//                                    //拼邮件1.下单账号，2.发票抬头，3.识别码类型，4.税号，5.发票类型，6.订单号，7.收货人，8.收货电话。税务登记证（15位）统一社会信用代码（18位）
+//                                    String taxNoTypeStr;
+//                                    if (taxNoType==1){
+//                                        taxNoTypeStr = "税务登记证（15位）";
+//                                    }else if (taxNoType==3){
+//                                        taxNoTypeStr = "无（政府机构，事业单位，非企业单位）";
+//                                    }else {
+//                                        taxNoTypeStr = "统一社会信用代码（18位）";
+//                                    }
+//                                    String typeStr;
+//                                    if (type==0){
+//                                        typeStr = "电子票";
+//                                    }else {
+//                                        typeStr = "普通发票";
+//                                    }
+//                                    String content = "您好，有待审核发票请您尽快去审核，信息如下：下单账号:"+memberCode+";发票抬头:"+invoice.getCustomername()
+//                                            +";识别码类型:"+taxNoTypeStr+";税号:"+invoice.getTaxno()+";发票类型:"+typeStr+";订单号:"+orderCode
+//                                            +";收货人:"+name+";收货电话:"+mobile+"。";
+//                                    String title = "发票审核";
+//                                    emailUtil.sendEmail(title,content);
+//                                }
+//                            }catch (Exception e){
+//                                LOGGER.info("审核发票发邮件出现异常=="+e.getMessage(),e);
+//                            }
                         }
                     }
                 }
