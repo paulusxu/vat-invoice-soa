@@ -1122,7 +1122,12 @@ public class InvoiceApiServiceImpl extends BaseService implements InvoiceApiServ
             payment.setPaymentTypes(Arrays.asList(new PaymentType[]{PaymentType.ZXZF, PaymentType.XXZZ}));
             return payment;
         }
-
+        if(tenant.getShopId()==16){//印度摩托
+            Payment payment = new Payment();
+            payment.setDefaultType(PaymentType.ZXZF_YD);
+            payment.setPaymentTypes(Arrays.asList(new PaymentType[]{PaymentType.ZXZF_YD}));
+            return payment;
+        }
         Payment payment = new Payment();
         payment.setDefaultType(PaymentType.ZXZF);
         payment.setPaymentTypes(Arrays.asList(new PaymentType[]{PaymentType.ZXZF}));
