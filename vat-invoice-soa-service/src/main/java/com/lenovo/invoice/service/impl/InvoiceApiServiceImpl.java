@@ -1014,6 +1014,7 @@ public class InvoiceApiServiceImpl extends BaseService implements InvoiceApiServ
             BeanUtils.copyProperties(getInvoiceTypeParam, getCiParam);
             information.setFaInvoiceResults(getInvoiceTypes(getInvoiceTypeParam, tenant).getT());
             information.setPayment(getPaymentType(getCiParam, tenant));
+            information.setDeliverGoods(getDeliverGoods(tenant.getShopId()));
             result.setSuccess(true);
             result.setT(information);
         } catch (Exception e) {
@@ -1152,6 +1153,16 @@ public class InvoiceApiServiceImpl extends BaseService implements InvoiceApiServ
             return null;
         }
 
+        return null;
+    }
+
+    public DeliverGoods getDeliverGoods(Integer shopid){
+        if(shopid==16){//印度摩托
+            DeliverGoods deliverGoods=new DeliverGoods();
+            deliverGoods.setDefaultType(DeliverGoodsTypeEnum.SURFACE_MODE);
+            deliverGoods.setDeliverGoodsList(Arrays.asList(new DeliverGoodsTypeEnum[]{DeliverGoodsTypeEnum.AIRE_MODE,DeliverGoodsTypeEnum.SURFACE_MODE,DeliverGoodsTypeEnum.SELF_PICK}));
+            return  deliverGoods;
+        }
         return null;
     }
 }
