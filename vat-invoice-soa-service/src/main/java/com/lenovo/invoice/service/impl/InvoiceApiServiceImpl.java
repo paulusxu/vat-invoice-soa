@@ -979,12 +979,21 @@ public class InvoiceApiServiceImpl extends BaseService implements InvoiceApiServ
             for (int i = 0; i < faDatas.size(); i++) {
                 FaInvoiceResult faInvoiceResult = new FaInvoiceResult();
                 faInvoiceResult.setFaid(faDatas.get(i).getFaid());
-                faInvoiceResult.setInvoiceList(getInvoiceTypes(getInvoiceTypeParam.getShopId(),
-                        getInvoiceTypeParam.getSalesType(),
-                        faDatas.get(i).getFatype(),
-                        faDatas.get(i).getFaid(),
-                        getInvoiceTypes.getOpenO2O(),
-                        getInvoiceTypes.getOpenZy()));
+                if(getInvoiceTypes.getOpenDz().equals("no")){
+                    faInvoiceResult.setInvoiceList(getInvoiceTypes(getInvoiceTypeParam.getShopId(),
+                            getInvoiceTypeParam.getSalesType(),
+                            faDatas.get(i).getFatype(),
+                            faDatas.get(i).getFaid(),
+                            getInvoiceTypes.getOpenO2O(),
+                            getInvoiceTypes.getOpenZy()));
+                }else {
+                    faInvoiceResult.setInvoiceList(getInvoiceTypesNOdz(getInvoiceTypeParam.getShopId(),
+                            getInvoiceTypeParam.getSalesType(),
+                            faDatas.get(i).getFatype(),
+                            faDatas.get(i).getFaid(),
+                            getInvoiceTypes.getOpenO2O(),
+                            getInvoiceTypes.getOpenZy()));
+                }
                 faInvoiceResults.add(faInvoiceResult);
             }
             listRemoteResult.setSuccess(true);
@@ -1178,6 +1187,59 @@ public class InvoiceApiServiceImpl extends BaseService implements InvoiceApiServ
                 return new InvoiceList(Arrays.asList(new InvoiceType[]{InvoiceType.DZFP, InvoiceType.PTFP}), Arrays.asList(new InvoiceType[]{InvoiceType.PTFP, InvoiceType.ZZFP, InvoiceType.DZFP}));
             } else {
                 return new InvoiceList(Arrays.asList(new InvoiceType[]{InvoiceType.DZFP}), Arrays.asList(new InvoiceType[]{InvoiceType.ZZFP, InvoiceType.DZFP}));
+            }
+        }
+        if (shopId == 15 || fatype == 5) {
+            return null;
+        }
+
+        return null;
+    }
+
+    public InvoiceList getInvoiceTypesNOdz(int shopId, int salesType, int fatype, String faid, String openO2O, String openZy) {
+        if (shopId == 9) {
+            return null;
+        }
+        HashSet<Integer> fatypesets = new HashSet<Integer>();
+        fatypesets.add(1);
+        fatypesets.add(2);
+        fatypesets.add(4);
+        if (shopId == 8) {
+            return new InvoiceList(Arrays.asList(new InvoiceType[]{InvoiceType.PTFP}), Arrays.asList(new InvoiceType[]{InvoiceType.ZZFP, InvoiceType.PTFP}));
+        }
+        if (shopId == 14) {
+            return new InvoiceList(null, Arrays.asList(new InvoiceType[]{InvoiceType.ZZFP, InvoiceType.PTFP}));
+        }
+        if (salesType == 98) {//alesType=o2o && openO2OVatInvoice.eq(“on”)
+            if (openO2O.equals("on")) {
+                return new InvoiceList(Arrays.asList(new InvoiceType[]{InvoiceType.PTFP}), Arrays.asList(new InvoiceType[]{InvoiceType.ZZFP, InvoiceType.PTFP}));
+            } else {
+                return new InvoiceList(null, Arrays.asList(new InvoiceType[]{InvoiceType.ZZFP}));
+            }
+        }
+        if (salesType == 97) {//salesType=ZC_SALES(众筹)
+            return new InvoiceList(Arrays.asList(new InvoiceType[]{InvoiceType.PTFP}), Arrays.asList(new InvoiceType[]{InvoiceType.ZZFP, InvoiceType.PTFP}));
+        }
+        if ("36d0caa1-af7a-459b-b147-04b86ad25dd7".equals(faid)) {//faids.contains(zukFaid)
+            return new InvoiceList(null, null);
+        }
+        if (fatypesets.contains(fatype)) {//非直营 fatypesets.congtains(1/2/4)
+            return new InvoiceList(Arrays.asList(new InvoiceType[]{InvoiceType.PTFP}), Arrays.asList(new InvoiceType[]{InvoiceType.PTFP}));
+        }
+        HashSet<Integer> smartTv = new HashSet<Integer>();
+        smartTv.add(9);
+        smartTv.add(10);
+        if (smartTv.contains(fatype)) {//smart.Tv  fatypesets.contains(9/10)
+            return new InvoiceList(Arrays.asList(new InvoiceType[]{InvoiceType.PTFP}), Arrays.asList(new InvoiceType[]{InvoiceType.PTFP}));
+        }
+        HashSet<Integer> zyFaTye = new HashSet<Integer>();
+        zyFaTye.add(0);
+        zyFaTye.add(3);
+        if (zyFaTye.contains(fatype)) {//直营 fatypes.contains(0/3)
+            if (openZy.equals("on")) {
+                return new InvoiceList(Arrays.asList(new InvoiceType[]{InvoiceType.PTFP}), Arrays.asList(new InvoiceType[]{InvoiceType.PTFP, InvoiceType.ZZFP}));
+            } else {
+                return new InvoiceList(null, Arrays.asList(new InvoiceType[]{InvoiceType.ZZFP}));
             }
         }
         if (shopId == 15 || fatype == 5) {
