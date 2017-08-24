@@ -316,7 +316,7 @@ public class InvoiceApiServiceImpl extends BaseService implements InvoiceApiServ
                 invoiceReviewParam.setFailureReason(increaseOrderRequest.getReason());
                 orderInvoiceService.updateInvoiceReviewStatus(invoiceReviewParam);
 
-                updateThrowingStatus(orderId + "", status == 1 ? 3 : 4);
+                updateThrowingStatus(orderId + "", status == 1 ? 3 : (status == 2 ? 1 : 2));
                 RemoteResult<Invoice> remoteResultInvoice = orderDetailService.getInvoiceByOrderId(orderId);
                 LOGGER_BTCP.info("btcpSyncVatInvoice:remoteResultInvoice{}", JacksonUtil.toJson(remoteResultInvoice));
 
@@ -1057,14 +1057,14 @@ public class InvoiceApiServiceImpl extends BaseService implements InvoiceApiServ
                                 taxNoTypeStr = "统一社会信用代码（18位）";
                             }
                             String typeStr;
-                            Integer type=vatInvoice.getInvoiceType();
+                            Integer type = vatInvoice.getInvoiceType();
                             if (type == 0) {
                                 typeStr = "电子票";
                             } else {
                                 typeStr = "普通发票";
                             }
-                            String content = "您好，有待审核发票请您尽快去审核，信息如下："  + "发票抬头:" + vatInvoice.getCustomername()
-                                    + ";识别码类型:" + taxNoTypeStr + ";税号:" + vatInvoice.getTaxno() + ";发票类型:" + typeStr  + "。";
+                            String content = "您好，有待审核发票请您尽快去审核，信息如下：" + "发票抬头:" + vatInvoice.getCustomername()
+                                    + ";识别码类型:" + taxNoTypeStr + ";税号:" + vatInvoice.getTaxno() + ";发票类型:" + typeStr + "。";
                             String title = "发票审核";
                             emailUtil.sendEmail(title, content);
                         }
@@ -1122,7 +1122,7 @@ public class InvoiceApiServiceImpl extends BaseService implements InvoiceApiServ
             payment.setPaymentTypes(Arrays.asList(new PaymentType[]{PaymentType.ZXZF, PaymentType.XXZZ}));
             return payment;
         }
-        if(tenant.getShopId()==16){//印度摩托
+        if (tenant.getShopId() == 16) {//印度摩托
             Payment payment = new Payment();
             payment.setDefaultType(PaymentType.ZXZF_YD);
             payment.setPaymentTypes(Arrays.asList(new PaymentType[]{PaymentType.ZXZF_YD}));
@@ -1187,12 +1187,12 @@ public class InvoiceApiServiceImpl extends BaseService implements InvoiceApiServ
         return null;
     }
 
-    public DeliverGoods getDeliverGoods(Integer shopid){
-        if(shopid==16){//印度摩托
-            DeliverGoods deliverGoods=new DeliverGoods();
+    public DeliverGoods getDeliverGoods(Integer shopid) {
+        if (shopid == 16) {//印度摩托
+            DeliverGoods deliverGoods = new DeliverGoods();
             deliverGoods.setDefaultType(DeliverGoodsTypeEnum.SURFACE_MODE);
-            deliverGoods.setDeliverGoodsList(Arrays.asList(new DeliverGoodsTypeEnum[]{DeliverGoodsTypeEnum.AIRE_MODE,DeliverGoodsTypeEnum.SURFACE_MODE,DeliverGoodsTypeEnum.SELF_PICK}));
-            return  deliverGoods;
+            deliverGoods.setDeliverGoodsList(Arrays.asList(new DeliverGoodsTypeEnum[]{DeliverGoodsTypeEnum.AIRE_MODE, DeliverGoodsTypeEnum.SURFACE_MODE, DeliverGoodsTypeEnum.SELF_PICK}));
+            return deliverGoods;
         }
         return null;
     }
