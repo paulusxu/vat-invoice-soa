@@ -6,7 +6,10 @@ package com.lenovo.invoice.domain.result;
 public enum PaymentType {
     ZXZF(0,"在线支付"),
     HDFK(1,"货到付款"),
-    XXZZ(2,"线下银行转账");
+    XXZZ(2,"线下银行转账"),
+    ZXZF_YD(0,"Online"),
+    HDFK_YD(1,"Cash on delivery"),
+    XXZZ_YD(2,"Offline bank transfer");
 
     private PaymentType(int type, String descr) {
         this.type = type;

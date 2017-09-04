@@ -9,6 +9,15 @@ import java.util.List;
 public class ConfigurationInformation implements Serializable {
     private List<FaInvoiceResult> faInvoiceResults;
     private Payment payment;
+    private DeliverGoods deliverGoods;
+
+    public DeliverGoods getDeliverGoods() {
+        return deliverGoods;
+    }
+
+    public void setDeliverGoods(DeliverGoods deliverGoods) {
+        this.deliverGoods = deliverGoods;
+    }
 
     public List<FaInvoiceResult> getFaInvoiceResults() {
         return faInvoiceResults;

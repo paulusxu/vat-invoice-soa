@@ -212,6 +212,7 @@
     <logger name="org.apache.commons.beanutils" level="WARN" additivity="false"/>
     <logger name="org.apache.http" level="WARN" additivity="false"/>
     <logger name="org.apache.velocity" level="WARN" additivity="false"/>
+    <logger name="httpclient.wire.content" level="WARN" additivity="false"/>
     <logger name="com.lenovo.m2.arch.framework" level="WARN" additivity="false"/>
     <logger name="com.lenovo.admin.extra.client" level="DEBUG" additivity="false"/>
 
