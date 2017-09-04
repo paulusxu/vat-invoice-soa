@@ -1,6 +1,7 @@
 package com.lenovo.invoice.api;
 
 import com.lenovo.invoice.domain.ExchangeInvoiceRecord;
+import com.lenovo.invoice.domain.param.ExchangeInvoiceParam;
 import com.lenovo.invoice.domain.result.GetVatInvoiceInfoResult;
 import com.lenovo.m2.arch.framework.domain.PageModel2;
 import com.lenovo.m2.arch.framework.domain.PageQuery;
@@ -20,13 +21,10 @@ public interface ExchangeInvoiceService {
     public RemoteResult BTCPCallback(String applyId,String code,String message);
 
     //换普票
-    public RemoteResult exchangeToCommon(String orderCode,String itCode,Integer oldInvoiceType,
-                                         Integer type,String newInvoiceTitle,String taxNo,Integer taxNoType);
+    public RemoteResult exchangeToCommon(ExchangeInvoiceParam param);
 
     //换增票
-    public RemoteResult exchangeToVat(String orderCode,String itCode, Integer oldInvoiceType,Integer exchangeType,String newInvoiceTitle,
-                                      String newTaxNo,String newBankName,String newBankNo,String newAddress,String newPhone,
-                                      String name,String province,String city,String county,String address2,String phone2,String zip,String tel);
+    public RemoteResult exchangeToVat(ExchangeInvoiceParam param);
 
     //获取换票记录，加分页
     public RemoteResult<PageModel2<ExchangeInvoiceRecord>> getExchangeInvoiceRecordByPage(PageQuery pageQuery, ExchangeInvoiceRecord exchangeInvoiceRecord);

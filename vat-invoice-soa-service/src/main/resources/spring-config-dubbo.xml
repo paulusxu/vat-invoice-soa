@@ -56,7 +56,10 @@
                      interface="com.lenovo.m2.buy.order.middleware.api.OrderInvoiceService"
                      timeout="100000"    check="false"/>
 
-    <!--地址库接口-->
-    <dubbo:reference id="consigneeAddressService" interface="com.lenovo.m2.buy.order.address.api.ConsigneeAddressService" timeout="100000" check="false" version="1.0.0"/>
-    <dubbo:reference id="areaAddressService" interface="com.lenovo.m2.buy.order.address.api.AreaAddressService" timeout="100000" check="false" version="1.0.0"/>
+    <!--地址库老接口-->
+    <!--<dubbo:reference id="consigneeAddressService" interface="com.lenovo.m2.buy.order.address.api.ConsigneeAddressService" timeout="100000" check="false" version="1.0.0"/>
+    <dubbo:reference id="areaAddressService" interface="com.lenovo.m2.buy.order.address.api.AreaAddressService" timeout="100000" check="false" version="1.0.0"/>-->
+
+    <!--地址库新接口-->
+    <dubbo:reference id="addressService" interface="com.lenovo.m2.address.soa.api.AddressService" timeout="100000" check="false"/>
 </beans>

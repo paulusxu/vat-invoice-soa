@@ -23,6 +23,7 @@ public class Provider {
                             "classpath*:spring-config-kafka.xml"
                     }
             );
+            System.out.println("SOA服务启动 over！一切正常！Dubbo service server started!");
             logger.info("vat-invoice-soa server started.");
         }catch (Exception e){
             running  = false;
