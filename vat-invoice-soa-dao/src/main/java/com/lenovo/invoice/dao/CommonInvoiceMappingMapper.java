@@ -6,6 +6,7 @@ import java.util.List;
 
 /**
  * Created by admin on 2017/3/16.
+ * 已废除
  */
 public interface CommonInvoiceMappingMapper {
 

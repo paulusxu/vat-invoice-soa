@@ -38,25 +38,18 @@ public class ExchangeInvoiceServiceImpl extends BaseService implements ExchangeI
 
     @Autowired
     private VathrowBtcpMapper vathrowBtcpMapper;
-
     @Autowired
     private ExchangeInvoiceRecordMapper exchangeInvoiceRecordMapper;
-
     @Autowired
     private PropertiesUtil propertiesUtil;
-
     @Autowired
     private VatApiOrderCenter vatApiOrderCenter;
-
     @Autowired
     private AddressService addressService;
-
     @Autowired
     private CommonInvoiceService commonInvoiceService;
-
     @Autowired
     private InvoiceApiService invoiceApiService;
-
     @Autowired
     private VatInvoiceService vatInvoiceService;
 

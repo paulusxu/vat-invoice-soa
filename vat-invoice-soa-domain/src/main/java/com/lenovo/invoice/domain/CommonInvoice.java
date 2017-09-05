@@ -5,7 +5,7 @@ import java.util.Date;
 
 /**
  * Created by admin on 2017/3/16.
- * 普通发票
+ * 普通发票  已废除
  */
 public class CommonInvoice implements Serializable{
 

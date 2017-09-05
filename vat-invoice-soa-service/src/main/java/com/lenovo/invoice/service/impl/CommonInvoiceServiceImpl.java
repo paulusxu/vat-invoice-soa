@@ -4,10 +4,8 @@ import com.lenovo.invoice.api.CommonInvoiceService;
 import com.lenovo.invoice.common.utils.InvoiceResultCode;
 import com.lenovo.invoice.common.utils.JacksonUtil;
 import com.lenovo.invoice.dao.CommonInvoiceMapper;
-import com.lenovo.invoice.dao.CommonInvoiceMappingMapper;
 import com.lenovo.invoice.dao.InvoiceToInvoiceMapper;
 import com.lenovo.invoice.dao.InvoiceToUserMapper;
-import com.lenovo.invoice.domain.CommonInvoice;
 import com.lenovo.invoice.domain.InvoiceToInvoice;
 import com.lenovo.invoice.domain.InvoiceToUser;
 import com.lenovo.invoice.domain.VatInvoice;
@@ -17,7 +15,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.regex.Matcher;
@@ -34,8 +31,8 @@ public class CommonInvoiceServiceImpl extends BaseService implements CommonInvoi
     @Autowired
     private CommonInvoiceMapper commonInvoiceMapper;
 
-    @Autowired
-    private CommonInvoiceMappingMapper commonInvoiceMappingMapper;
+    /*@Autowired
+    private CommonInvoiceMappingMapper commonInvoiceMappingMapper;*/
 
     @Autowired
     private InvoiceToInvoiceMapper invoiceToInvoiceMapper;
@@ -43,7 +40,7 @@ public class CommonInvoiceServiceImpl extends BaseService implements CommonInvoi
     @Autowired
     private InvoiceToUserMapper invoiceToUserMapper;
 
-    @Override
+    /*@Override
     @Transactional
     //添加普通发票
     public RemoteResult<CommonInvoice> addCommonInvoice(CommonInvoice commonInvoice,Tenant tenant) throws Exception {
@@ -101,9 +98,9 @@ public class CommonInvoiceServiceImpl extends BaseService implements CommonInvoi
         }
         LOGGER.info("addCommonInvoice返回值=="+ JacksonUtil.toJson(remoteResult));
         return remoteResult;
-    }
+    }*/
 
-    @Override
+    /*@Override
     //获取用户最近一次开的普通发票，区分公司和个人
     public RemoteResult<CommonInvoice> getCommonInvoice(CommonInvoice commonInvoice,Tenant tenant){
         LOGGER.info("getCommonInvoice参数=="+JacksonUtil.toJson(commonInvoice));
@@ -143,9 +140,9 @@ public class CommonInvoiceServiceImpl extends BaseService implements CommonInvoi
         }
         LOGGER.info("getCommonInvoice返回值=="+JacksonUtil.toJson(remoteResult));
         return remoteResult;
-    }
+    }*/
 
-    @Override
+    /*@Override
     public RemoteResult<CommonInvoice> getCommonInvoiceByIds(String lenovoId, Integer id,Tenant tenant) {
         LOGGER.info("getCommonInvoiceByIds参数=="+lenovoId+"=="+id);
         RemoteResult<CommonInvoice> remoteResult = new RemoteResult<CommonInvoice>();
@@ -181,7 +178,7 @@ public class CommonInvoiceServiceImpl extends BaseService implements CommonInvoi
         }
         LOGGER.info("getCommonInvoiceByIds返回值==" + JacksonUtil.toJson(remoteResult));
         return remoteResult;
-    }
+    }*/
 
     //以下为添加税号后方法。这里只操作普票和电子票
 
