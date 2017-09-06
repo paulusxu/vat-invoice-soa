@@ -8,7 +8,7 @@
 
 
     <!--  dubb配置注册信息分割线  -->
-    <dubbo:application name="${dubbo.application.name}"/>
+    <dubbo:application name="${dubbo.application.name}" logger="slf4j"/>
     <dubbo:registry address="${dubbo.registry.address}" protocol="${dubbo.registry.protocol}"
                     group="${dubbo.registry.group}"/>
 
