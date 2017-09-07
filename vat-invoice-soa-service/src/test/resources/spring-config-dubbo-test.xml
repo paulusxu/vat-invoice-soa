@@ -18,8 +18,8 @@
     <!--17shop发票-->
     <!--<dubbo:service interface="com.lenovo.invoice.api.InvoiceShopApiService" ref="invoiceShopApiService"/>-->
     <!--官网增票-->
-    <dubbo:service interface="com.lenovo.invoice.api.InvoiceApiService" ref="invoiceApiService"/>
-    <dubbo:service interface="com.lenovo.invoice.api.CommonInvoiceService" ref="commonInvoiceService"/>
+    <dubbo:reference interface="com.lenovo.invoice.api.InvoiceApiService" id="invoiceApiService"/>
+    <dubbo:reference interface="com.lenovo.invoice.api.CommonInvoiceService" id="commonInvoiceService"/>
     <!--合同管理-->
     <!--<dubbo:service interface="com.lenovo.invoice.api.ContractApiService" ref="contractApiService"/>-->
 

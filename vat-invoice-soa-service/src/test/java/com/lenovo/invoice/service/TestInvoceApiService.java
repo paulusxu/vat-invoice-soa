@@ -3,14 +3,18 @@ package com.lenovo.invoice.service;
 import com.lenovo.invoice.api.InvoiceApiService;
 import com.lenovo.invoice.common.utils.JacksonUtil;
 import com.lenovo.invoice.domain.param.AddVatInvoiceInfoParam;
+import com.lenovo.invoice.domain.param.GetVatInvoiceInfoListParam;
 import com.lenovo.invoice.domain.param.GetVatInvoiceInfoParam;
+import com.lenovo.invoice.domain.result.GetVatInvoiceInfoResult;
 import com.lenovo.m2.arch.framework.domain.RemoteResult;
+import com.lenovo.m2.arch.framework.domain.Tenant;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.Date;
+import java.util.List;
 
 /**
  * Created by mayan3 on 2016/6/23.
@@ -23,6 +27,18 @@ public class TestInvoceApiService extends BaseManagerTestCase{
 
     @Test
     public void checkVatInvoiceInfo(){
+        GetVatInvoiceInfoListParam param=new GetVatInvoiceInfoListParam();
+        param.setFaid("7102f80a-e544-4631-9f98-71c9e9296a5d");
+        param.setFaType("1");
+        param.setLenovoId("1000012107");
+        Tenant tenant=new Tenant();
+        tenant.setShopId(14);
+        tenant.setCurrencyCode("CNY");
+        tenant.setLanguage("zh");
+
+
+        RemoteResult<List<GetVatInvoiceInfoResult>> resultRemoteResult=invoiceApiService.getVatInvoiceInfo(param, tenant);
+        System.out.println(JacksonUtil.toJson(resultRemoteResult));
 //        try {
 //            String id="1";
 //            String lenovoID="111";

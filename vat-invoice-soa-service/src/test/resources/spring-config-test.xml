@@ -16,7 +16,7 @@
 
     <!--<import resource="classpath*:spring-config-service.xml"/>-->
     <import resource="classpath*:spring-config-dao-test.xml"/>
-    <!--<import resource="classpath*:spring-config-dubbo-test.xml"/>-->
+    <import resource="classpath*:spring-config-dubbo-test.xml"/>
     <import resource="classpath*:spring-redis-shard-test.xml"/>
 
 

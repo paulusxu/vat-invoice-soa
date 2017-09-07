@@ -636,7 +636,7 @@ public class InvoiceApiServiceImpl extends BaseService implements InvoiceApiServ
         RemoteResult remoteResult = new RemoteResult(false);
         try {
             String lenovoId = param.getLenovoId();
-            String customerName = param.getCustomerName();
+            String customerName = param.getCustomerName().replace(")","）").replace("(","（");;
             String taxNo = param.getTaxNo();
             String bankName = param.getBankName();
             String accountNo = param.getAccountNo();
