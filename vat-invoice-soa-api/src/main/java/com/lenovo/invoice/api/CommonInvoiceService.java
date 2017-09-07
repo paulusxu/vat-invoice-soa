@@ -1,6 +1,5 @@
 package com.lenovo.invoice.api;
 
-import com.lenovo.invoice.domain.CommonInvoice;
 import com.lenovo.invoice.domain.InvoiceToInvoice;
 import com.lenovo.invoice.domain.VatInvoice;
 import com.lenovo.m2.arch.framework.domain.PageModel2;
@@ -15,11 +14,11 @@ import java.util.List;
  */
 public interface CommonInvoiceService {
 
-    public RemoteResult addCommonInvoice(CommonInvoice commonInvoice,Tenant tenant) throws Exception;
+    /*public RemoteResult addCommonInvoice(CommonInvoice commonInvoice,Tenant tenant) throws Exception;
 
     public RemoteResult<CommonInvoice> getCommonInvoice(CommonInvoice commonInvoice,Tenant tenant);
 
-    public RemoteResult<CommonInvoice> getCommonInvoiceByIds(String lenovoId,Integer id,Tenant tenant);
+    public RemoteResult<CommonInvoice> getCommonInvoiceByIds(String lenovoId,Integer id,Tenant tenant);*/
 
     //public RemoteResult updateCommonInvoice(Integer id,String invoiceTitle);
 

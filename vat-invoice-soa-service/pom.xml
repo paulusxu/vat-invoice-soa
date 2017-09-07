@@ -89,6 +89,12 @@
             <groupId>com.lenovo.m2.ordercenter.soa</groupId>
             <artifactId>ordercenter-domain</artifactId>
             <version>3.2.0-SNAPSHOT</version>
+            <exclusions>
+                <exclusion>
+                    <artifactId>log4j-slf4j-impl</artifactId>
+                    <groupId>org.apache.logging.log4j</groupId>
+                </exclusion>
+            </exclusions>
         </dependency>
 
         <dependency>

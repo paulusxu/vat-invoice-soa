@@ -1,6 +1,5 @@
 package com.lenovo.invoice.dao;
 
-import com.lenovo.invoice.domain.CommonInvoice;
 import com.lenovo.invoice.domain.VatInvoice;
 import com.lenovo.m2.arch.framework.domain.PageModel;
 import com.lenovo.m2.arch.framework.domain.PageQuery;
@@ -12,7 +11,7 @@ import java.util.List;
  */
 public interface CommonInvoiceMapper {
 
-    public int addCommonInvoice(CommonInvoice commonInvoice);
+    /*public int addCommonInvoice(CommonInvoice commonInvoice);
 
     public CommonInvoice getCommonInvoiceById(Integer id);
 
@@ -20,7 +19,7 @@ public interface CommonInvoiceMapper {
 
     public CommonInvoice getCommonInvoiceByTitle(CommonInvoice commonInvoice);
 
-    public int updateCommonInvoice(CommonInvoice commonInvoice);
+    public int updateCommonInvoice(CommonInvoice commonInvoice);*/
 
     //以下为添加税号后方法。这里只操作普票和电子票
 
