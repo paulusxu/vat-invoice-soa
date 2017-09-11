@@ -24,6 +24,69 @@ public class PropertiesConfig implements ILeconfUpdate{
 	@Value(value = "off")
 	private String huiShangZF = "off";
 
+	@Value(value = "")
+	private String interfaceUrl="";
+	@Value(value = "")
+	private String appKey="";
+	@Value(value = "")
+	private String appSecret="";
+	@Value(value = "")
+	private String method="";
+	@Value(value = "")
+	private String sts="";
+
+	@Value(value = "")
+	private String smbUrl="";
+	@LeconfFileItem(name = "smbUrl")
+	public String getSmbUrl() {
+		return smbUrl;
+	}
+
+	public void setSmbUrl(String smbUrl) {
+		this.smbUrl = smbUrl;
+	}
+
+	@LeconfFileItem(name = "interfaceUrl")
+	public String getInterfaceUrl() {
+		return interfaceUrl;
+	}
+
+	public void setInterfaceUrl(String interfaceUrl) {
+		this.interfaceUrl = interfaceUrl;
+	}
+	@LeconfFileItem(name = "appKey")
+	public String getAppKey() {
+		return appKey;
+	}
+
+	public void setAppKey(String appKey) {
+		this.appKey = appKey;
+	}
+	@LeconfFileItem(name = "appSecret")
+	public String getAppSecret() {
+		return appSecret;
+	}
+
+	public void setAppSecret(String appSecret) {
+		this.appSecret = appSecret;
+	}
+	@LeconfFileItem(name = "method")
+	public String getMethod() {
+		return method;
+	}
+
+	public void setMethod(String method) {
+		this.method = method;
+	}
+	@LeconfFileItem(name = "sts")
+	public String getSts() {
+		return sts;
+	}
+
+	public void setSts(String sts) {
+		this.sts = sts;
+	}
+
 	@LeconfFileItem(name = "openDz")
 	public String getOpenDz() {
 		return openDz;

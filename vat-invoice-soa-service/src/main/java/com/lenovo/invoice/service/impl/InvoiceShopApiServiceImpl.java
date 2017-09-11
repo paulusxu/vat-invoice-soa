@@ -1,11 +1,9 @@
 package com.lenovo.invoice.service.impl;
 
 import com.alibaba.dubbo.common.utils.CollectionUtils;
+import com.alibaba.fastjson.JSONObject;
 import com.lenovo.invoice.api.InvoiceShopApiService;
-import com.lenovo.invoice.common.utils.ErrorUtils;
-import com.lenovo.invoice.common.utils.InvoiceShopCode;
-import com.lenovo.invoice.common.utils.JacksonUtil;
-import com.lenovo.invoice.common.utils.ShopCode;
+import com.lenovo.invoice.common.utils.*;
 import com.lenovo.invoice.dao.InvoiceShopMapper;
 import com.lenovo.invoice.domain.InvoiceIdAndUuid;
 import com.lenovo.invoice.domain.InvoiceShop;
@@ -15,6 +13,8 @@ import com.lenovo.m2.arch.framework.domain.PageModel2;
 import com.lenovo.m2.arch.framework.domain.PageQuery;
 import com.lenovo.m2.arch.framework.domain.RemoteResult;
 import com.lenovo.m2.arch.tool.util.StringUtils;
+import com.lenovo.open.gateway.java.sdk.JavaSDKClient;
+import com.lenovo.open.gateway.java.sdk.util.Response;
 import org.apache.commons.beanutils.BeanUtils;
 import org.apache.commons.beanutils.ConvertUtils;
 import org.apache.commons.beanutils.converters.DateConverter;
@@ -25,10 +25,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 
 /**
  * Created by xuweihua on 2016/7/26.
@@ -38,6 +35,9 @@ public class InvoiceShopApiServiceImpl implements InvoiceShopApiService {
     private static final Logger logger = LoggerFactory.getLogger("com.lenovo.invoice.service.impl.17shop");
     @Autowired
     private InvoiceShopMapper invoiceShopMapper;
+
+    @Autowired
+    private PropertiesConfig propertiesConfig;
 
     @Transactional(rollbackFor = Exception.class)
     public RemoteResult<InvoiceIdAndUuid> synInvoice(InvoiceShop invoiceShop) throws Exception {
@@ -66,60 +66,38 @@ public class InvoiceShopApiServiceImpl implements InvoiceShopApiService {
                     invoiceShop.setPayManType(invoiceShop.getCompanyType());
                 }
             }
-            InvoiceShopModifyLog invoiceShopModifyLog = new InvoiceShopModifyLog();
-            ConvertUtils.register(new DateConverter(null), java.util.Date.class);
-            ConvertUtils.register(new IntegerConverter(null), java.lang.Integer.class);
-            invoiceShop.setCreateBy(invoiceShop.getLenovoID());
-            BeanUtils.copyProperties(invoiceShopModifyLog, invoiceShop);
+
             if (invoiceShop.getIsDefault() == null) {
                 invoiceShop.setIsDefault(0);
-                invoiceShopModifyLog.setIsDefault(0);
             }
             if (invoiceShop.getSynType() == 1) {
                 //判断customername,taxno 是否有单独存在的
                 if(invoiceShop.getCompanyType()==0&&"个人".equals(invoiceShop.getCustomerName())){
                     invoiceShop.setApprovalStatus(2);
-                    invoiceShopModifyLog.setApprovalStatus(2);
-                }else {
-                    int validationInvoice = invoiceShopMapper.validationInvoice(invoiceShop.getLenovoID(), invoiceShop.getInvoiceType(), invoiceShop.getCustomerName(), invoiceShop.getTaxNo());
-                    if (validationInvoice > 0) {
-                        remoteResult.setResultCode(ErrorUtils.ERR_CODE_CUSTOMERNAME_TAXNO_EXIST);
-                        remoteResult.setResultMsg("公司名和税号不匹配，请核对后再试！");
-                        logger.info("synInvoicePersonalCenter返回参数>>" + JacksonUtil.toJson(remoteResult));
-                        return remoteResult;
-                    }
                 }
-                String uuid = UUID.randomUUID().toString();
-                invoiceShop.setUuid(uuid);
-                invoiceShopMapper.addInvoiceShop(invoiceShop);
-                invoiceIdAndUuid.setId(invoiceShop.getId());
-                invoiceIdAndUuid.setUuid(uuid);
-                remoteResult.setT(invoiceIdAndUuid);
-                invoiceShopModifyLog.setUuid(uuid);
-                invoiceShopModifyLog.setId(invoiceShop.getId());
-                invoiceShopModifyLog.setCreateTime(new Date());
+
+                String ret=HttpClientUtil.executeHttpPost(propertiesConfig.getSmbUrl(), getInvoiceJson(invoiceShop).toString());
+                JSONObject retJson=JSONObject.parseObject(ret);
+                if("1".equals(retJson.getString("code"))){
+                    invoiceIdAndUuid.setUuid(retJson.getJSONObject("data").getString("uuid"));
+                    remoteResult.setT(invoiceIdAndUuid);
+                }else {
+                    remoteResult.setResultCode(retJson.getString("code"));
+                    remoteResult.setResultMsg(retJson.getString("msg"));
+                    return remoteResult;
+                }
             } else if (invoiceShop.getSynType() == 2) {
                 invoiceShop.setUpdateBy(invoiceShop.getLenovoID());
                 invoiceShop.setUpdateTime(new Date());
-                invoiceShopModifyLog.setUpdateBy(invoiceShop.getLenovoID());
-                invoiceShopModifyLog.setUpdateTime(new Date());
                 invoiceShopMapper.editInvoiceShop(invoiceShop);
             } else if (invoiceShop.getSynType() == 3) {
                 RemoteResult<InvoiceShop> invoice = queryInvoiceForId(invoiceShop.getId() + "", invoiceShop.getLenovoID());
-                BeanUtils.copyProperties(invoiceShopModifyLog, invoice.getT());
-                invoiceShopModifyLog.setUuid(invoice.getT().getUuid());
-                invoiceShopModifyLog.setSynType(3);
                 invoiceShop.setUpdateBy(invoiceShop.getLenovoID());
                 invoiceShop.setUpdateTime(new Date());
 
-
-                invoiceShopModifyLog.setUpdateBy(invoiceShop.getLenovoID());
-                invoiceShopModifyLog.setUpdateTime(new Date());
                 invoiceShopMapper.delInvoiceShop(invoiceShop.getId() + "", invoiceShop.getLenovoID());
             }
-            if (invoiceShop.getShopId() == ShopCode.smpsShop && !invoiceShop.isNoLog()) {
-                invoiceShopMapper.addInvoiceShopLog(invoiceShopModifyLog);
-            }
+
             remoteResult.setSuccess(true);
             remoteResult.setResultCode(InvoiceShopCode.SUCCESS);
             remoteResult.setResultMsg("成功");
@@ -367,7 +345,7 @@ public class InvoiceShopApiServiceImpl implements InvoiceShopApiService {
             remoteResult.setResultCode(InvoiceShopCode.FAIL);
             remoteResult.setResultMsg("失败!");
             e.printStackTrace();
-            logger.error(e.getMessage(),e);
+            logger.error(e.getMessage(), e);
         }
         logger.info("queryInvoiceAuditForId返回参数>>" + JacksonUtil.toJson(remoteResult));
         return remoteResult;
@@ -420,6 +398,61 @@ public class InvoiceShopApiServiceImpl implements InvoiceShopApiService {
             return false;
         }
         return true;
+    }
+
+    private JSONObject getInvoiceJson(InvoiceShop invoiceShop){
+        JSONObject invoiceJson=new JSONObject();
+        invoiceJson.put("invoicename", invoiceShop.getCustomerName());
+        invoiceJson.put("memberinfoid",getMemberinfoid(invoiceShop.getLenovoID()));
+        invoiceJson.put("companytype", invoiceShop.getCompanyType());
+        invoiceJson.put("invoicesort", "");
+        invoiceJson.put("taxnotype", invoiceShop.getTaxNoType());
+        invoiceJson.put("invoicetype", invoiceShop.getInvoiceType());
+        invoiceJson.put("paymantype", invoiceShop.getPayManType());
+        invoiceJson.put("payman", invoiceShop.getPayMan());
+        invoiceJson.put("taxid", invoiceShop.getTaxNo());
+        invoiceJson.put("bankname", invoiceShop.getBankName());
+        invoiceJson.put("bankid", invoiceShop.getAccountNo());
+        invoiceJson.put("zip", invoiceShop.getZip());
+        invoiceJson.put("provincecode", invoiceShop.getProvinceCode());
+        invoiceJson.put("provincename", invoiceShop.getProvinceName());
+        invoiceJson.put("citycode", invoiceShop.getCityCode());
+        invoiceJson.put("cityname", invoiceShop.getCityName());
+        invoiceJson.put("countycode", invoiceShop.getCountyCode());
+        invoiceJson.put("countyname", invoiceShop.getCountyName());
+        invoiceJson.put("address", invoiceShop.getAddress());
+        invoiceJson.put("phone", invoiceShop.getPhoneNo());
+        invoiceJson.put("isshow", invoiceShop.getIsShow());
+        invoiceJson.put("isdefault", invoiceShop.getIsDefault());
+        invoiceJson.put("processstatus", "");
+        invoiceJson.put("operationtype", "");
+        invoiceJson.put("approvalstatus", invoiceShop.getApprovalStatus());
+        invoiceJson.put("soldtocode", invoiceShop.getSoldToCode());
+        invoiceJson.put("isneedacc", "");
+        invoiceJson.put("fileurl", "");
+        return invoiceJson;
+    }
+    private String getMemberinfoid(String lenovoid){
+        Map<String, Object> lenovo_param_json = new HashMap<String, Object>();
+        lenovo_param_json.put("customerId", lenovoid);
+        lenovo_param_json.put("sts", propertiesConfig.getSts());
+        Response response = null;
+        try {
+            response = JavaSDKClient.proxy(propertiesConfig.getInterfaceUrl(), propertiesConfig.getAppKey(), propertiesConfig.getAppSecret(), propertiesConfig.getMethod(), lenovo_param_json, null, null);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        logger.info("getMemberinfoid>>status============" + response.getStatus());
+        logger.info("getMemberinfoid>>body============" + response.getBody().toString());
+
+        JSONObject jsonObject=JSONObject.parseObject(response.getBody().toString());
+        JSONObject data=jsonObject.getJSONObject("result").getJSONObject("lenovo_customer_open_getCustomerbyid_response");
+        if(data!=null) {
+            if("0".equals(data.getString("ret"))){
+                return data.getJSONObject("obj").getString("customerguid");
+            }
+        }
+        return "";
     }
 
 }
