@@ -1,6 +1,6 @@
 package com.lenovo.invoice.service.impl;
 
-import com.alibaba.dubbo.common.utils.CollectionUtils;
+import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.lenovo.invoice.api.InvoiceShopApiService;
 import com.lenovo.invoice.common.utils.*;
@@ -79,7 +79,7 @@ public class InvoiceShopApiServiceImpl implements InvoiceShopApiService {
                 String ret=HttpClientUtil.executeHttpPost(propertiesConfig.getSmbUrl(), getInvoiceJson(invoiceShop).toString());
                 JSONObject retJson=JSONObject.parseObject(ret);
                 if("1".equals(retJson.getString("code"))){
-                    invoiceIdAndUuid.setUuid(retJson.getJSONObject("data").getString("uuid"));
+                    invoiceIdAndUuid.setUuid(retJson.getJSONObject("data").getString("id"));
                     remoteResult.setT(invoiceIdAndUuid);
                 }else {
                     remoteResult.setResultCode(retJson.getString("code"));
@@ -87,15 +87,26 @@ public class InvoiceShopApiServiceImpl implements InvoiceShopApiService {
                     return remoteResult;
                 }
             } else if (invoiceShop.getSynType() == 2) {
-                invoiceShop.setUpdateBy(invoiceShop.getLenovoID());
-                invoiceShop.setUpdateTime(new Date());
-                invoiceShopMapper.editInvoiceShop(invoiceShop);
+                String ret=HttpClientUtil.executeHttpPost(propertiesConfig.getSmbUrl(), getInvoiceJson(invoiceShop).toString());
+                JSONObject retJson=JSONObject.parseObject(ret);
+                if("1".equals(retJson.getString("code"))){
+                    remoteResult.setSuccess(true);
+                }else {
+                    remoteResult.setResultCode(retJson.getString("code"));
+                    remoteResult.setResultMsg(retJson.getString("msg"));
+                    return remoteResult;
+                }
             } else if (invoiceShop.getSynType() == 3) {
-                RemoteResult<InvoiceShop> invoice = queryInvoiceForId(invoiceShop.getId() + "", invoiceShop.getLenovoID());
-                invoiceShop.setUpdateBy(invoiceShop.getLenovoID());
-                invoiceShop.setUpdateTime(new Date());
+                String ret=HttpClientUtil.executeHttpPost(propertiesConfig.getSmbUrl(), getInvoiceJson(invoiceShop).toString());
+                JSONObject retJson=JSONObject.parseObject(ret);
+                if("1".equals(retJson.getString("code"))){
+                    remoteResult.setSuccess(true);
+                }else {
+                    remoteResult.setResultCode(retJson.getString("code"));
+                    remoteResult.setResultMsg(retJson.getString("msg"));
+                    return remoteResult;
+                }
 
-                invoiceShopMapper.delInvoiceShop(invoiceShop.getId() + "", invoiceShop.getLenovoID());
             }
 
             remoteResult.setSuccess(true);
@@ -123,7 +134,18 @@ public class InvoiceShopApiServiceImpl implements InvoiceShopApiService {
                 remoteResult.setResultCode(InvoiceShopCode.PARAMETER_ERROR_CODE);
                 remoteResult.setResultMsg("参数错误！");
             } else {
-                List<InvoiceShop> invoiceShopList = invoiceShopMapper.queryInvoiceShop(lenovoid);
+                List<InvoiceShop> invoiceShopList = new ArrayList<InvoiceShop>();
+                String ret=HttpClientUtil.executeHttpPost(propertiesConfig.getSmbUrl(),"");
+                JSONObject retJson=JSONObject.parseObject(ret);
+                if("1".equals(retJson.getString("code"))){
+                    JSONArray jsonArray=retJson.getJSONArray("data");
+                    Iterator<Object> it = jsonArray.iterator();
+                    while (it.hasNext()) {
+                        JSONObject ob = (JSONObject) it.next();
+                        InvoiceShop invoiceShop =getInvoice(ob);
+                        invoiceShopList.add(invoiceShop);
+                    }
+                }
                 remoteResult.setSuccess(true);
                 remoteResult.setT(invoiceShopList);
                 remoteResult.setResultCode(InvoiceShopCode.SUCCESS);
@@ -147,9 +169,15 @@ public class InvoiceShopApiServiceImpl implements InvoiceShopApiService {
                 remoteResult.setResultCode(InvoiceShopCode.PARAMETER_ERROR_CODE);
                 remoteResult.setResultMsg("参数错误！");
             } else {
-                InvoiceShop invoice = invoiceShopMapper.queryInvoiceForId(id, lenovoid);
+                String ret=HttpClientUtil.executeHttpPost(propertiesConfig.getSmbUrl(),"");
+                JSONObject retJson=JSONObject.parseObject(ret);
+                InvoiceShop invoiceShop=new InvoiceShop();
+                if("1".equals(retJson.getString("code"))) {
+                    JSONObject jsonObject = retJson.getJSONObject("data");
+                    invoiceShop = getInvoice(jsonObject);
+                }
                 remoteResult.setSuccess(true);
-                remoteResult.setT(invoice);
+                remoteResult.setT(invoiceShop);
                 remoteResult.setResultCode(InvoiceShopCode.SUCCESS);
                 remoteResult.setResultMsg("成功！");
             }
@@ -402,6 +430,9 @@ public class InvoiceShopApiServiceImpl implements InvoiceShopApiService {
 
     private JSONObject getInvoiceJson(InvoiceShop invoiceShop){
         JSONObject invoiceJson=new JSONObject();
+        if(StringUtil.isNotEmpty(invoiceShop.getUuid())){
+            invoiceJson.put("id", invoiceShop.getUuid());
+        }
         invoiceJson.put("invoicename", invoiceShop.getCustomerName());
         invoiceJson.put("memberinfoid",getMemberinfoid(invoiceShop.getLenovoID()));
         invoiceJson.put("companytype", invoiceShop.getCompanyType());
@@ -431,6 +462,34 @@ public class InvoiceShopApiServiceImpl implements InvoiceShopApiService {
         invoiceJson.put("isneedacc", "");
         invoiceJson.put("fileurl", "");
         return invoiceJson;
+    }
+
+    private InvoiceShop getInvoice(JSONObject jsonObject){
+        InvoiceShop invoiceShop=new InvoiceShop();
+        invoiceShop.setUuid(jsonObject.getString("id"));
+        invoiceShop.setCustomerName(jsonObject.getString("invoicename"));
+        invoiceShop.setCompanyType(jsonObject.getInteger("companytype"));
+        invoiceShop.setTaxNoType(jsonObject.getString("taxnotype"));
+        invoiceShop.setInvoiceType(jsonObject.getInteger("invoicetype"));
+        invoiceShop.setPayManType(jsonObject.getInteger("paymantype"));
+        invoiceShop.setPayMan(jsonObject.getString("payman"));
+        invoiceShop.setTaxNo(jsonObject.getString("taxid"));
+        invoiceShop.setBankName(jsonObject.getString("bankname"));
+        invoiceShop.setAccountNo(jsonObject.getString("bankid"));
+        invoiceShop.setZip(jsonObject.getString("zip"));
+        invoiceShop.setProvinceCode(jsonObject.getString("provincecode"));
+        invoiceShop.setProvinceName(jsonObject.getString("provincename"));
+        invoiceShop.setCityCode(jsonObject.getString("citycode"));
+        invoiceShop.setCityName(jsonObject.getString("cityname"));
+        invoiceShop.setCountyCode(jsonObject.getString("countycode"));
+        invoiceShop.setCountyName(jsonObject.getString("countyname"));
+        invoiceShop.setAddress(jsonObject.getString("address"));
+        invoiceShop.setPhoneNo(jsonObject.getString("phone"));
+        invoiceShop.setIsShow(jsonObject.getInteger("isshow"));
+        invoiceShop.setIsDefault(jsonObject.getInteger("isdefault"));
+        invoiceShop.setApprovalStatus(jsonObject.getInteger("approvalstatus"));
+        invoiceShop.setSoldToCode(jsonObject.getString("soldtocode"));
+        return invoiceShop;
     }
     private String getMemberinfoid(String lenovoid){
         Map<String, Object> lenovo_param_json = new HashMap<String, Object>();
