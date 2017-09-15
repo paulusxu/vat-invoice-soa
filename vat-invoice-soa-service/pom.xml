@@ -33,7 +33,7 @@
         </dependency>
 
         <!-- dubbo dependency -->
-        <dependency>
+        <!--<dependency>
             <groupId>com.alibaba</groupId>
             <artifactId>dubbo</artifactId>
             <version>2.4.5</version>
@@ -43,7 +43,7 @@
                     <artifactId>spring</artifactId>
                 </exclusion>
             </exclusions>
-        </dependency>
+        </dependency>-->
 
         <dependency>
             <groupId>com.lenovo.dtc.buy.invoice</groupId>
