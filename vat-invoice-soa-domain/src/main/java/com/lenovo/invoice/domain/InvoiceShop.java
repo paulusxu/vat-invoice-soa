@@ -45,6 +45,15 @@ public class InvoiceShop  implements Serializable {
     private Integer synType;
     private Integer shopId;
     private boolean noLog;//true:不写日志  false:写日志
+    private String fileURL;//公司证明附件
+
+    public String getFileURL() {
+        return fileURL;
+    }
+
+    public void setFileURL(String fileURL) {
+        this.fileURL = fileURL;
+    }
 
     public Integer getCompanyType() {
         return companyType;

@@ -76,7 +76,7 @@ public class InvoiceShopApiServiceImpl implements InvoiceShopApiService {
                     invoiceShop.setApprovalStatus(2);
                 }
 
-                String ret=HttpClientUtil.executeHttpPost(propertiesConfig.getSmbUrl(), getInvoiceJson(invoiceShop).toString());
+                String ret=ShopHttpClientUtil.sendPost(propertiesConfig.getSmbUrl()+"/invoices", getInvoiceJson(invoiceShop).toString());
                 JSONObject retJson=JSONObject.parseObject(ret);
                 if("1".equals(retJson.getString("code"))){
                     invoiceIdAndUuid.setUuid(retJson.getJSONObject("data").getString("id"));
@@ -87,7 +87,7 @@ public class InvoiceShopApiServiceImpl implements InvoiceShopApiService {
                     return remoteResult;
                 }
             } else if (invoiceShop.getSynType() == 2) {
-                String ret=HttpClientUtil.executeHttpPost(propertiesConfig.getSmbUrl(), getInvoiceJson(invoiceShop).toString());
+                String ret=ShopHttpClientUtil.sendPut(propertiesConfig.getSmbUrl() + "/invoices", getInvoiceJson(invoiceShop).toString());
                 JSONObject retJson=JSONObject.parseObject(ret);
                 if("1".equals(retJson.getString("code"))){
                     remoteResult.setSuccess(true);
@@ -97,7 +97,7 @@ public class InvoiceShopApiServiceImpl implements InvoiceShopApiService {
                     return remoteResult;
                 }
             } else if (invoiceShop.getSynType() == 3) {
-                String ret=HttpClientUtil.executeHttpPost(propertiesConfig.getSmbUrl(), getInvoiceJson(invoiceShop).toString());
+                String ret=ShopHttpClientUtil.sendDelete(propertiesConfig.getSmbUrl(), getInvoiceJson(invoiceShop).toString());
                 JSONObject retJson=JSONObject.parseObject(ret);
                 if("1".equals(retJson.getString("code"))){
                     remoteResult.setSuccess(true);
@@ -135,10 +135,9 @@ public class InvoiceShopApiServiceImpl implements InvoiceShopApiService {
                 remoteResult.setResultMsg("参数错误！");
             } else {
                 List<InvoiceShop> invoiceShopList = new ArrayList<InvoiceShop>();
-                String ret=HttpClientUtil.executeHttpPost(propertiesConfig.getSmbUrl(),"");
-                JSONObject retJson=JSONObject.parseObject(ret);
+                JSONObject retJson=ShopHttpClientUtil.sendGet(propertiesConfig.getSmbUrl() + "/memberinvoice/"+getMemberinfoid(lenovoid)+"/1");
                 if("1".equals(retJson.getString("code"))){
-                    JSONArray jsonArray=retJson.getJSONArray("data");
+                    JSONArray jsonArray=retJson.getJSONObject("data").getJSONArray("content");
                     Iterator<Object> it = jsonArray.iterator();
                     while (it.hasNext()) {
                         JSONObject ob = (JSONObject) it.next();
@@ -169,8 +168,7 @@ public class InvoiceShopApiServiceImpl implements InvoiceShopApiService {
                 remoteResult.setResultCode(InvoiceShopCode.PARAMETER_ERROR_CODE);
                 remoteResult.setResultMsg("参数错误！");
             } else {
-                String ret=HttpClientUtil.executeHttpPost(propertiesConfig.getSmbUrl(),"");
-                JSONObject retJson=JSONObject.parseObject(ret);
+                JSONObject retJson=ShopHttpClientUtil.sendGet(propertiesConfig.getSmbUrl() + "/invoices/"+id);
                 InvoiceShop invoiceShop=new InvoiceShop();
                 if("1".equals(retJson.getString("code"))) {
                     JSONObject jsonObject = retJson.getJSONObject("data");
@@ -256,94 +254,7 @@ public class InvoiceShopApiServiceImpl implements InvoiceShopApiService {
     public RemoteResult modifyePersonalCenter(InvoiceShop invoiceShop) throws Exception {
         logger.info("synInvoicePersonalCenter参数>>" + JacksonUtil.toJson(invoiceShop));
         RemoteResult remoteResult = new RemoteResult(false);
-        try {
-            if (checkParameter(invoiceShop) > 0) {
-                remoteResult.setResultCode(InvoiceShopCode.PARAMETER_ERROR_CODE);
-                remoteResult.setResultMsg("参数错误！");
-                logger.info("synInvoicePersonalCenter返回参数>>" + JacksonUtil.toJson(remoteResult));
-                return remoteResult;
-            }
-            if(StringUtils.isEmpty(invoiceShop.getTaxNoType())&&StringUtils.isNotEmpty(invoiceShop.getTaxNo())) {
-                if (invoiceShop.getTaxNo().length() == 15 || invoiceShop.getTaxNo().length() == 20) {
-                    invoiceShop.setTaxNoType("0");
-                } else if (invoiceShop.getTaxNo().length() == 18) {
-                    invoiceShop.setTaxNoType("1");
-                }
-            }
-            if (invoiceShop.getSynType() == 1) {
-                if (StringUtils.isEmpty(invoiceShop.getPayMan())) {
-                    invoiceShop.setPayMan(invoiceShop.getCustomerName());
-                }
-                if (invoiceShop.getPayManType() == null) {
-                    invoiceShop.setPayManType(invoiceShop.getCompanyType());
-                }
-            }
-            InvoiceShopModifyLog invoiceShopModifyLog = new InvoiceShopModifyLog();
-            ConvertUtils.register(new DateConverter(null), java.util.Date.class);
-            ConvertUtils.register(new IntegerConverter(null), java.lang.Integer.class);
-            invoiceShop.setCreateBy(invoiceShop.getLenovoID());
-            BeanUtils.copyProperties(invoiceShopModifyLog, invoiceShop);
-            if (invoiceShop.getIsDefault() == null) {
-                invoiceShop.setIsDefault(0);
-                invoiceShopModifyLog.setIsDefault(0);
-            }
-            if (invoiceShop.getSynType() == 1) {
-                //判断customername,taxno 是否有单独存在的
-                //个人开抬头为个人忽略验证
-                if(invoiceShop.getCompanyType() == 0 && "个人".equals(invoiceShop.getCustomerName())){
-                    invoiceShop.setApprovalStatus(2);
-                    invoiceShopModifyLog.setApprovalStatus(2);
-                }else {
-                    int validationInvoice=invoiceShopMapper.validationInvoice(invoiceShop.getLenovoID(),invoiceShop.getInvoiceType(),invoiceShop.getCustomerName(),invoiceShop.getTaxNo());
-                    if(validationInvoice>0){
-                        remoteResult.setResultCode(ErrorUtils.ERR_CODE_CUSTOMERNAME_TAXNO_EXIST);
-                        remoteResult.setResultMsg("公司名和税号不匹配，请核对后再试！");
-                        logger.info("synInvoicePersonalCenter返回参数>>" + JacksonUtil.toJson(remoteResult));
-                        return remoteResult;
-                    }
-                }
-                String uuid = UUID.randomUUID().toString();
-                invoiceShop.setUuid(uuid);
-                invoiceShopMapper.addInvoiceShop(invoiceShop);
-                invoiceShopModifyLog.setUuid(uuid);
-                invoiceShopModifyLog.setId(invoiceShop.getId());
-                invoiceShopModifyLog.setCreateTime(new Date());
-            } else if (invoiceShop.getSynType() == 2) {
-                invoiceShop.setUpdateBy(invoiceShop.getLenovoID());
-                invoiceShop.setUpdateTime(new Date());
-                invoiceShopModifyLog.setUpdateBy(invoiceShop.getLenovoID());
-                invoiceShopModifyLog.setUpdateTime(new Date());
-                if (invoiceShop.getIsDefault() == 1) {
-                    invoiceShopMapper.editInvoiceIsDefault(invoiceShop.getLenovoID());
-                }else {
-                    invoiceShop.setApprovalStatus(3);
-                }
-                invoiceShopMapper.editInvoiceShop(invoiceShop);
-            } else if (invoiceShop.getSynType() == 3) {
-                RemoteResult<InvoiceShop> invoice = queryInvoiceForId(invoiceShop.getId() + "", invoiceShop.getLenovoID());
-                BeanUtils.copyProperties(invoiceShopModifyLog, invoice.getT());
-                invoiceShopModifyLog.setUuid(invoice.getT().getUuid());
-                invoiceShopModifyLog.setSynType(3);
-
-                invoiceShop.setUpdateBy(invoiceShop.getLenovoID());
-                invoiceShop.setUpdateTime(new Date());
-                invoiceShopModifyLog.setUpdateBy(invoiceShop.getLenovoID());
-                invoiceShopModifyLog.setUpdateTime(new Date());
-                invoiceShopMapper.delInvoiceShop(invoiceShop.getId() + "", invoiceShop.getLenovoID());
-            }
-            invoiceShopMapper.addInvoiceShopLog(invoiceShopModifyLog);
-            remoteResult.setSuccess(true);
-            remoteResult.setResultCode(InvoiceShopCode.SUCCESS);
-            remoteResult.setResultMsg("成功");
-
-        } catch (Exception e) {
-            remoteResult.setResultCode(InvoiceShopCode.FAIL);
-            remoteResult.setSuccess(false);
-            remoteResult.setResultMsg("失败");
-            logger.info("synInvoicePersonalCenter返回参数>>" + JacksonUtil.toJson(remoteResult));
-            e.printStackTrace();
-            throw e;
-        }
+        remoteResult=synInvoice(invoiceShop);
         logger.info("synInvoicePersonalCenter返回参数>>" + JacksonUtil.toJson(remoteResult));
         return remoteResult;
     }
@@ -358,7 +269,12 @@ public class InvoiceShopApiServiceImpl implements InvoiceShopApiService {
                 remoteResult.setResultCode(InvoiceShopCode.PARAMETER_ERROR_CODE);
                 remoteResult.setResultMsg("参数错误！");
             } else {
-                InvoiceShop invoice = invoiceShopMapper.queryInvoiceForId(id, null);
+                JSONObject retJson=ShopHttpClientUtil.sendGet(propertiesConfig.getSmbUrl() + "/invoices/"+id);
+                InvoiceShop invoice=new InvoiceShop();
+                if("1".equals(retJson.getString("code"))) {
+                    JSONObject jsonObject = retJson.getJSONObject("data");
+                    invoice = getInvoice(jsonObject);
+                }
                 if (invoice!=null&&invoice.getApprovalStatus()!=null&&invoice.getApprovalStatus() == 2) {
                     remoteResult.setSuccess(true);
                     remoteResult.setT(invoice);
@@ -433,6 +349,12 @@ public class InvoiceShopApiServiceImpl implements InvoiceShopApiService {
         if(StringUtil.isNotEmpty(invoiceShop.getUuid())){
             invoiceJson.put("id", invoiceShop.getUuid());
         }
+        if(StringUtil.isNotEmpty(invoiceShop.getFileURL())){
+            invoiceJson.put("isneedacc", 1);
+            invoiceJson.put("fileurl", invoiceShop.getFileURL());
+        }else {
+            invoiceJson.put("isneedacc", 0);
+        }
         invoiceJson.put("invoicename", invoiceShop.getCustomerName());
         invoiceJson.put("memberinfoid",getMemberinfoid(invoiceShop.getLenovoID()));
         invoiceJson.put("companytype", invoiceShop.getCompanyType());
@@ -459,12 +381,12 @@ public class InvoiceShopApiServiceImpl implements InvoiceShopApiService {
         invoiceJson.put("operationtype", "");
         invoiceJson.put("approvalstatus", invoiceShop.getApprovalStatus());
         invoiceJson.put("soldtocode", invoiceShop.getSoldToCode());
-        invoiceJson.put("isneedacc", "");
-        invoiceJson.put("fileurl", "");
+        invoiceJson.put("datafrom", "C_BTC");
+        invoiceJson.put("datadependon", "C_BTC");
         return invoiceJson;
     }
 
-    private InvoiceShop getInvoice(JSONObject jsonObject){
+    private InvoiceShop getInvoice(JSONObject jsonObject) {
         InvoiceShop invoiceShop=new InvoiceShop();
         invoiceShop.setUuid(jsonObject.getString("id"));
         invoiceShop.setCustomerName(jsonObject.getString("invoicename"));
@@ -512,6 +434,125 @@ public class InvoiceShopApiServiceImpl implements InvoiceShopApiService {
             }
         }
         return "";
+    }
+
+    public static void main(String[] args) {
+//        InvoiceShop invoiceShop=new InvoiceShop();
+        try {
+//            invoiceShop.setUuid("37aa14a7-bac8-4341-b255-f39e51621290");
+//            invoiceShop.setCustomerName("测试发票公司修改xx");
+//            invoiceShop.setLenovoID("154463");
+//            invoiceShop.setInvoiceType(1);
+//            invoiceShop.setPayManType(1);
+//            invoiceShop.setPayMan("测试发票公司");
+//            invoiceShop.setTaxNo("273489875989687586");
+//            invoiceShop.setTaxNoType("1");
+//            invoiceShop.setCompanyType(1);
+//            invoiceShop.setBankName("银行");
+//            invoiceShop.setAccountNo("3342342323");
+//            invoiceShop.setSubAreaName("海淀");
+//            invoiceShop.setZip("100000");
+//            invoiceShop.setProvinceName("北京");
+//            invoiceShop.setProvinceCode("北京");
+//            invoiceShop.setCityName("北京");
+//            invoiceShop.setCityCode("北京");
+//            invoiceShop.setCountyName("XXX县");
+//            invoiceShop.setCountyCode("XXX县");
+//            invoiceShop.setAddress("MXMXMXM地址");
+//            invoiceShop.setPhoneNo("手机号");
+//            invoiceShop.setIsDefault(0);
+//            invoiceShop.setSynType(1);
+//            invoiceShop.setShopId(8);
+//            invoiceShop.setFileURL("x");
+//
+//            String memberinfoid="";
+//            Map<String, Object> lenovo_param_json = new HashMap<String, Object>();
+//            lenovo_param_json.put("customerId", invoiceShop.getLenovoID());
+//            lenovo_param_json.put("sts", "e40e7004-4c8a-4963-8564-31271a8337d8");
+//            Response response = null;
+//            try {
+//                response = JavaSDKClient.proxy("http://open.lenovouat.com/router/json.jhtm", "yg7IRC","W!rwc5tesI2YgrFEdJ7#", "lenovo.customer.open.getCustomerbyid", lenovo_param_json, null, null);
+//            } catch (Exception e) {
+//                e.printStackTrace();
+//            }
+//            logger.info("getMemberinfoid>>status============" + response.getStatus());
+//            logger.info("getMemberinfoid>>body============" + response.getBody().toString());
+//
+//            JSONObject jsonObject=JSONObject.parseObject(response.getBody().toString());
+//            JSONObject data=jsonObject.getJSONObject("result").getJSONObject("lenovo_customer_open_getCustomerbyid_response");
+//            if(data!=null) {
+//                if("0".equals(data.getString("ret"))){
+//                    memberinfoid= data.getJSONObject("obj").getString("customerguid");
+//                }
+//            }
+//
+//            JSONObject invoiceJson=new JSONObject();
+//            if(StringUtil.isNotEmpty(invoiceShop.getUuid())){
+//                invoiceJson.put("id", invoiceShop.getUuid());
+//            }
+//            if(StringUtil.isNotEmpty(invoiceShop.getFileURL())){
+//                invoiceJson.put("isneedacc", 1);
+//                invoiceJson.put("fileurl", invoiceShop.getFileURL());
+//            }else {
+//                invoiceJson.put("isneedacc", 0);
+//            }
+//            invoiceJson.put("invoicename", invoiceShop.getCustomerName());
+//            invoiceJson.put("memberinfoid","00182108-082a-45bc-b8b2-2181800bb72c");
+//            invoiceJson.put("companytype", invoiceShop.getCompanyType());
+//            invoiceJson.put("invoicesort", "");
+//            invoiceJson.put("taxnotype", invoiceShop.getTaxNoType());
+//            invoiceJson.put("invoicetype", invoiceShop.getInvoiceType());
+//            invoiceJson.put("paymantype", invoiceShop.getPayManType());
+//            invoiceJson.put("payman", invoiceShop.getPayMan());
+//            invoiceJson.put("taxid", invoiceShop.getTaxNo());
+//            invoiceJson.put("bankname", invoiceShop.getBankName());
+//            invoiceJson.put("bankid", invoiceShop.getAccountNo());
+//            invoiceJson.put("zip", invoiceShop.getZip());
+//            invoiceJson.put("provincecode", invoiceShop.getProvinceCode());
+//            invoiceJson.put("provincename", invoiceShop.getProvinceName());
+//            invoiceJson.put("citycode", invoiceShop.getCityCode());
+//            invoiceJson.put("cityname", invoiceShop.getCityName());
+//            invoiceJson.put("countycode", invoiceShop.getCountyCode());
+//            invoiceJson.put("countyname", invoiceShop.getCountyName());
+//            invoiceJson.put("address", invoiceShop.getAddress());
+//            invoiceJson.put("phone", invoiceShop.getPhoneNo());
+//            invoiceJson.put("isshow", invoiceShop.getIsShow());
+//            invoiceJson.put("isdefault", invoiceShop.getIsDefault());
+//            invoiceJson.put("processstatus", "");
+//            invoiceJson.put("operationtype", "");
+//            invoiceJson.put("approvalstatus", invoiceShop.getApprovalStatus());
+//            invoiceJson.put("soldtocode", invoiceShop.getSoldToCode());
+//            invoiceJson.put("datafrom", "C_BTC");
+//            invoiceJson.put("datadependon", "C_BTC");
+//
+//            String ret=ShopHttpClientUtil.sendPost("http://10.99.206.102:8014/invoices", invoiceJson.toString());
+//            JSONObject retJson=JSONObject.parseObject(ret);
+//            System.out.println(invoiceJson.toString());
+//            JSONObject ret=ShopHttpClientUtil.sendGet("http://10.99.206.102:8014/memberinvoice/00182108-082a-45bc-b8b2-2181800bb72c/1");
+            JSONObject ret=ShopHttpClientUtil.sendGet("http://10.99.206.102:8014/invoices/8ed6b48c-3626-4c48-b6b1-06e8bed67ab2");
+
+//            String ret=ShopHttpClientUtil.sendDelete("http://10.99.206.102:8014/invoices", "{\"approvalstatus\":3,\"phone\":\"手机号\",\"bankid\":\"3342342323\",\"memberinfoid\":\"00182108-082a-45bc-b8b2-2181800bb72c\",\"fileurl\":\"x\",\"taxnotype\":1,\"invoicetype\":0,\"createtime\":1505788879000,\"id\":\"8ed6b48c-3626-4c48-b6b1-06e8bed67ab2\",\"citycode\":\"北京\",\"provincename\":\"北京\",\"provincecode\":\"010\",\"countycode\":\"XXX县\",\"paymantype\":1,\"taxid\":\"273489875989687586\",\"zip\":\"100000\",\"companytype\":1,\"isdefault\":0,\"bankname\":\"银行\",\"payman\":\"测试发票公司修改xx\",\"isneedacc\":1,\"subareaname\":\"京津冀分区\",\"invoicesort\":\"01\",\"invoicename\":\"测试发票公司修改xx\",\"subareacode\":\"100101\",\"countyname\":\"XXX县\",\"address\":\"MXMXMXM地址\",\"cityname\":\"北京\",\"datafrom\":\"C_BTC\",\"datadependon\":\"C_BTC\"}");
+            System.out.println(ret.toString());
+
+
+
+//            List<InvoiceShop> invoiceShopList = new ArrayList<InvoiceShop>();
+//            JSONObject retJson=ShopHttpClientUtil.sendGet("http://10.99.206.102:8014/memberinvoice/00182108-082a-45bc-b8b2-2181800bb72c/1");
+//            System.out.println(retJson.toString());
+//            if("1".equals(retJson.getString("code"))){
+//                JSONArray jsonArray=retJson.getJSONObject("data").getJSONArray("content");
+//                Iterator<Object> it = jsonArray.iterator();
+//                while (it.hasNext()) {
+//                    JSONObject ob = (JSONObject) it.next();
+//                    InvoiceShop invoiceShop =getInvoice(ob);
+//                    invoiceShopList.add(invoiceShop);
+//                }
+//                System.out.println(invoiceShopList);
+//            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
 }
