@@ -97,13 +97,23 @@ public class InvoiceShopApiServiceImpl implements InvoiceShopApiService {
                     return remoteResult;
                 }
             } else if (invoiceShop.getSynType() == 3) {
-                String ret=ShopHttpClientUtil.sendDelete(propertiesConfig.getSmbUrl(), getInvoiceJson(invoiceShop).toString());
-                JSONObject retJson=JSONObject.parseObject(ret);
-                if("1".equals(retJson.getString("code"))){
-                    remoteResult.setSuccess(true);
+                JSONObject invoicesJson=ShopHttpClientUtil.sendGet(propertiesConfig.getSmbUrl() + "/invoices/" + invoiceShop.getUuid());
+                if("1".equals(invoicesJson.getString("code"))) {
+                    JSONObject jsonObject = invoicesJson.getJSONObject("data");
+                    jsonObject.put("datafrom", "C_BTC");
+                    jsonObject.put("datadependon", "C_BTC");
+                    String ret=ShopHttpClientUtil.sendDelete(propertiesConfig.getSmbUrl(), jsonObject.toString());
+                    JSONObject retJson=JSONObject.parseObject(ret);
+                    if("1".equals(retJson.getString("code"))){
+                        remoteResult.setSuccess(true);
+                    }else {
+                        remoteResult.setResultCode(retJson.getString("code"));
+                        remoteResult.setResultMsg(retJson.getString("msg"));
+                        return remoteResult;
+                    }
                 }else {
-                    remoteResult.setResultCode(retJson.getString("code"));
-                    remoteResult.setResultMsg(retJson.getString("msg"));
+                    remoteResult.setResultCode(invoicesJson.getString("code"));
+                    remoteResult.setResultMsg(invoicesJson.getString("msg"));
                     return remoteResult;
                 }
 
