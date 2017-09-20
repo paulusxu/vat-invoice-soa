@@ -6,8 +6,9 @@
     <appender name="STDOUT" class="ch.qos.logback.core.FileAppender">
         <file>${log.path}/vat-invoice-soa.log</file>
         <encoder>
-            <pattern>[%d{yyyy-MM-dd HH:mm:ss} %-5p] projectName : vat-invoice-soa %X{elk_leId} %X{elk_lenovoId} %X{elk_requestId} %X{ip} [%thread] %-5level %logger{5} - %msg%n
-            </pattern>
+            <!--<pattern>[%d{yyyy-MM-dd HH:mm:ss} %-5p] projectName : vat-invoice-soa %X{elk_leId} %X{elk_lenovoId} %X{elk_requestId} %X{ip} [%thread] %-5level %logger{5} - %msg%n
+            </pattern>-->
+            <pattern>[%d{yyyy-MM-dd HH:mm:ss.SSS} %-5p] projectName : vat-invoice-soa %X{hunterid} [%thread] %-5level %logger{5} - %msg%n</pattern>
         </encoder>
     </appender>
 
@@ -16,7 +17,8 @@
             <fileNamePattern>${log.path}/vat-invoice-soa.%d{yyyy-MM-dd}.log</fileNamePattern>
         </rollingPolicy>
         <encoder>
-            <pattern>[%d{yyyy-MM-dd HH:mm:ss} %-5p] projectName : vat-invoice-soa %X{elk_leId} %X{elk_lenovoId} %X{elk_requestId} %X{ip} [%thread] %-5level %logger{5} - %msg%n</pattern>
+            <!--<pattern>[%d{yyyy-MM-dd HH:mm:ss} %-5p] projectName : vat-invoice-soa %X{elk_leId} %X{elk_lenovoId} %X{elk_requestId} %X{ip} [%thread] %-5level %logger{5} - %msg%n</pattern>-->
+            <pattern>[%d{yyyy-MM-dd HH:mm:ss.SSS} %-5p] projectName : vat-invoice-soa %X{hunterid} [%thread] %-5level %logger{5} - %msg%n</pattern>
         </encoder>
         <append>true</append>
         <prudent>false</prudent>
@@ -31,7 +33,8 @@
             <fileNamePattern>${log.path}/invoice.%d{yyyy-MM-dd}.log</fileNamePattern>
         </rollingPolicy>
         <encoder>
-            <pattern>[%d{yyyy-MM-dd HH:mm:ss} %-5p] projectName : vat-invoice-soa %X{elk_leId} %X{elk_lenovoId} %X{elk_requestId} %X{ip} [%thread] %-5level %logger{5} - %msg%n</pattern>
+            <!--<pattern>[%d{yyyy-MM-dd HH:mm:ss} %-5p] projectName : vat-invoice-soa %X{elk_leId} %X{elk_lenovoId} %X{elk_requestId} %X{ip} [%thread] %-5level %logger{5} - %msg%n</pattern>-->
+            <pattern>[%d{yyyy-MM-dd HH:mm:ss.SSS} %-5p] projectName : vat-invoice-soa %X{hunterid} [%thread] %-5level %logger{5} - %msg%n</pattern>
         </encoder>
     </appender>
     <logger name="com.lenovo.invoice.service.log" level="info" additivity="false">
@@ -44,7 +47,8 @@
             <fileNamePattern>${log.path}/17shop.%d{yyyy-MM-dd}.log</fileNamePattern>
         </rollingPolicy>
         <encoder>
-            <pattern>[%d{yyyy-MM-dd HH:mm:ss} %-5p] projectName : vat-invoice-soa %X{elk_leId} %X{elk_lenovoId} %X{elk_requestId} %X{ip} [%thread] %-5level %logger{5} - %msg%n</pattern>
+            <!--<pattern>[%d{yyyy-MM-dd HH:mm:ss} %-5p] projectName : vat-invoice-soa %X{elk_leId} %X{elk_lenovoId} %X{elk_requestId} %X{ip} [%thread] %-5level %logger{5} - %msg%n</pattern>-->
+            <pattern>[%d{yyyy-MM-dd HH:mm:ss.SSS} %-5p] projectName : vat-invoice-soa %X{hunterid} [%thread] %-5level %logger{5} - %msg%n</pattern>
         </encoder>
     </appender>
     <logger name="com.lenovo.invoice.service.impl.17shop" level="info" additivity="false">
@@ -57,7 +61,8 @@
             <fileNamePattern>${log.path}/contract.%d{yyyy-MM-dd}.log</fileNamePattern>
         </rollingPolicy>
         <encoder>
-            <pattern>[%d{yyyy-MM-dd HH:mm:ss} %-5p] projectName : vat-invoice-soa %X{elk_leId} %X{elk_lenovoId} %X{elk_requestId} %X{ip} [%thread] %-5level %logger{5} - %msg%n</pattern>
+            <!--<pattern>[%d{yyyy-MM-dd HH:mm:ss} %-5p] projectName : vat-invoice-soa %X{elk_leId} %X{elk_lenovoId} %X{elk_requestId} %X{ip} [%thread] %-5level %logger{5} - %msg%n</pattern>-->
+            <pattern>[%d{yyyy-MM-dd HH:mm:ss.SSS} %-5p] projectName : vat-invoice-soa %X{hunterid} [%thread] %-5level %logger{5} - %msg%n</pattern>
         </encoder>
     </appender>
     <logger name="com.lenovo.invoice.service.impl.contract" level="info" additivity="false">
@@ -70,7 +75,8 @@
             <fileNamePattern>${log.path}/throw.%d{yyyy-MM-dd}.log</fileNamePattern>
         </rollingPolicy>
         <encoder>
-            <pattern>[%d{yyyy-MM-dd HH:mm:ss} %-5p] projectName : vat-invoice-soa %X{elk_leId} %X{elk_lenovoId} %X{elk_requestId} %X{ip} [%thread] %-5level %logger{5} - %msg%n</pattern>
+            <!--<pattern>[%d{yyyy-MM-dd HH:mm:ss} %-5p] projectName : vat-invoice-soa %X{elk_leId} %X{elk_lenovoId} %X{elk_requestId} %X{ip} [%thread] %-5level %logger{5} - %msg%n</pattern>-->
+            <pattern>[%d{yyyy-MM-dd HH:mm:ss.SSS} %-5p] projectName : vat-invoice-soa %X{hunterid} [%thread] %-5level %logger{5} - %msg%n</pattern>
         </encoder>
     </appender>
     <logger name="com.lenovo.invoice.customer.order.throw" level="info" additivity="false">
@@ -82,7 +88,8 @@
             <fileNamePattern>${log.path}/deliver.%d{yyyy-MM-dd}.log</fileNamePattern>
         </rollingPolicy>
         <encoder>
-            <pattern>[%d{yyyy-MM-dd HH:mm:ss} %-5p] projectName : vat-invoice-soa %X{elk_leId} %X{elk_lenovoId} %X{elk_requestId} %X{ip} [%thread] %-5level %logger{5} - %msg%n</pattern>
+            <!--<pattern>[%d{yyyy-MM-dd HH:mm:ss} %-5p] projectName : vat-invoice-soa %X{elk_leId} %X{elk_lenovoId} %X{elk_requestId} %X{ip} [%thread] %-5level %logger{5} - %msg%n</pattern>-->
+            <pattern>[%d{yyyy-MM-dd HH:mm:ss.SSS} %-5p] projectName : vat-invoice-soa %X{hunterid} [%thread] %-5level %logger{5} - %msg%n</pattern>
         </encoder>
     </appender>
     <logger name="com.lenovo.invoice.customer.order.deliver" level="info" additivity="false">
@@ -95,7 +102,8 @@
             <fileNamePattern>${log.path}/paid.%d{yyyy-MM-dd}.log</fileNamePattern>
         </rollingPolicy>
         <encoder>
-            <pattern>[%d{yyyy-MM-dd HH:mm:ss} %-5p] projectName : vat-invoice-soa %X{elk_leId} %X{elk_lenovoId} %X{elk_requestId} %X{ip} [%thread] %-5level %logger{5} - %msg%n</pattern>
+            <!--<pattern>[%d{yyyy-MM-dd HH:mm:ss} %-5p] projectName : vat-invoice-soa %X{elk_leId} %X{elk_lenovoId} %X{elk_requestId} %X{ip} [%thread] %-5level %logger{5} - %msg%n</pattern>-->
+            <pattern>[%d{yyyy-MM-dd HH:mm:ss.SSS} %-5p] projectName : vat-invoice-soa %X{hunterid} [%thread] %-5level %logger{5} - %msg%n</pattern>
         </encoder>
     </appender>
     <logger name="com.lenovo.invoice.customer.order.paid" level="info" additivity="false">
@@ -111,7 +119,8 @@
             <fileNamePattern>${log.path}/btcp.throw.%d{yyyy-MM-dd}.log</fileNamePattern>
         </rollingPolicy>
         <encoder>
-            <pattern>[%d{yyyy-MM-dd HH:mm:ss} %-5p] projectName : vat-invoice-soa %X{elk_leId} %X{elk_lenovoId} %X{elk_requestId} %X{ip} [%thread] %-5level %logger{5} - %msg%n</pattern>
+            <!--<pattern>[%d{yyyy-MM-dd HH:mm:ss} %-5p] projectName : vat-invoice-soa %X{elk_leId} %X{elk_lenovoId} %X{elk_requestId} %X{ip} [%thread] %-5level %logger{5} - %msg%n</pattern>-->
+            <pattern>[%d{yyyy-MM-dd HH:mm:ss.SSS} %-5p] projectName : vat-invoice-soa %X{hunterid} [%thread] %-5level %logger{5} - %msg%n</pattern>
         </encoder>
     </appender>
     <logger name="com.lenovo.invoice.service.impl.throwBtcp" level="info" additivity="false">
@@ -123,7 +132,8 @@
             <fileNamePattern>${log.path}/vatInvoiceService.%d{yyyy-MM-dd}.log</fileNamePattern>
         </rollingPolicy>
         <encoder>
-            <pattern>[%d{yyyy-MM-dd HH:mm:ss} %-5p] projectName : vat-invoice-soa %X{elk_leId} %X{elk_lenovoId} %X{elk_requestId} %X{ip} [%thread] %-5level %logger{5} - %msg%n</pattern>
+            <!--<pattern>[%d{yyyy-MM-dd HH:mm:ss} %-5p] projectName : vat-invoice-soa %X{elk_leId} %X{elk_lenovoId} %X{elk_requestId} %X{ip} [%thread] %-5level %logger{5} - %msg%n</pattern>-->
+            <pattern>[%d{yyyy-MM-dd HH:mm:ss.SSS} %-5p] projectName : vat-invoice-soa %X{hunterid} [%thread] %-5level %logger{5} - %msg%n</pattern>
         </encoder>
     </appender>
     <logger name="com.lenovo.invoice.service.impl.vatinvoice" level="info" additivity="false">
@@ -135,7 +145,8 @@
             <fileNamePattern>${log.path}/orderInvoiceApiService.%d{yyyy-MM-dd}.log</fileNamePattern>
         </rollingPolicy>
         <encoder>
-            <pattern>[%d{yyyy-MM-dd HH:mm:ss} %-5p] projectName : vat-invoice-soa %X{elk_leId} %X{elk_lenovoId} %X{elk_requestId} %X{ip} [%thread] %-5level %logger{5} - %msg%n</pattern>
+            <!--<pattern>[%d{yyyy-MM-dd HH:mm:ss} %-5p] projectName : vat-invoice-soa %X{elk_leId} %X{elk_lenovoId} %X{elk_requestId} %X{ip} [%thread] %-5level %logger{5} - %msg%n</pattern>-->
+            <pattern>[%d{yyyy-MM-dd HH:mm:ss.SSS} %-5p] projectName : vat-invoice-soa %X{hunterid} [%thread] %-5level %logger{5} - %msg%n</pattern>
         </encoder>
     </appender>
     <logger name="com.lenovo.invoice.service.impl.OrderInvoiceApiService" level="info" additivity="false">
@@ -148,7 +159,8 @@
             <fileNamePattern>${log.path}/updateZid.%d{yyyy-MM-dd}.log</fileNamePattern>
         </rollingPolicy>
         <encoder>
-            <pattern>[%d{yyyy-MM-dd HH:mm:ss} %-5p] projectName : vat-invoice-soa %X{elk_leId} %X{elk_lenovoId} %X{elk_requestId} %X{ip} [%thread] %-5level %logger{5} - %msg%n</pattern>
+            <!--<pattern>[%d{yyyy-MM-dd HH:mm:ss} %-5p] projectName : vat-invoice-soa %X{elk_leId} %X{elk_lenovoId} %X{elk_requestId} %X{ip} [%thread] %-5level %logger{5} - %msg%n</pattern>-->
+            <pattern>[%d{yyyy-MM-dd HH:mm:ss.SSS} %-5p] projectName : vat-invoice-soa %X{hunterid} [%thread] %-5level %logger{5} - %msg%n</pattern>
         </encoder>
     </appender>
     <logger name="com.lenovo.invoice.service.impl.updateZid" level="info" additivity="false">
@@ -161,7 +173,8 @@
             <fileNamePattern>${log.path}/autoCheckInvoice.%d{yyyy-MM-dd}.log</fileNamePattern>
         </rollingPolicy>
         <encoder>
-            <pattern>[%d{yyyy-MM-dd HH:mm:ss} %-5p] projectName : vat-invoice-soa %X{elk_leId} %X{elk_lenovoId} %X{elk_requestId} %X{ip} [%thread] %-5level %logger{5} - %msg%n</pattern>
+            <!--<pattern>[%d{yyyy-MM-dd HH:mm:ss} %-5p] projectName : vat-invoice-soa %X{elk_leId} %X{elk_lenovoId} %X{elk_requestId} %X{ip} [%thread] %-5level %logger{5} - %msg%n</pattern>-->
+            <pattern>[%d{yyyy-MM-dd HH:mm:ss.SSS} %-5p] projectName : vat-invoice-soa %X{hunterid} [%thread] %-5level %logger{5} - %msg%n</pattern>
         </encoder>
     </appender>
     <logger name="com.lenovo.invoice.worker.AutoCheckInvoice" level="info" additivity="false">
@@ -174,7 +187,8 @@
             <fileNamePattern>${log.path}/throwStatus.%d{yyyy-MM-dd}.log</fileNamePattern>
         </rollingPolicy>
         <encoder>
-            <pattern>[%d{yyyy-MM-dd HH:mm:ss} %-5p] projectName : vat-invoice-soa %X{elk_leId} %X{elk_lenovoId} %X{elk_requestId} %X{ip} [%thread] %-5level %logger{5} - %msg%n</pattern>
+            <!--<pattern>[%d{yyyy-MM-dd HH:mm:ss} %-5p] projectName : vat-invoice-soa %X{elk_leId} %X{elk_lenovoId} %X{elk_requestId} %X{ip} [%thread] %-5level %logger{5} - %msg%n</pattern>-->
+            <pattern>[%d{yyyy-MM-dd HH:mm:ss.SSS} %-5p] projectName : vat-invoice-soa %X{hunterid} [%thread] %-5level %logger{5} - %msg%n</pattern>
         </encoder>
     </appender>
     <logger name="com.lenovo.invoice.customer.order.throwStatus" level="info" additivity="false">
@@ -187,7 +201,8 @@
             <fileNamePattern>${log.path}/exchangeInvoiceError.%d{yyyy-MM-dd}.log</fileNamePattern>
         </rollingPolicy>
         <encoder>
-            <pattern>[%d{yyyy-MM-dd HH:mm:ss} %-5p] projectName : vat-invoice-soa %X{elk_leId} %X{elk_lenovoId} %X{elk_requestId} %X{ip} [%thread] %-5level %logger{5} - %msg%n</pattern>
+            <!--<pattern>[%d{yyyy-MM-dd HH:mm:ss} %-5p] projectName : vat-invoice-soa %X{elk_leId} %X{elk_lenovoId} %X{elk_requestId} %X{ip} [%thread] %-5level %logger{5} - %msg%n</pattern>-->
+            <pattern>[%d{yyyy-MM-dd HH:mm:ss.SSS} %-5p] projectName : vat-invoice-soa %X{hunterid} [%thread] %-5level %logger{5} - %msg%n</pattern>
         </encoder>
     </appender>
     <logger name="com.lenovo.invoice.service.impl.exchangeInvoice" level="info" additivity="false">
@@ -200,7 +215,8 @@
             <fileNamePattern>${log.path}/invoice_order_error.%d{yyyy-MM-dd}.log</fileNamePattern>
         </rollingPolicy>
         <encoder>
-            <pattern>[%d{yyyy-MM-dd HH:mm:ss} %-5p] projectName : vat-invoice-soa %X{elk_leId} %X{elk_lenovoId} %X{elk_requestId} %X{ip} [%thread] %-5level %logger{5} - %msg%n</pattern>
+            <!--<pattern>[%d{yyyy-MM-dd HH:mm:ss} %-5p] projectName : vat-invoice-soa %X{elk_leId} %X{elk_lenovoId} %X{elk_requestId} %X{ip} [%thread] %-5level %logger{5} - %msg%n</pattern>-->
+            <pattern>[%d{yyyy-MM-dd HH:mm:ss.SSS} %-5p] projectName : vat-invoice-soa %X{hunterid} [%thread] %-5level %logger{5} - %msg%n</pattern>
         </encoder>
     </appender>
     <logger name="com.lenovo.invoice.service.impl.commonInvoice" level="info" additivity="false">
