@@ -116,9 +116,7 @@ public class InvoiceShopApiServiceImpl implements InvoiceShopApiService {
                     remoteResult.setResultMsg(invoicesJson.getString("msg"));
                     return remoteResult;
                 }
-
             }
-
             remoteResult.setSuccess(true);
             remoteResult.setResultCode(InvoiceShopCode.SUCCESS);
             remoteResult.setResultMsg("成功");
