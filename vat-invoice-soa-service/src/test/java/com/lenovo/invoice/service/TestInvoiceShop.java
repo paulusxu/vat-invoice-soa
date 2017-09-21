@@ -8,6 +8,8 @@ import com.lenovo.m2.arch.framework.domain.RemoteResult;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import java.util.List;
+
 /**
  * Created by xuweihua on 2017/9/15.
  */
@@ -47,5 +49,10 @@ public class TestInvoiceShop extends BaseServiceTest {
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+    @Test
+    public void get(){
+        RemoteResult<List<InvoiceShop>> remoteResult= invoiceShopApiService.queryInvoice("209515");
+        System.out.println(JacksonUtil.toJson(remoteResult));
     }
 }
