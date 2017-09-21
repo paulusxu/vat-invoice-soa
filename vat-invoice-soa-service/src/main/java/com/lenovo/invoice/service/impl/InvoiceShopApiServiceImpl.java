@@ -415,7 +415,7 @@ public class InvoiceShopApiServiceImpl implements InvoiceShopApiService {
         invoiceShop.setCountyName(jsonObject.getString("countyname"));
         invoiceShop.setAddress(jsonObject.getString("address"));
         invoiceShop.setPhoneNo(jsonObject.getString("phone"));
-        invoiceShop.setIsShow(jsonObject.getInteger("isshow"));
+//        invoiceShop.setIsShow(jsonObject.getInteger("isshow"));
         invoiceShop.setIsDefault(jsonObject.getInteger("isdefault"));
         invoiceShop.setApprovalStatus(jsonObject.getInteger("approvalstatus"));
         invoiceShop.setSoldToCode(jsonObject.getString("soldtocode"));
@@ -445,15 +445,15 @@ public class InvoiceShopApiServiceImpl implements InvoiceShopApiService {
     }
 
     public static void main(String[] args) {
-//        InvoiceShop invoiceShop=new InvoiceShop();
+        InvoiceShop invoiceShop=new InvoiceShop();
         try {
-//            invoiceShop.setUuid("37aa14a7-bac8-4341-b255-f39e51621290");
-//            invoiceShop.setCustomerName("测试发票公司修改xx");
+//            invoiceShop.setUuid("d5bcd4b1-df3b-459b-b78b-e21d8f5012f0");
+//            invoiceShop.setCustomerName("测试发票6666");
 //            invoiceShop.setLenovoID("154463");
 //            invoiceShop.setInvoiceType(1);
 //            invoiceShop.setPayManType(1);
-//            invoiceShop.setPayMan("测试发票公司");
-//            invoiceShop.setTaxNo("273489875989687586");
+//            invoiceShop.setPayMan("测试发票公司6666");
+//            invoiceShop.setTaxNo("666489875989687586");
 //            invoiceShop.setTaxNoType("1");
 //            invoiceShop.setCompanyType(1);
 //            invoiceShop.setBankName("银行");
@@ -524,7 +524,6 @@ public class InvoiceShopApiServiceImpl implements InvoiceShopApiService {
 //            invoiceJson.put("countyname", invoiceShop.getCountyName());
 //            invoiceJson.put("address", invoiceShop.getAddress());
 //            invoiceJson.put("phone", invoiceShop.getPhoneNo());
-//            invoiceJson.put("isshow", invoiceShop.getIsShow());
 //            invoiceJson.put("isdefault", invoiceShop.getIsDefault());
 //            invoiceJson.put("processstatus", "");
 //            invoiceJson.put("operationtype", "");
@@ -536,8 +535,9 @@ public class InvoiceShopApiServiceImpl implements InvoiceShopApiService {
 //            String ret=ShopHttpClientUtil.sendPost("http://10.99.206.102:8014/invoices", invoiceJson.toString());
 //            JSONObject retJson=JSONObject.parseObject(ret);
 //            System.out.println(invoiceJson.toString());
+//            System.out.println(retJson.toString());
 //            JSONObject ret=ShopHttpClientUtil.sendGet("http://10.99.206.102:8014/memberinvoice/00182108-082a-45bc-b8b2-2181800bb72c/1");
-            JSONObject ret=ShopHttpClientUtil.sendGet("http://10.99.206.102:8014/invoices/8ed6b48c-3626-4c48-b6b1-06e8bed67ab2");
+            JSONObject ret=ShopHttpClientUtil.sendGet("http://10.99.206.102:8014/invoices/eb75b19f-9175-4124-8b6d-2cdf4d1032eb");
 
 //            String ret=ShopHttpClientUtil.sendDelete("http://10.99.206.102:8014/invoices", "{\"approvalstatus\":3,\"phone\":\"手机号\",\"bankid\":\"3342342323\",\"memberinfoid\":\"00182108-082a-45bc-b8b2-2181800bb72c\",\"fileurl\":\"x\",\"taxnotype\":1,\"invoicetype\":0,\"createtime\":1505788879000,\"id\":\"8ed6b48c-3626-4c48-b6b1-06e8bed67ab2\",\"citycode\":\"北京\",\"provincename\":\"北京\",\"provincecode\":\"010\",\"countycode\":\"XXX县\",\"paymantype\":1,\"taxid\":\"273489875989687586\",\"zip\":\"100000\",\"companytype\":1,\"isdefault\":0,\"bankname\":\"银行\",\"payman\":\"测试发票公司修改xx\",\"isneedacc\":1,\"subareaname\":\"京津冀分区\",\"invoicesort\":\"01\",\"invoicename\":\"测试发票公司修改xx\",\"subareacode\":\"100101\",\"countyname\":\"XXX县\",\"address\":\"MXMXMXM地址\",\"cityname\":\"北京\",\"datafrom\":\"C_BTC\",\"datadependon\":\"C_BTC\"}");
             System.out.println(ret.toString());
