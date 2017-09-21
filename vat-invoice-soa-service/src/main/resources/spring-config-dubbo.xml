@@ -39,9 +39,9 @@
     <dubbo:service interface="com.lenovo.invoice.api.OrderInvoiceApiService" ref="orderInvoiceApiService"/>
 
     <!-- 门店-->
-    <dubbo:reference interface="com.lenovo.m2.stock.soa.api.service.StoreInfoApiService" id="storeInfoApiService"/>
+    <dubbo:reference interface="com.lenovo.m2.stock.soa.api.service.StoreInfoApiService" id="storeInfoApiService" check="false"/>
 
-    <dubbo:reference interface="com.lenovo.m2.ordercenter.soa.api.vat.VatApiOrderCenter" id="vatApiOrderCenter" registry="order"/>
+    <dubbo:reference interface="com.lenovo.m2.ordercenter.soa.api.vat.VatApiOrderCenter" id="vatApiOrderCenter" registry="order" check="false"/>
     <!--合同详细接口-->
     <dubbo:reference id="orderApiService"
                      interface="com.lenovo.my.api.OrderApiService"
