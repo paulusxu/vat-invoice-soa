@@ -336,8 +336,6 @@
             <version>${framework-version}</version>
         </dependency>
 
-
-
         <dependency>
             <groupId>com.lenovo</groupId>
             <artifactId>lenovo-productadmin-client</artifactId>
