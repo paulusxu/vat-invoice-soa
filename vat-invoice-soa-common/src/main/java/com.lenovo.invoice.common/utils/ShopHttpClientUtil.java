@@ -29,7 +29,8 @@ public class ShopHttpClientUtil {
 			HttpClient httpClient = new HttpClient();// 客户端实例化
 			PostMethod postMethod = new PostMethod(requestUrl);
 			//设置请求头
-			postMethod.setRequestHeader("token", "79fe55dede798566f71c6c94536cfee2");
+			postMethod.setRequestHeader("MSP-AppKey", "8503DF4DD58E4F46886002C89F9D843E");
+			postMethod.setRequestHeader("MSP-AuthKey", AuthKeyGen.getAuthKey("8C01DFF16C904D7AA04E698468CD22F0","4FCCD290E58548EDA7C786342AE50D99"));
 			// 设置请求头  Content-Type
 			postMethod.setRequestHeader("Content-Type", "application/json");
 			InputStream inputStream = new ByteArrayInputStream(requestBytes, 0,
@@ -59,7 +60,8 @@ public class ShopHttpClientUtil {
 			DefaultHttpClient client = new DefaultHttpClient();
 			//发送get请求
 			HttpGet request = new HttpGet(url);
-			request.setHeader("token","79fe55dede798566f71c6c94536cfee2");
+			request.setHeader("MSP-AppKey", "8503DF4DD58E4F46886002C89F9D843E");
+			request.setHeader("MSP-AuthKey", AuthKeyGen.getAuthKey("8C01DFF16C904D7AA04E698468CD22F0", "4FCCD290E58548EDA7C786342AE50D99"));
 			HttpResponse response = client.execute(request);
 
 			/**请求发送成功，并得到响应**/
@@ -69,7 +71,7 @@ public class ShopHttpClientUtil {
 				/**把json字符串转换成json对象**/
 				jsonResult = JSONObject.parseObject(strResult);
 			} else {
-				logger.error("get请求提交失败:" + url);
+				logger.error("get请求提交失败:" + url+">>"+ EntityUtils.toString(response.getEntity(),"UTF-8"));
 			}
 		} catch (IOException e) {
 			logger.error("get请求提交失败:" + url, e);
@@ -85,7 +87,8 @@ public class ShopHttpClientUtil {
 			HttpClient httpClient = new HttpClient();// 客户端实例化
 			PutMethod  putMethod = new PutMethod (requestUrl);
 			//设置请求头
-			putMethod.setRequestHeader("token", "79fe55dede798566f71c6c94536cfee2");
+			putMethod.setRequestHeader("MSP-AppKey", "8503DF4DD58E4F46886002C89F9D843E");
+			putMethod.setRequestHeader("MSP-AuthKey", AuthKeyGen.getAuthKey("8C01DFF16C904D7AA04E698468CD22F0","4FCCD290E58548EDA7C786342AE50D99"));
 			// 设置请求头  Content-Type
 			putMethod.setRequestHeader("Content-Type", "application/json");
 			InputStream inputStream = new ByteArrayInputStream(requestBytes, 0,
@@ -111,7 +114,8 @@ public class ShopHttpClientUtil {
 		try {
 			DefaultHttpClient httpClient = new DefaultHttpClient();
 			HttpDeleteWithBody method = new HttpDeleteWithBody(requestUrl);
-			method.setHeader("token", "79fe55dede798566f71c6c94536cfee2");
+			method.setHeader("MSP-AppKey", "8503DF4DD58E4F46886002C89F9D843E");
+			method.setHeader("MSP-AuthKey", AuthKeyGen.getAuthKey("8C01DFF16C904D7AA04E698468CD22F0", "4FCCD290E58548EDA7C786342AE50D99"));
 			StringEntity entity = new StringEntity(params, "utf-8");// 解决中文乱码问题
 			entity.setContentEncoding("UTF-8");
 			entity.setContentType("application/json");
