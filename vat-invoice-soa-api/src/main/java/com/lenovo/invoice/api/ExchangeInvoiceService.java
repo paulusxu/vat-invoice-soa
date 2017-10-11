@@ -23,6 +23,9 @@ public interface ExchangeInvoiceService {
     //换普票
     public RemoteResult exchangeToCommon(ExchangeInvoiceParam param);
 
+    //换电子票
+    public RemoteResult exchangeToDian(ExchangeInvoiceParam param);
+
     //换增票
     public RemoteResult exchangeToVat(ExchangeInvoiceParam param);
 

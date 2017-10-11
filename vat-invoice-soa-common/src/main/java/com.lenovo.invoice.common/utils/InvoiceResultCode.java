@@ -28,6 +28,7 @@ public class InvoiceResultCode {
     public static final String UPDATEINVOICEFAIL = "19"; //发票修改失败
     public static final String invoiceTitleIsExist = "20"; //存在已审核过的相同抬头！
     public static final String invoiceTaxNoIsExist = "21"; //存在已审核过的相同税号！
+    public static final String ADD_DIAN_INVOICE_FAIL = "22";//添加新的电子票失败
 
 
 

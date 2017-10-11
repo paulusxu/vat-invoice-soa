@@ -624,7 +624,7 @@ public class CommonInvoiceServiceImpl extends BaseService implements CommonInvoi
         return remoteResult;
     }
 
-    //订单使用新增发票接口，如果已存在，返回老发票信息
+    //订单和换票使用新增发票接口，如果已存在，返回老发票信息
     @Override
     public RemoteResult<VatInvoice> addInvoice(VatInvoice vatInvoice, Tenant tenant) {
         LOGGER.info("addInvoice==参数=="+JacksonUtil.toJson(vatInvoice));
