@@ -11,8 +11,17 @@ public class GetCiParam  implements Serializable {
     private int shopId;
     private int salesType;
     private int bu;
+    private boolean silenceOrder;
     private BigDecimal bigDecimal;
     private List<FaData> faDatas;
+
+    public boolean isSilenceOrder() {
+        return silenceOrder;
+    }
+
+    public void setSilenceOrder(boolean silenceOrder) {
+        this.silenceOrder = silenceOrder;
+    }
 
     public BigDecimal getBigDecimal() {
         return bigDecimal;
