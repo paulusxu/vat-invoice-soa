@@ -382,11 +382,11 @@ public class InvoiceShopApiServiceImpl implements InvoiceShopApiService {
         invoiceJson.put("bankname", invoiceShop.getBankName());
         invoiceJson.put("bankid", invoiceShop.getAccountNo());
         invoiceJson.put("zip", invoiceShop.getZip());
-        invoiceJson.put("provincecode", invoiceShop.getProvinceCode());
+        invoiceJson.put("provincecode", invoiceShop.getProvinceName());
         invoiceJson.put("provincename", invoiceShop.getProvinceName());
-        invoiceJson.put("citycode", invoiceShop.getCityCode());
+        invoiceJson.put("citycode", invoiceShop.getCityName());
         invoiceJson.put("cityname", invoiceShop.getCityName());
-        invoiceJson.put("countycode", invoiceShop.getCountyCode());
+        invoiceJson.put("countycode", invoiceShop.getCountyName());
         invoiceJson.put("countyname", invoiceShop.getCountyName());
         invoiceJson.put("address", invoiceShop.getAddress());
         invoiceJson.put("phone", invoiceShop.getPhoneNo());
@@ -454,96 +454,96 @@ public class InvoiceShopApiServiceImpl implements InvoiceShopApiService {
     public static void main(String[] args) {
         InvoiceShop invoiceShop=new InvoiceShop();
         try {
-//            invoiceShop.setUuid("d5bcd4b1-df3b-459b-b78b-e21d8f5012f0");
-//            invoiceShop.setCustomerName("测试发票6666");
-//            invoiceShop.setLenovoID("154463");
-//            invoiceShop.setInvoiceType(1);
-//            invoiceShop.setPayManType(1);
-//            invoiceShop.setPayMan("测试发票公司6666");
-//            invoiceShop.setTaxNo("666489875989687586");
-//            invoiceShop.setTaxNoType("1");
-//            invoiceShop.setCompanyType(1);
-//            invoiceShop.setBankName("银行");
-//            invoiceShop.setAccountNo("3342342323");
-//            invoiceShop.setSubAreaName("海淀");
-//            invoiceShop.setZip("100000");
-//            invoiceShop.setProvinceName("北京");
-//            invoiceShop.setProvinceCode("北京");
-//            invoiceShop.setCityName("北京");
-//            invoiceShop.setCityCode("北京");
-//            invoiceShop.setCountyName("XXX县");
-//            invoiceShop.setCountyCode("XXX县");
-//            invoiceShop.setAddress("MXMXMXM地址");
-//            invoiceShop.setPhoneNo("手机号");
-//            invoiceShop.setIsDefault(0);
-//            invoiceShop.setSynType(1);
-//            invoiceShop.setShopId(8);
-//            invoiceShop.setFileURL("x");
-//
-//            String memberinfoid="";
-//            Map<String, Object> lenovo_param_json = new HashMap<String, Object>();
-//            lenovo_param_json.put("customerId", invoiceShop.getLenovoID());
-//            lenovo_param_json.put("sts", "e40e7004-4c8a-4963-8564-31271a8337d8");
-//            Response response = null;
-//            try {
-//                response = JavaSDKClient.proxy("http://open.lenovouat.com/router/json.jhtm", "yg7IRC","W!rwc5tesI2YgrFEdJ7#", "lenovo.customer.open.getCustomerbyid", lenovo_param_json, null, null);
-//            } catch (Exception e) {
-//                e.printStackTrace();
-//            }
-//            logger.info("getMemberinfoid>>status============" + response.getStatus());
-//            logger.info("getMemberinfoid>>body============" + response.getBody().toString());
-//
-//            JSONObject jsonObject=JSONObject.parseObject(response.getBody().toString());
-//            JSONObject data=jsonObject.getJSONObject("result").getJSONObject("lenovo_customer_open_getCustomerbyid_response");
-//            if(data!=null) {
-//                if("0".equals(data.getString("ret"))){
-//                    memberinfoid= data.getJSONObject("obj").getString("customerguid");
-//                }
-//            }
-//
-//            JSONObject invoiceJson=new JSONObject();
-//            if(StringUtil.isNotEmpty(invoiceShop.getUuid())){
-//                invoiceJson.put("id", invoiceShop.getUuid());
-//            }
-//            if(StringUtil.isNotEmpty(invoiceShop.getFileURL())){
-//                invoiceJson.put("isneedacc", 1);
-//                invoiceJson.put("fileurl", invoiceShop.getFileURL());
-//            }else {
-//                invoiceJson.put("isneedacc", 0);
-//            }
-//            invoiceJson.put("invoicename", invoiceShop.getCustomerName());
-//            invoiceJson.put("memberinfoid","00182108-082a-45bc-b8b2-2181800bb72c");
-//            invoiceJson.put("companytype", invoiceShop.getCompanyType());
-//            invoiceJson.put("invoicesort", "");
-//            invoiceJson.put("taxnotype", invoiceShop.getTaxNoType());
-//            invoiceJson.put("invoicetype", invoiceShop.getInvoiceType());
-//            invoiceJson.put("paymantype", invoiceShop.getPayManType());
-//            invoiceJson.put("payman", invoiceShop.getPayMan());
-//            invoiceJson.put("taxid", invoiceShop.getTaxNo());
-//            invoiceJson.put("bankname", invoiceShop.getBankName());
-//            invoiceJson.put("bankid", invoiceShop.getAccountNo());
-//            invoiceJson.put("zip", invoiceShop.getZip());
-//            invoiceJson.put("provincecode", invoiceShop.getProvinceCode());
-//            invoiceJson.put("provincename", invoiceShop.getProvinceName());
-//            invoiceJson.put("citycode", invoiceShop.getCityCode());
-//            invoiceJson.put("cityname", invoiceShop.getCityName());
-//            invoiceJson.put("countycode", invoiceShop.getCountyCode());
-//            invoiceJson.put("countyname", invoiceShop.getCountyName());
-//            invoiceJson.put("address", invoiceShop.getAddress());
-//            invoiceJson.put("phone", invoiceShop.getPhoneNo());
-//            invoiceJson.put("isdefault", invoiceShop.getIsDefault());
-//            invoiceJson.put("processstatus", "");
-//            invoiceJson.put("operationtype", "");
-//            invoiceJson.put("approvalstatus", invoiceShop.getApprovalStatus());
-//            invoiceJson.put("soldtocode", invoiceShop.getSoldToCode());
-//            invoiceJson.put("datafrom", "C_BTC");
-//            invoiceJson.put("datadependon", "C_BTC");
-//
-//            String ret=ShopHttpClientUtil.sendPost("http://10.99.206.102:8014/invoices", invoiceJson.toString());
+            invoiceShop.setUuid("d5bcd4b1-df3b-459b-b78b-e21d8f5012f0");
+            invoiceShop.setCustomerName("测试发票6666");
+            invoiceShop.setLenovoID("154463");
+            invoiceShop.setInvoiceType(1);
+            invoiceShop.setPayManType(1);
+            invoiceShop.setPayMan("测试发票公司6666");
+            invoiceShop.setTaxNo("666489875989687586");
+            invoiceShop.setTaxNoType("1");
+            invoiceShop.setCompanyType(1);
+            invoiceShop.setBankName("银行");
+            invoiceShop.setAccountNo("3342342323");
+            invoiceShop.setSubAreaName("海淀");
+            invoiceShop.setZip("100000");
+            invoiceShop.setProvinceName("北京");
+            invoiceShop.setProvinceCode("北京");
+            invoiceShop.setCityName("北京");
+            invoiceShop.setCityCode("北京");
+            invoiceShop.setCountyName("XXX县");
+            invoiceShop.setCountyCode("XXX县");
+            invoiceShop.setAddress("MXMXMXM地址");
+            invoiceShop.setPhoneNo("手机号");
+            invoiceShop.setIsDefault(0);
+            invoiceShop.setSynType(1);
+            invoiceShop.setShopId(8);
+            invoiceShop.setFileURL("x");
+
+            String memberinfoid="";
+            Map<String, Object> lenovo_param_json = new HashMap<String, Object>();
+            lenovo_param_json.put("customerId", invoiceShop.getLenovoID());
+            lenovo_param_json.put("sts", "e40e7004-4c8a-4963-8564-31271a8337d8");
+            Response response = null;
+            try {
+                response = JavaSDKClient.proxy("http://open.lenovouat.com/router/json.jhtm", "yg7IRC","W!rwc5tesI2YgrFEdJ7#", "lenovo.customer.open.getCustomerbyid", lenovo_param_json, null, null);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            logger.info("getMemberinfoid>>status============" + response.getStatus());
+            logger.info("getMemberinfoid>>body============" + response.getBody().toString());
+
+            JSONObject jsonObject=JSONObject.parseObject(response.getBody().toString());
+            JSONObject data=jsonObject.getJSONObject("result").getJSONObject("lenovo_customer_open_getCustomerbyid_response");
+            if(data!=null) {
+                if("0".equals(data.getString("ret"))){
+                    memberinfoid= data.getJSONObject("obj").getString("customerguid");
+                }
+            }
+
+            JSONObject invoiceJson=new JSONObject();
+            if(StringUtil.isNotEmpty(invoiceShop.getUuid())){
+                invoiceJson.put("id", invoiceShop.getUuid());
+            }
+            if(StringUtil.isNotEmpty(invoiceShop.getFileURL())){
+                invoiceJson.put("isneedacc", 1);
+                invoiceJson.put("fileurl", invoiceShop.getFileURL());
+            }else {
+                invoiceJson.put("isneedacc", 0);
+            }
+            invoiceJson.put("invoicename", invoiceShop.getCustomerName());
+            invoiceJson.put("memberinfoid","00182108-082a-45bc-b8b2-2181800bb72c");
+            invoiceJson.put("companytype", invoiceShop.getCompanyType());
+            invoiceJson.put("invoicesort", "");
+            invoiceJson.put("taxnotype", invoiceShop.getTaxNoType());
+            invoiceJson.put("invoicetype", invoiceShop.getInvoiceType());
+            invoiceJson.put("paymantype", invoiceShop.getPayManType());
+            invoiceJson.put("payman", invoiceShop.getPayMan());
+            invoiceJson.put("taxid", invoiceShop.getTaxNo());
+            invoiceJson.put("bankname", invoiceShop.getBankName());
+            invoiceJson.put("bankid", invoiceShop.getAccountNo());
+            invoiceJson.put("zip", invoiceShop.getZip());
+            invoiceJson.put("provincecode", invoiceShop.getProvinceCode());
+            invoiceJson.put("provincename", invoiceShop.getProvinceName());
+            invoiceJson.put("citycode", invoiceShop.getCityCode());
+            invoiceJson.put("cityname", invoiceShop.getCityName());
+            invoiceJson.put("countycode", invoiceShop.getCountyCode());
+            invoiceJson.put("countyname", invoiceShop.getCountyName());
+            invoiceJson.put("address", invoiceShop.getAddress());
+            invoiceJson.put("phone", invoiceShop.getPhoneNo());
+            invoiceJson.put("isdefault", invoiceShop.getIsDefault());
+            invoiceJson.put("processstatus", "");
+            invoiceJson.put("operationtype", "");
+            invoiceJson.put("approvalstatus", invoiceShop.getApprovalStatus());
+            invoiceJson.put("soldtocode", invoiceShop.getSoldToCode());
+            invoiceJson.put("datafrom", "C_BTC");
+            invoiceJson.put("datadependon", "C_BTC");
+
+            String ret=ShopHttpClientUtil.sendPost("https://api-dev.unifiedcloud.lenovo.com/pcsd-btbp-invoice/invoices", invoiceJson.toString());
 //            JSONObject retJson=JSONObject.parseObject(ret);
 //            System.out.println(invoiceJson.toString());
 //            System.out.println(retJson.toString());
-            JSONObject ret=ShopHttpClientUtil.sendGet("https://api-dev.unifiedcloud.lenovo.com/pcsd-btbp-invoice/memberinvoice/00182108-082a-45bc-b8b2-2181800bb72c/1");
+//            JSONObject ret=ShopHttpClientUtil.sendGet("https://api-dev.unifiedcloud.lenovo.com/pcsd-btbp-invoice/memberinvoice/00182108-082a-45bc-b8b2-2181800bb72c/1");
 //            JSONObject ret=ShopHttpClientUtil.sendGet("https://api-dev.unifiedcloud.lenovo.com/pcsd-btbp-invoice/invoices/ba4b9c28-e6f9-42e6-aa1b-00dfdaf46312");
 
 //            String ret=ShopHttpClientUtil.sendDelete("http://10.99.206.102:8014/invoices", "{\"approvalstatus\":3,\"phone\":\"手机号\",\"bankid\":\"3342342323\",\"memberinfoid\":\"00182108-082a-45bc-b8b2-2181800bb72c\",\"fileurl\":\"x\",\"taxnotype\":1,\"invoicetype\":0,\"createtime\":1505788879000,\"id\":\"8ed6b48c-3626-4c48-b6b1-06e8bed67ab2\",\"citycode\":\"北京\",\"provincename\":\"北京\",\"provincecode\":\"010\",\"countycode\":\"XXX县\",\"paymantype\":1,\"taxid\":\"273489875989687586\",\"zip\":\"100000\",\"companytype\":1,\"isdefault\":0,\"bankname\":\"银行\",\"payman\":\"测试发票公司修改xx\",\"isneedacc\":1,\"subareaname\":\"京津冀分区\",\"invoicesort\":\"01\",\"invoicename\":\"测试发票公司修改xx\",\"subareacode\":\"100101\",\"countyname\":\"XXX县\",\"address\":\"MXMXMXM地址\",\"cityname\":\"北京\",\"datafrom\":\"C_BTC\",\"datadependon\":\"C_BTC\"}");
