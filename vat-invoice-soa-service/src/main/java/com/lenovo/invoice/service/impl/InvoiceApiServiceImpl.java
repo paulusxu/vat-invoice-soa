@@ -1128,7 +1128,11 @@ public class InvoiceApiServiceImpl extends BaseService implements InvoiceApiServ
         if (tenant.getShopId() == 14 && "on".equals(getInvoiceTypes.getHuiShangZF())) {//惠商
             Payment payment = new Payment();
             payment.setDefaultType(PaymentType.ZXZF);
-            payment.setPaymentTypes(Arrays.asList(new PaymentType[]{PaymentType.ZXZF, PaymentType.XXZZ}));
+            if(getCiParam.isSilenceOrder()){//静默下单只能在线支付
+                payment.setPaymentTypes(Arrays.asList(new PaymentType[]{PaymentType.ZXZF}));
+            }else {
+                payment.setPaymentTypes(Arrays.asList(new PaymentType[]{PaymentType.ZXZF, PaymentType.XXZZ}));
+            }
             return payment;
         }
         if (tenant.getShopId() == 16) {//印度摩托
