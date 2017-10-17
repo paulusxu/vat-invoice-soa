@@ -396,8 +396,8 @@ public class InvoiceShopApiServiceImpl implements InvoiceShopApiService {
         invoiceJson.put("operationtype", "");
         invoiceJson.put("approvalstatus", invoiceShop.getApprovalStatus());
         invoiceJson.put("soldtocode", invoiceShop.getSoldToCode());
-        invoiceJson.put("datafrom", "C_BTC");
-        invoiceJson.put("datadependon", "C_BTC");
+        invoiceJson.put("datafrom", "SMB");
+        invoiceJson.put("datadependon", "SMB");
         return invoiceJson;
     }
 
@@ -426,6 +426,7 @@ public class InvoiceShopApiServiceImpl implements InvoiceShopApiService {
         invoiceShop.setIsDefault(jsonObject.getInteger("isdefault"));
         invoiceShop.setApprovalStatus(jsonObject.getInteger("approvalstatus"));
         invoiceShop.setSoldToCode(jsonObject.getString("soldtocode"));
+        invoiceShop.setShopId(ShopCode.smpsShop);
         return invoiceShop;
     }
     private String getMemberinfoid(String lenovoid){
