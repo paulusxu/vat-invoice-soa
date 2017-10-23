@@ -64,6 +64,8 @@ public interface InvoiceApiService {
     //是否可抛送增票 订单推送
     int updateThrowingStatus(String orderCode, int status);
 
+    //更改是否有效isvalid
+    int updateIsvalid(int valid);
     //修改单条增票
     long updateVatInvoice(UpdateVatInvoiceBatchParam param);
 

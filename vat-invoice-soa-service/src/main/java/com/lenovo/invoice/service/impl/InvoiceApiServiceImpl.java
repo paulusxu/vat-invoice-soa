@@ -280,6 +280,11 @@ public class InvoiceApiServiceImpl extends BaseService implements InvoiceApiServ
     }
 
     @Override
+    public int updateIsvalid(int valid) {
+        return 0;
+    }
+
+    @Override
     public long updateVatInvoice(UpdateVatInvoiceBatchParam param) {
         long rows = 0;
         try {
