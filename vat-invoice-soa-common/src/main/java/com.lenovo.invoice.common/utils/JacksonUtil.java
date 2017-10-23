@@ -3,6 +3,8 @@ package com.lenovo.invoice.common.utils;
 import org.codehaus.jackson.JsonFactory;
 import org.codehaus.jackson.JsonGenerator;
 import org.codehaus.jackson.JsonParseException;
+import org.codehaus.jackson.JsonParser;
+import org.codehaus.jackson.map.DeserializationConfig;
 import org.codehaus.jackson.map.JsonMappingException;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.slf4j.Logger;
@@ -16,6 +18,10 @@ public class JacksonUtil {
 	private static Logger logger = LoggerFactory.getLogger(JacksonUtil.class);
 	
 	public static final ObjectMapper mapper = new ObjectMapper();
+	static {
+		mapper.configure(DeserializationConfig.Feature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+		mapper.configure(JsonParser.Feature.ALLOW_SINGLE_QUOTES, true);
+	}
 
 	public static String toJson(Object obj) {
 		StringWriter writer = new StringWriter();

@@ -4,7 +4,7 @@
     <groupId>com.lenovo.dtc.buy.invoice</groupId>
     <artifactId>vat-invoice-soa</artifactId>
     <packaging>pom</packaging>
-    <version>3.2.0-SNAPSHOT</version>
+    <version>3.2.1-SNAPSHOT</version>
     <modules>
         <module>vat-invoice-soa-domain</module>
         <module>vat-invoice-soa-common</module>
@@ -335,8 +335,6 @@
             <artifactId>framework-mybatis</artifactId>
             <version>${framework-version}</version>
         </dependency>
-
-
 
         <dependency>
             <groupId>com.lenovo</groupId>
