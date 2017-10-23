@@ -82,7 +82,6 @@ public class ShopHttpClientUtil {
 
 	public static String sendPut(String requestUrl,String params){
 		try {
-			sendGet(requestUrl+"/"+params);
 			byte[] requestBytes = params.getBytes("utf-8"); // 将参数转为二进制流
 			HttpClient httpClient = new HttpClient();// 客户端实例化
 			PutMethod  putMethod = new PutMethod (requestUrl);

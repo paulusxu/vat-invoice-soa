@@ -14,7 +14,6 @@ import com.lenovo.m2.ordercenter.soa.domain.forward.Main;
 import com.lenovo.m2.ordercenter.soa.domain.forward.DeliveryAddress;
 
 
-import org.apache.logging.log4j.util.Strings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
