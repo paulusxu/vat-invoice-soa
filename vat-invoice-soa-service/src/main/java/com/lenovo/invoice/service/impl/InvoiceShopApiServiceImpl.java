@@ -92,6 +92,7 @@ public class InvoiceShopApiServiceImpl implements InvoiceShopApiService {
                 logger.info("synInvoice SMB修改前查询>>" + invoicesJson.toString());
                 if("1".equals(invoicesJson.getString("code"))) {
                     JSONObject jsonObject = invoicesJson.getJSONObject("data");
+                    invoiceShop.setApprovalStatus(3);
                     String pram=getInvoiceJson(jsonObject,invoiceShop).toString();
                     logger.info("synInvoice SMB修改数据>>" + pram);
                     String ret=ShopHttpClientUtil.sendPut(propertiesConfig.getSmbUrl()+ "/invoices/", pram);
