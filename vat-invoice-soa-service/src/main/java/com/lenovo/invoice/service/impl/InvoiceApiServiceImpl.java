@@ -34,11 +34,13 @@ import com.lenovo.m2.stock.soa.api.service.StoreInfoApiService;
 import com.lenovo.m2.stock.soa.domain.param.GetStoreInfoIdParam;
 import com.lenovo.my.common.utils.ErrorUtil;
 import org.apache.commons.beanutils.BeanUtils;
+import org.apache.poi.ss.formula.functions.Roman;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.rmi.Remote;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -1268,5 +1270,14 @@ public class InvoiceApiServiceImpl extends BaseService implements InvoiceApiServ
             return deliverGoods;
         }
         return null;
+    }
+
+    public static void main(String[] args) {
+        String [] c=new String[]{"1","2","3","4","5","6","7"};
+        int max=c.length-1;
+        int min=0;
+        Random random = new Random();
+        int s = random.nextInt(max)%(max-min+1) + min;
+        System.out.println(c[s]);
     }
 }
