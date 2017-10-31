@@ -65,7 +65,7 @@ public interface InvoiceApiService {
     int updateThrowingStatus(String orderCode, int status);
 
     //更改是否有效isvalid
-    int updateIsvalid(int valid);
+    int updateIsvalid(long vatInvoiceId,int valid);
     //修改单条增票
     long updateVatInvoice(UpdateVatInvoiceBatchParam param);
 

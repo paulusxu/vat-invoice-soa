@@ -191,8 +191,25 @@
     UPDATE vatinvoice SET isvalid=1 WHERE id=#{zid} AND isvalid=0 AND shopid=#{shopid}
   </update>
 
-  <insert id="insertVatInvoiceInfo" parameterType="com.lenovo.invoice.domain.VatInvoice" >
+  <insert id="insertVatInvoiceInfoForChange" parameterType="com.lenovo.invoice.domain.VatInvoice" >
+    <selectKey resultType="java.lang.Long" keyProperty="id" order="AFTER">
+      SELECT @@IDENTITY
+    </selectKey>
 
+    insert into vatinvoice (CustomerName,
+    TaxNo, BankName, AccountNo,
+    Address, PhoneNo, CreateTime,
+    CreateBy, IsShared,isNeedMerge,ShopId,ShardedBy,ShardedTime,faid,storesid,type,isvalid,isCheck)
+    values (#{customername,jdbcType=VARCHAR},
+    #{taxno,jdbcType=VARCHAR}, #{bankname,jdbcType=VARCHAR}, #{accountno,jdbcType=VARCHAR},
+    #{address,jdbcType=VARCHAR}, #{phoneno,jdbcType=VARCHAR},now(),
+    #{createby,jdbcType=VARCHAR},
+    #{isshared,jdbcType=INTEGER},#{isNeedMerge,jdbcType=INTEGER},
+    #{shopid},#{shardedby},#{shardedtime},#{faid},#{storesid},#{type},#{isvalid},#{ischeck}
+    )
+  </insert>
+
+  <insert id="insertVatInvoiceInfo" parameterType="com.lenovo.invoice.domain.VatInvoice" >
     <selectKey resultType="java.lang.Long" keyProperty="id" order="AFTER">
       SELECT @@IDENTITY
     </selectKey>
@@ -209,6 +226,11 @@
     #{shopid},#{shardedby},#{shardedtime},#{faid},#{storesid},#{type}
     )
   </insert>
+
+  <update id="updateIsvalid">
+    update vatinvoice
+    set isvalid = #{valid} WHERE id=#{vatInvoiceId}
+  </update>
 
 
   <update id="updateVatInvoice" parameterType="com.lenovo.invoice.domain.VatInvoice" >

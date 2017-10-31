@@ -16,6 +16,8 @@ public interface VatInvoiceMapper {
 
     long insertVatInvoiceInfo(VatInvoice vatInvoice);
 
+    long insertVatInvoiceInfoForChange(VatInvoice vatInvoice);
+
     long updateVatInvoice(VatInvoice vatInvoice);
 
     long updateVatInvoiceAutoCheck(VatInvoice vatInvoice);
@@ -49,6 +51,8 @@ public interface VatInvoiceMapper {
     void updateIsvalid(@Param("zid") String zid);
 
     long updateAutoIsCheck(@Param("id") long id,@Param("type") int type);
+
+    int updateIsvalid(@Param("vatInvoiceId") long vatInvoiceId,@Param("valid") int valid);
 
     void updateVatInvoiceIsvalid(@Param("zid") String zid,@Param("shopid") String shopid);
 

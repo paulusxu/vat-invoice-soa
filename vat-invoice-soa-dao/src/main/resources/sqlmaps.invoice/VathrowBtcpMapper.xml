@@ -302,6 +302,7 @@
     set ThrowingStatus = #{status} WHERE OrderCode=#{orderCode}  AND IsUsable=1
   </update>
 
+
     <update id="updateVatInvoice" parameterType="com.lenovo.invoice.domain.param.UpdateVatInvoiceBatchParam">
     UPDATE vathrowbtcp
     set Title=#{customerName},

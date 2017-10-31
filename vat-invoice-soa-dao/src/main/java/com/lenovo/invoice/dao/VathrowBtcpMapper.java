@@ -28,6 +28,7 @@ public interface VathrowBtcpMapper {
 
     int updateThrowingStatus(@Param("orderCode") String orderCode, @Param("status") int status);
 
+
     int updateVathrowbtcp(@Param("record") VathrowBtcp record);
 
     List<VathrowBtcp> getThrowBtcpList();
