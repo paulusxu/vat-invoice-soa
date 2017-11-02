@@ -308,7 +308,7 @@ public class InvoiceApiServiceImpl extends BaseService implements InvoiceApiServ
         LOGGER_THROWSTATUS.info("updateIsvalid Start:{},{}", vatInvoiceId, valid);
         int rows = 0;
         try {
-            rows = vatInvoiceMapper.updateIsvalid(vatInvoiceId, valid);
+            rows = vatInvoiceMapper.updateIsvalidCom(vatInvoiceId, valid);
             LOGGER.info("UpdateIsvalid End:{},{}", vatInvoiceId, rows);
         } catch (Exception e) {
             LOGGER_THROWSTATUS.error(e.getMessage(), e);

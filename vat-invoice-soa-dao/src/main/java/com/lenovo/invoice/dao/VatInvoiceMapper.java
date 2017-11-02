@@ -52,7 +52,7 @@ public interface VatInvoiceMapper {
 
     long updateAutoIsCheck(@Param("id") long id,@Param("type") int type);
 
-    int updateIsvalid(@Param("vatInvoiceId") long vatInvoiceId,@Param("valid") int valid);
+    int updateIsvalidCom(@Param("vatInvoiceId") long vatInvoiceId,@Param("valid") int valid);
 
     void updateVatInvoiceIsvalid(@Param("zid") String zid,@Param("shopid") String shopid);
 
