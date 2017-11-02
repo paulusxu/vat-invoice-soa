@@ -28,6 +28,7 @@ public interface VathrowBtcpMapper {
 
     int updateThrowingStatus(@Param("orderCode") String orderCode, @Param("status") int status);
 
+
     int updateVathrowbtcp(@Param("record") VathrowBtcp record);
 
     List<VathrowBtcp> getThrowBtcpList();
@@ -36,9 +37,13 @@ public interface VathrowBtcpMapper {
 
     List<VathrowBtcp> getOrderListByZidPage(Map map);
 
+    List<VathrowBtcp> getNotThrowBtcpOrderListPage(Map map);
+
     int getNotThrowBtcpVatInvoiceCount(Map map);
 
     int getOrderListByZidPageCount(Map map);
+
+    int getNotThrowBtcpOrderListPageCount(Map map);
 
     long updateZid(@Param("record") VatInvoice record);
 

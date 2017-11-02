@@ -136,6 +136,28 @@ public class InvoiceApiServiceImpl extends BaseService implements InvoiceApiServ
     }
 
     @Override
+    public PageModel2<VathrowBtcp> getNotThrowBtcpOrderListPage(PageQuery pageQuery, Map map) {
+        List<VathrowBtcp> vathrowBtcpList = null;
+        try {
+            int count = vathrowBtcpMapper.getNotThrowBtcpOrderListPageCount(map);
+            pageQuery.setTotalCount(count);
+            if (pageQuery.getTotalCount() == 0) {
+                PageModel2<VathrowBtcp> pageModel2 = new PageModel2<VathrowBtcp>(pageQuery, new ArrayList<VathrowBtcp>());
+                return pageModel2;
+            }
+
+            int pageIndex = (pageQuery.getPageNum() - 1) * pageQuery.getPageSize();
+            int pageSize = pageQuery.getPageSize();
+            map.put("pageIndex", pageIndex);//0
+            map.put("pageSize", pageSize);//10
+            vathrowBtcpList = vathrowBtcpMapper.getNotThrowBtcpOrderListPage(map);
+        } catch (Exception e) {
+            LOGGER.error(e.getMessage(), e);
+        }
+        return new PageModel2<VathrowBtcp>(pageQuery, vathrowBtcpList);
+    }
+
+    @Override
     public PageModel2<VatInvoice> getNotThrowBtcpVatInvoicePage(PageQuery pageQuery, Map map) {
         List<VatInvoice> invoiceList = null;
         try {
@@ -270,7 +292,7 @@ public class InvoiceApiServiceImpl extends BaseService implements InvoiceApiServ
 
     @Override
     public int updateThrowingStatus(String orderCode, int status) {
-        LOGGER_THROWSTATUS.info("ThrowStatusMessageCustomer Start:{{},{}", orderCode, status);
+        LOGGER_THROWSTATUS.info("ThrowStatusMessageCustomer Start:{},{}", orderCode, status);
         int rows = 0;
         try {
             rows = vathrowBtcpMapper.updateThrowingStatus(orderCode, status);
@@ -282,8 +304,16 @@ public class InvoiceApiServiceImpl extends BaseService implements InvoiceApiServ
     }
 
     @Override
-    public int updateIsvalid(int valid) {
-        return 0;
+    public int updateIsvalid(long vatInvoiceId,int valid) {
+        LOGGER_THROWSTATUS.info("updateIsvalid Start:{},{}", vatInvoiceId, valid);
+        int rows = 0;
+        try {
+            rows = vatInvoiceMapper.updateIsvalid(vatInvoiceId, valid);
+            LOGGER.info("UpdateIsvalid End:{},{}", vatInvoiceId, rows);
+        } catch (Exception e) {
+            LOGGER_THROWSTATUS.error(e.getMessage(), e);
+        }
+        return rows;
     }
 
     @Override
@@ -602,7 +632,7 @@ public class InvoiceApiServiceImpl extends BaseService implements InvoiceApiServ
                 vatInvoice.setType(type);
                 vatInvoice.setStoresid(storeId);
 
-                long rows = vatInvoiceMapper.insertVatInvoiceInfo(vatInvoice);
+                long rows = vatInvoiceMapper.insertVatInvoiceInfoForChange(vatInvoice);
                 if (rows > 0) {
                     //写映射表
                     MemberVatInvoice memberVatInvoice = memberVatInvoiceService.getMemberVatInvoice(vatInvoice.getId(), lenovoId);
