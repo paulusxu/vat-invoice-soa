@@ -227,7 +227,7 @@
     )
   </insert>
 
-  <update id="updateIsvalid">
+  <update id="updateIsvalidCom">
     update vatinvoice
     set isvalid = #{valid} WHERE id=#{vatInvoiceId}
   </update>
