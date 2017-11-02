@@ -129,10 +129,34 @@
         ORDER BY ThrowingStatus
     </select>
 
+    <select id="getNotThrowBtcpOrderListPageCount" resultType="java.lang.Integer" parameterType="java.util.Map">
+        SELECT COUNT(1) FROM vathrowbtcp WHERE OrderStatus=3 AND ThrowingStatus IN (0,4)  AND IsUsable=1
+        <if test="orderCode != null and orderCode!=''">
+            AND OrderCode=#{orderCode}
+        </if>
+        <if test="btcpSo != null and btcpSo!=''">
+            AND OutId=#{btcpSo}
+        </if>
+        ORDER BY ThrowingStatus
+    </select>
+
     <select id="getOrderListByZidPage" resultMap="BaseResultMap" parameterType="java.util.Map">
         SELECT
         <include refid="Base_Column_List"/>
         FROM vathrowbtcp WHERE OrderStatus=3 AND zid=#{zid} AND ThrowingStatus IN (0,2,4)  AND IsUsable=1
+        <if test="orderCode != null and orderCode!=''">
+            AND OrderCode=#{orderCode}
+        </if>
+        <if test="btcpSo != null and btcpSo!=''">
+            AND OutId=#{btcpSo}
+        </if>
+        ORDER BY ThrowingStatus limit ${pageIndex},${pageSize}
+    </select>
+
+    <select id="getNotThrowBtcpOrderListPage" resultMap="BaseResultMap" parameterType="java.util.Map">
+        SELECT
+        <include refid="Base_Column_List"/>
+        FROM vathrowbtcp WHERE OrderStatus=3 AND ThrowingStatus IN (0,4)  AND IsUsable=1
         <if test="orderCode != null and orderCode!=''">
             AND OrderCode=#{orderCode}
         </if>
