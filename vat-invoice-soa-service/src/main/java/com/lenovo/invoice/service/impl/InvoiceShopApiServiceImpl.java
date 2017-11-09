@@ -58,6 +58,9 @@ public class InvoiceShopApiServiceImpl implements InvoiceShopApiService {
                     invoiceShop.setTaxNoType("1");
                 }
             }
+            if(invoiceShop.getCompanyType()==0){
+                invoiceShop.setTaxNoType("");
+            }
             if (invoiceShop.getSynType() == 1) {
                 if (StringUtils.isEmpty(invoiceShop.getPayMan())) {
                     invoiceShop.setPayMan(invoiceShop.getCustomerName());
