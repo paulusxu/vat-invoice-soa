@@ -58,7 +58,7 @@ public class InvoiceShopApiServiceImpl implements InvoiceShopApiService {
                     invoiceShop.setTaxNoType("1");
                 }
             }
-            if(invoiceShop.getCompanyType()==0){
+            if(invoiceShop.getCompanyType()!=null&&invoiceShop.getCompanyType()==0){
                 invoiceShop.setTaxNoType("");
             }
             if (invoiceShop.getSynType() == 1) {
@@ -117,7 +117,7 @@ public class InvoiceShopApiServiceImpl implements InvoiceShopApiService {
                 logger.info("synInvoice SMB删除前查询>>" + invoicesJson.toString());
                 if("1".equals(invoicesJson.getString("code"))) {
                     JSONObject jsonObject = invoicesJson.getJSONObject("data");
-                    jsonObject.put("datafrom", "SMB");
+                    jsonObject.put("datafrom", "B2C");
                     jsonObject.put("datadependon", "SMB");
                     String ret=ShopHttpClientUtil.sendDelete(propertiesConfig.getSmbUrl()+ "/invoices/", jsonObject.toString());
                     logger.info("synInvoice SMB删除返回>>" + ret);
@@ -415,7 +415,7 @@ public class InvoiceShopApiServiceImpl implements InvoiceShopApiService {
         invoiceJson.put("operationtype", "");
         invoiceJson.put("approvalstatus", invoiceShop.getApprovalStatus());
         invoiceJson.put("soldtocode", invoiceShop.getSoldToCode());
-        invoiceJson.put("datafrom", "SMB");
+        invoiceJson.put("datafrom", "B2C");
         invoiceJson.put("datadependon", "SMB");
         return invoiceJson;
     }
@@ -469,7 +469,7 @@ public class InvoiceShopApiServiceImpl implements InvoiceShopApiService {
             invoiceJson.put("address", invoiceShop.getAddress());
             invoiceJson.put("phone", invoiceShop.getPhoneNo());
         }
-        invoiceJson.put("datafrom", "SMB");
+        invoiceJson.put("datafrom", "B2C");
         invoiceJson.put("datadependon", "SMB");
         if(invoiceShop.getIsDefault()!=null){
             invoiceJson.put("isdefault", invoiceShop.getIsDefault());
