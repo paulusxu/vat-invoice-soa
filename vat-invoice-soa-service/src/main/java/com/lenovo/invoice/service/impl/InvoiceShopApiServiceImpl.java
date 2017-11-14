@@ -25,6 +25,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.text.SimpleDateFormat;
 import java.util.*;
 
 /**
@@ -387,7 +388,13 @@ public class InvoiceShopApiServiceImpl implements InvoiceShopApiService {
 //            invoiceJson.put("fileurl", invoiceShop.getFileURL());
             JSONObject jsonObject=new JSONObject();
             jsonObject.put("accguid",invoiceShop.getFileURL());
-            jsonObject.put("enddate","2027-01-01");
+            Calendar calendar = Calendar.getInstance();
+            Date date = new Date();
+            calendar.setTime(date);
+            calendar.add(Calendar.YEAR, +1);
+            date = calendar.getTime();
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+            jsonObject.put("enddate",sdf.format(date));
             invoiceJson.put("file",jsonObject);
         }else {
             invoiceJson.put("isneedacc", 0);
@@ -429,7 +436,14 @@ public class InvoiceShopApiServiceImpl implements InvoiceShopApiService {
 //            invoiceJson.put("fileurl", invoiceShop.getFileURL());
             JSONObject jsonObject=new JSONObject();
             jsonObject.put("accguid",invoiceShop.getFileURL());
-            jsonObject.put("enddate","2027-01-01");
+
+            Calendar calendar = Calendar.getInstance();
+            Date date = new Date();
+            calendar.setTime(date);
+            calendar.add(Calendar.YEAR, +1);
+            date = calendar.getTime();
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+            jsonObject.put("enddate",sdf.format(date));
             invoiceJson.put("file",jsonObject);
         }
         if(StringUtil.isNotEmpty(invoiceShop.getCustomerName())){
