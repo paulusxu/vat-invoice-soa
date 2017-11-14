@@ -393,7 +393,7 @@ public class InvoiceShopApiServiceImpl implements InvoiceShopApiService {
             calendar.setTime(date);
             calendar.add(Calendar.YEAR, +1);
             date = calendar.getTime();
-            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
             jsonObject.put("enddate",sdf.format(date));
             invoiceJson.put("file",jsonObject);
         }else {
@@ -442,7 +442,7 @@ public class InvoiceShopApiServiceImpl implements InvoiceShopApiService {
             calendar.setTime(date);
             calendar.add(Calendar.YEAR, +1);
             date = calendar.getTime();
-            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
             jsonObject.put("enddate",sdf.format(date));
             invoiceJson.put("file",jsonObject);
         }
