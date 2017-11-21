@@ -1,5 +1,7 @@
 package com.lenovo.invoice.service.impl;
 
+import com.google.common.base.Strings;
+import com.google.common.collect.Maps;
 import com.lenovo.invoice.common.utils.*;
 import com.lenovo.invoice.dao.VatInvoiceMapper;
 import com.lenovo.invoice.dao.VathrowBtcpMapper;
@@ -14,7 +16,6 @@ import com.lenovo.m2.ordercenter.soa.domain.forward.Main;
 import com.lenovo.m2.ordercenter.soa.domain.forward.DeliveryAddress;
 
 
-import org.apache.logging.log4j.util.Strings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -97,8 +98,18 @@ public class VatInvoiceServiceImpl implements VatInvoiceService {
 
                         VatInvoice vatInvoice = getVatInvoiceByZid(zid, shopid);
                         if (vatInvoice != null) {
-                            vathrowBtcp.setTitle(vatInvoice.getCustomername());//发票抬头
-                            vathrowBtcp.setTaxpayeridentity(vatInvoice.getTaxno());//税号
+                            String customername = vatInvoice.getCustomername();
+                            String taxno = vatInvoice.getTaxno();
+                            //自动校验抬头和税号
+                            String autoTaxNo = AutoCheckInvoiceUtil.getTaxNo(customername);
+                            if (Strings.isNullOrEmpty(autoTaxNo) || !autoTaxNo.equals(taxno)) {
+                                //自动审核失败 需要人工审核
+                                vatInvoice.setCheckBy("admin_check");
+                                vatInvoice.setIscheck(4);
+                            }
+
+                            vathrowBtcp.setTitle(customername);//发票抬头
+                            vathrowBtcp.setTaxpayeridentity(taxno);//税号
                             vathrowBtcp.setBankno(vatInvoice.getAccountno());//开户账号
                             vathrowBtcp.setDepositbank(vatInvoice.getBankname());//开户行
                             vathrowBtcp.setRegisteraddress(vatInvoice.getAddress());//注册地址
@@ -121,7 +132,7 @@ public class VatInvoiceServiceImpl implements VatInvoiceService {
     @Override
     public long initVathrowBtcp(String orderCode, String zid, int shopId) {
         long rows = 0;
-        LOGGER_PAID.info("InitVathrowBtcp:orderCode:{},zid:{},shopId:{}",orderCode,zid,shopId);
+        LOGGER_PAID.info("InitVathrowBtcp:orderCode:{},zid:{},shopId:{}", orderCode, zid, shopId);
         try {
             if (shopId != 8 && shopId != 14 && shopId != 15) {
                 VathrowBtcp vathrowBtcp = new VathrowBtcp();
@@ -153,7 +164,7 @@ public class VatInvoiceServiceImpl implements VatInvoiceService {
         try {
             for (VathrowBtcp vathrowBtcp : btcpList) {
                 LOGGER_BTCP.info("开始准备抛单orderId=[" + vathrowBtcp.getOrderCode() + "]");
-                Map<String, String> map = new HashMap<String, String>();
+                Map<String, String> map = Maps.newHashMap();
                 String xml = "";
                 String context = "<CUSTOMERNAME>" + vathrowBtcp.getTitle() + "</CUSTOMERNAME>";
                 context += "<TAXNO>" + vathrowBtcp.getTaxpayeridentity() + "</TAXNO>";
@@ -212,9 +223,13 @@ public class VatInvoiceServiceImpl implements VatInvoiceService {
                         }
                     } else {
                         //<Result><Code>213_700_020</Code><Message>213_700_020:只有审批被拒绝的情况下才可二次抛送</Message></Result>
-                        if (!resCode.equals("213_700_020")) {
-                            int rows = vathrowBtcpMapper.updateByOrderCode(vathrowBtcp.getOrderCode(), 4, message);
+                        int code = 4;
+                        if (resCode.equals("213_700_017") || resCode.equals("9999")) {
+                            //213_700_017 正向订单还未同步，请稍后在抛
+                            //9999接口调用次数超限制的报错为统一报错
+                            code = 0;
                         }
+                        int rows = vathrowBtcpMapper.updateByOrderCode(vathrowBtcp.getOrderCode(), code, message);
                     }
 
                 } catch (Exception e) {

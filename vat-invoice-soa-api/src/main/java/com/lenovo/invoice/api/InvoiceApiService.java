@@ -54,6 +54,9 @@ public interface InvoiceApiService {
     //admin后台获取某个增票下订单列表
     PageModel2<VathrowBtcp> getOrderListByZidPage(PageQuery pageQuery, Map map);
 
+    PageModel2<VathrowBtcp> getNotThrowBtcpOrderListPage(PageQuery pageQuery, Map map);
+
+
     PageModel2<VatInvoice> getNotThrowBtcpVatInvoicePage(PageQuery pageQuery, Map map);
 
     //合并zid,此zid下的订单一起合并
@@ -64,6 +67,8 @@ public interface InvoiceApiService {
     //是否可抛送增票 订单推送
     int updateThrowingStatus(String orderCode, int status);
 
+    //更改是否有效isvalid
+    int updateIsvalid(long vatInvoiceId,int valid);
     //修改单条增票
     long updateVatInvoice(UpdateVatInvoiceBatchParam param);
 

@@ -134,6 +134,28 @@ public class InvoiceApiServiceImpl extends BaseService implements InvoiceApiServ
     }
 
     @Override
+    public PageModel2<VathrowBtcp> getNotThrowBtcpOrderListPage(PageQuery pageQuery, Map map) {
+        List<VathrowBtcp> vathrowBtcpList = null;
+        try {
+            int count = vathrowBtcpMapper.getNotThrowBtcpOrderListPageCount(map);
+            pageQuery.setTotalCount(count);
+            if (pageQuery.getTotalCount() == 0) {
+                PageModel2<VathrowBtcp> pageModel2 = new PageModel2<VathrowBtcp>(pageQuery, new ArrayList<VathrowBtcp>());
+                return pageModel2;
+            }
+
+            int pageIndex = (pageQuery.getPageNum() - 1) * pageQuery.getPageSize();
+            int pageSize = pageQuery.getPageSize();
+            map.put("pageIndex", pageIndex);//0
+            map.put("pageSize", pageSize);//10
+            vathrowBtcpList = vathrowBtcpMapper.getNotThrowBtcpOrderListPage(map);
+        } catch (Exception e) {
+            LOGGER.error(e.getMessage(), e);
+        }
+        return new PageModel2<VathrowBtcp>(pageQuery, vathrowBtcpList);
+    }
+
+    @Override
     public PageModel2<VatInvoice> getNotThrowBtcpVatInvoicePage(PageQuery pageQuery, Map map) {
         List<VatInvoice> invoiceList = null;
         try {
@@ -268,11 +290,24 @@ public class InvoiceApiServiceImpl extends BaseService implements InvoiceApiServ
 
     @Override
     public int updateThrowingStatus(String orderCode, int status) {
-        LOGGER_THROWSTATUS.info("ThrowStatusMessageCustomer Start:{{},{}", orderCode, status);
+        LOGGER_THROWSTATUS.info("ThrowStatusMessageCustomer Start:{},{}", orderCode, status);
         int rows = 0;
         try {
             rows = vathrowBtcpMapper.updateThrowingStatus(orderCode, status);
             LOGGER.info("ThrowStatusMessageCustomer End:{},{}", orderCode, rows);
+        } catch (Exception e) {
+            LOGGER_THROWSTATUS.error(e.getMessage(), e);
+        }
+        return rows;
+    }
+
+    @Override
+    public int updateIsvalid(long vatInvoiceId,int valid) {
+        LOGGER_THROWSTATUS.info("updateIsvalid Start:{},{}", vatInvoiceId, valid);
+        int rows = 0;
+        try {
+            rows = vatInvoiceMapper.updateIsvalidCom(vatInvoiceId, valid);
+            LOGGER.info("UpdateIsvalid End:{},{}", vatInvoiceId, rows);
         } catch (Exception e) {
             LOGGER_THROWSTATUS.error(e.getMessage(), e);
         }
@@ -316,7 +351,7 @@ public class InvoiceApiServiceImpl extends BaseService implements InvoiceApiServ
                 invoiceReviewParam.setFailureReason(increaseOrderRequest.getReason());
                 orderInvoiceService.updateInvoiceReviewStatus(invoiceReviewParam);
 
-                updateThrowingStatus(orderId + "", status == 1 ? 3 : (status == 2 ? 1 : 2));
+                updateThrowingStatus(orderId + "", status == 1 ? 3 : (status == 2 ? 4 : 2));
                 RemoteResult<Invoice> remoteResultInvoice = orderDetailService.getInvoiceByOrderId(orderId);
                 LOGGER_BTCP.info("btcpSyncVatInvoice:remoteResultInvoice{}", JacksonUtil.toJson(remoteResultInvoice));
 
@@ -535,7 +570,8 @@ public class InvoiceApiServiceImpl extends BaseService implements InvoiceApiServ
         RemoteResult remoteResult = new RemoteResult(false);
         try {
             String lenovoId = param.getLenovoId();
-            String customerName = param.getCustomerName().replace(")","）").replace("(","（");;
+            String customerName = param.getCustomerName().replace(")", "）").replace("(", "（");
+            ;
             String taxNo = param.getTaxNo();
             String bankName = param.getBankName();
             String accountNo = param.getAccountNo();
@@ -594,7 +630,7 @@ public class InvoiceApiServiceImpl extends BaseService implements InvoiceApiServ
                 vatInvoice.setType(type);
                 vatInvoice.setStoresid(storeId);
 
-                long rows = vatInvoiceMapper.insertVatInvoiceInfo(vatInvoice);
+                long rows = vatInvoiceMapper.insertVatInvoiceInfoForChange(vatInvoice);
                 if (rows > 0) {
                     //写映射表
                     MemberVatInvoice memberVatInvoice = memberVatInvoiceService.getMemberVatInvoice(vatInvoice.getId(), lenovoId);
@@ -636,7 +672,8 @@ public class InvoiceApiServiceImpl extends BaseService implements InvoiceApiServ
         RemoteResult remoteResult = new RemoteResult(false);
         try {
             String lenovoId = param.getLenovoId();
-            String customerName = param.getCustomerName().replace(")","）").replace("(","（");;
+            String customerName = param.getCustomerName().replace(")", "）").replace("(", "（");
+            ;
             String taxNo = param.getTaxNo();
             String bankName = param.getBankName();
             String accountNo = param.getAccountNo();
@@ -979,14 +1016,14 @@ public class InvoiceApiServiceImpl extends BaseService implements InvoiceApiServ
             for (int i = 0; i < faDatas.size(); i++) {
                 FaInvoiceResult faInvoiceResult = new FaInvoiceResult();
                 faInvoiceResult.setFaid(faDatas.get(i).getFaid());
-                if(getInvoiceTypes.getOpenDz().equals("no")){
+                if (getInvoiceTypes.getOpenDz().equals("no")) {
                     faInvoiceResult.setInvoiceList(getInvoiceTypes(getInvoiceTypeParam.getShopId(),
                             getInvoiceTypeParam.getSalesType(),
                             faDatas.get(i).getFatype(),
                             faDatas.get(i).getFaid(),
                             getInvoiceTypes.getOpenO2O(),
                             getInvoiceTypes.getOpenZy()));
-                }else {
+                } else {
                     faInvoiceResult.setInvoiceList(getInvoiceTypesNOdz(getInvoiceTypeParam.getShopId(),
                             getInvoiceTypeParam.getSalesType(),
                             faDatas.get(i).getFatype(),
@@ -1128,9 +1165,9 @@ public class InvoiceApiServiceImpl extends BaseService implements InvoiceApiServ
         if (tenant.getShopId() == 14 && "on".equals(getInvoiceTypes.getHuiShangZF())) {//惠商
             Payment payment = new Payment();
             payment.setDefaultType(PaymentType.ZXZF);
-            if(getCiParam.isSilenceOrder()){//静默下单只能在线支付
+            if (getCiParam.isSilenceOrder()) {//静默下单只能在线支付
                 payment.setPaymentTypes(Arrays.asList(new PaymentType[]{PaymentType.ZXZF}));
-            }else {
+            } else {
                 payment.setPaymentTypes(Arrays.asList(new PaymentType[]{PaymentType.ZXZF, PaymentType.XXZZ}));
             }
             return payment;
