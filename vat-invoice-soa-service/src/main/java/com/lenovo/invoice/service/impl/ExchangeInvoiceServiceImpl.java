@@ -17,7 +17,6 @@ import com.lenovo.invoice.domain.result.GetVatInvoiceInfoResult;
 import com.lenovo.invoice.service.BaseService;
 import com.lenovo.invoice.service.VatInvoiceService;
 import com.lenovo.m2.address.soa.api.AddressService;
-import com.lenovo.m2.address.soa.domain.param.ConsigneeAddressParam;
 import com.lenovo.m2.arch.framework.domain.*;
 import com.lenovo.m2.ordercenter.soa.api.model.forward.InvoiceChangeApi;
 import com.lenovo.m2.ordercenter.soa.api.vat.VatApiOrderCenter;
@@ -668,7 +667,7 @@ public class ExchangeInvoiceServiceImpl extends BaseService implements ExchangeI
                 }
 
                 //添加成功，添加收票地址
-                ConsigneeAddressParam param1 = new ConsigneeAddressParam();
+                /*ConsigneeAddressParam param1 = new ConsigneeAddressParam();
                 param1.setLenovoId(invoiceChangeApi.getLenovoId());
                 param1.setName(name);
                 param1.setMobile(mobile);
@@ -692,7 +691,7 @@ public class ExchangeInvoiceServiceImpl extends BaseService implements ExchangeI
                     remoteResult.setResultMsg("添加收票地址失败，"+remoteResult3.getResultMsg());
                     LOGGER.info("exchangeToVat==返回值==添加收票地址失败==" + JacksonUtil.toJson(remoteResult3));
                     return remoteResult;
-                }
+                }*/
 
                 //添加成功，再次判断订单状态
                 LOGGER.info("exchangeToVat==获取订单信息==参数==" + orderCode);
