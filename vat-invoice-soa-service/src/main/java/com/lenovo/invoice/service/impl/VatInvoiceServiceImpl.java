@@ -144,27 +144,27 @@ public class VatInvoiceServiceImpl implements VatInvoiceService {
                 rows = vathrowBtcpMapper.insertVathrowBtcp(vathrowBtcp);
                 //自动审核增票
                 VatInvoice vatInvoice = getVatInvoiceByZid(zid, shopId + "");
-                String customername=vatInvoice.getCustomername();
-                String taxNo = vatInvoice.getTaxno();
-                String autoTaxNo = AutoCheckInvoiceUtil.getTaxNo(customername);
-                if (Strings.isNullOrEmpty(autoTaxNo)) {
-                    //自动审核失败
-                    vatInvoice.setCheckBy("admin_check");
-                    vatInvoice.setIscheck(4);
-                    vatInvoiceMapper.updateVatInvoiceAutoCheck(vatInvoice);
-                }else {
-                    if (!autoTaxNo.equals(taxNo)) {
+                if(vatInvoice!=null){
+                    String customername=vatInvoice.getCustomername();
+                    String taxNo = vatInvoice.getTaxno();
+                    String autoTaxNo = AutoCheckInvoiceUtil.getTaxNo(customername);
+                    if (Strings.isNullOrEmpty(autoTaxNo)) {
+                        //自动审核失败
                         vatInvoice.setCheckBy("admin_check");
                         vatInvoice.setIscheck(4);
+                        vatInvoiceMapper.updateVatInvoiceAutoCheck(vatInvoice);
                     }else {
-                        vatInvoice.setCheckBy("admin_check");
-                        vatInvoice.setIscheck(1);
+                        if (!autoTaxNo.equals(taxNo)) {
+                            vatInvoice.setCheckBy("admin_check");
+                            vatInvoice.setIscheck(4);
+                        }else {
+                            vatInvoice.setCheckBy("admin_check");
+                            vatInvoice.setIscheck(1);
+                        }
+                        vatInvoiceMapper.updateVatInvoiceAutoCheck(vatInvoice);
                     }
-                    vatInvoiceMapper.updateVatInvoiceAutoCheck(vatInvoice);
                 }
-
             }
-
         } catch (Exception e) {
             LOGGER_PAID.error(e.getMessage());
         }
