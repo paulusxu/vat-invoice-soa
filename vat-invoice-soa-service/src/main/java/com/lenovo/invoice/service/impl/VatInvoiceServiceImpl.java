@@ -5,6 +5,7 @@ import com.google.common.collect.Maps;
 import com.lenovo.invoice.common.utils.*;
 import com.lenovo.invoice.dao.VatInvoiceMapper;
 import com.lenovo.invoice.dao.VathrowBtcpMapper;
+import com.lenovo.invoice.domain.ChangeInvoiceHistory;
 import com.lenovo.invoice.domain.VatInvoice;
 import com.lenovo.invoice.domain.VathrowBtcp;
 import com.lenovo.invoice.service.VatInvoiceService;
@@ -141,6 +142,27 @@ public class VatInvoiceServiceImpl implements VatInvoiceService {
                 vathrowBtcp.setZid(zid);
                 //初始化
                 rows = vathrowBtcpMapper.insertVathrowBtcp(vathrowBtcp);
+                //自动审核增票
+                VatInvoice vatInvoice = getVatInvoiceByZid(zid, shopId + "");
+                String customername=vatInvoice.getCustomername();
+                String taxNo = vatInvoice.getTaxno();
+                String autoTaxNo = AutoCheckInvoiceUtil.getTaxNo(customername);
+                if (Strings.isNullOrEmpty(autoTaxNo)) {
+                    //自动审核失败
+                    vatInvoice.setCheckBy("admin_check");
+                    vatInvoice.setIscheck(4);
+                    vatInvoiceMapper.updateVatInvoiceAutoCheck(vatInvoice);
+                }else {
+                    if (!autoTaxNo.equals(taxNo)) {
+                        vatInvoice.setCheckBy("admin_check");
+                        vatInvoice.setIscheck(4);
+                    }else {
+                        vatInvoice.setCheckBy("admin_check");
+                        vatInvoice.setIscheck(1);
+                    }
+                    vatInvoiceMapper.updateVatInvoiceAutoCheck(vatInvoice);
+                }
+
             }
 
         } catch (Exception e) {
