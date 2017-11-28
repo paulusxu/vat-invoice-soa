@@ -99,7 +99,17 @@ public class InvoiceShopApiServiceImpl implements InvoiceShopApiService {
                     if(jsonObject.getInteger("companytype")==0){
                         invoiceShop.setTaxNoType("");
                     }
-                    if(invoiceShop.getIsDefault()==1&&jsonObject.getInteger("isdefault")==0){}else {
+                    if(invoiceShop.getIsDefault()==1&&jsonObject.getInteger("isdefault")==0){
+                        String ret=ShopHttpClientUtil.sendPut(propertiesConfig.getSmbUrl()+ "/setdefault/"+getMemberinfoid(invoiceShop.getLenovoID())+"/"+invoiceShop.getUuid(),"");
+                        logger.info("synInvoice SMB设置默认返回>>" + ret);
+                        JSONObject retJson=JSONObject.parseObject(ret);
+                        if("0".equals(retJson.getString("code"))){
+                            remoteResult.setSuccess(true);
+                        }
+                        remoteResult.setResultCode(retJson.getString("code"));
+                        remoteResult.setResultMsg(retJson.getString("msg"));
+                        return remoteResult;
+                    }else {
                         invoiceShop.setApprovalStatus(3);
                     }
                     String pram=getInvoiceJson(jsonObject,invoiceShop).toString();
@@ -647,9 +657,15 @@ public class InvoiceShopApiServiceImpl implements InvoiceShopApiService {
 //            System.out.println(invoiceJson.toString());
 //            System.out.println(retJson.toString());
 //            JSONObject ret=ShopHttpClientUtil.sendGet("https://api-dev.unifiedcloud.lenovo.com/pcsd-btbp-invoice/memberinvoice/00182108-082a-45bc-b8b2-2181800bb72c/1");
-            JSONObject ret=ShopHttpClientUtil.sendGet("https://api-dev.unifiedcloud.lenovo.com/pcsd-btbp-invoice/invoices/dc079cdd-f59a-4292-a70b-a7fb2b46a976");
+//            JSONObject ret=ShopHttpClientUtil.sendGet("https://api-dev.unifiedcloud.lenovo.com/pcsd-btbp-invoice/invoices/dc079cdd-f59a-4292-a70b-a7fb2b46a976");
 
 //            String ret=ShopHttpClientUtil.sendDelete("http://10.99.206.102:8014/invoices", "{\"approvalstatus\":3,\"phone\":\"手机号\",\"bankid\":\"3342342323\",\"memberinfoid\":\"00182108-082a-45bc-b8b2-2181800bb72c\",\"fileurl\":\"x\",\"taxnotype\":1,\"invoicetype\":0,\"createtime\":1505788879000,\"id\":\"8ed6b48c-3626-4c48-b6b1-06e8bed67ab2\",\"citycode\":\"北京\",\"provincename\":\"北京\",\"provincecode\":\"010\",\"countycode\":\"XXX县\",\"paymantype\":1,\"taxid\":\"273489875989687586\",\"zip\":\"100000\",\"companytype\":1,\"isdefault\":0,\"bankname\":\"银行\",\"payman\":\"测试发票公司修改xx\",\"isneedacc\":1,\"subareaname\":\"京津冀分区\",\"invoicesort\":\"01\",\"invoicename\":\"测试发票公司修改xx\",\"subareacode\":\"100101\",\"countyname\":\"XXX县\",\"address\":\"MXMXMXM地址\",\"cityname\":\"北京\",\"datafrom\":\"C_BTC\",\"datadependon\":\"C_BTC\"}");
+            String ret=ShopHttpClientUtil.sendPut("https://api-dev.unifiedcloud.lenovo.com/pcsd-btbp-invoice/setdefault/00182108-082a-45bc-b8b2-2181800bb72c/8ed6b48c-3626-4c48-b6b1-06e8bed67ab2","");
+            logger.info("synInvoice SMB设置默认返回>>" + ret);
+            JSONObject retJson=JSONObject.parseObject(ret);
+            if("0".equals(retJson.getString("code"))){
+
+            }
             System.out.println(ret.toString());
 
 
