@@ -226,13 +226,13 @@
                 Address = #{address,jdbcType=VARCHAR},
             </if>
             <if test="phone != null">
-                Phone = #{phone,jdbcType=VARCHAR},
+                Phone = #{phone,jdbcType=VARCHAR},ThrowingStatus=0,
             </if>
             <if test="zip != null">
                 Zip = #{zip,jdbcType=VARCHAR},
             </if>
         </set>
-         ThrowingStatus=0
+
         WHERE OrderCode = #{orderCode}  AND IsUsable=1
   </update>
 
