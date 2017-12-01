@@ -89,6 +89,7 @@ public class InvoiceShopApiServiceImpl implements InvoiceShopApiService {
                 }else {
                     remoteResult.setResultCode(retJson.getString("code"));
                     remoteResult.setResultMsg(retJson.getString("msg"));
+                    logger.info("synInvoice SMB增加返回数据>>" + JacksonUtil.toJson(remoteResult));
                     return remoteResult;
                 }
             } else if (invoiceShop.getSynType() == 2) {

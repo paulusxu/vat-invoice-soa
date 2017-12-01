@@ -1062,7 +1062,11 @@ public class InvoiceApiServiceImpl extends BaseService implements InvoiceApiServ
         try {
             GetInvoiceTypeParam getInvoiceTypeParam = new GetInvoiceTypeParam();
             BeanUtils.copyProperties(getInvoiceTypeParam, getCiParam);
-            information.setFaInvoiceResults(getInvoiceTypes(getInvoiceTypeParam, tenant).getT());
+            if(getCiParam.getBigDecimal().doubleValue()<=0){
+                information.setFaInvoiceResults(new ArrayList<FaInvoiceResult>());
+            }else {
+                information.setFaInvoiceResults(getInvoiceTypes(getInvoiceTypeParam, tenant).getT());
+            }
             information.setPayment(getPaymentType(getCiParam, tenant));
             information.setDeliverGoods(getDeliverGoods(tenant.getShopId()));
             result.setSuccess(true);
@@ -1142,6 +1146,13 @@ public class InvoiceApiServiceImpl extends BaseService implements InvoiceApiServ
     }
 
     public Payment getPaymentType(GetCiParam getCiParam, Tenant tenant) {
+        if(getCiParam.getBigDecimal().doubleValue()<=0){
+            Payment payment = new Payment();
+            payment.setDefaultType(PaymentType.ZXZF);
+            payment.setPaymentTypes(Arrays.asList(new PaymentType[]{PaymentType.ZXZF}));
+            return payment;
+        }
+
         if (tenant.getShopId() == 9) {
             return new Payment();
         }
