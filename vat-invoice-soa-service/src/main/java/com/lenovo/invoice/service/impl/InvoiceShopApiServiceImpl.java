@@ -323,17 +323,17 @@ public class InvoiceShopApiServiceImpl implements InvoiceShopApiService {
                     JSONObject jsonObject = retJson.getJSONObject("data");
                     invoice = getInvoice(jsonObject);
                 }
-                if (invoice!=null&&invoice.getApprovalStatus()!=null&&invoice.getApprovalStatus() == 5&&invoice.getInvoiceType()==0) {
+                if (invoice!=null&&invoice.getApprovalStatus()!=null&&invoice.getApprovalStatus() == 2) {
                     remoteResult.setSuccess(true);
                     remoteResult.setT(invoice);
                     remoteResult.setResultCode(InvoiceShopCode.SUCCESS);
                     remoteResult.setResultMsg("成功！");
-                }else if (invoice!=null&&invoice.getApprovalStatus()!=null&&invoice.getApprovalStatus() == 2) {
+                }else if (invoice!=null&&invoice.getApprovalStatus()!=null&&invoice.getApprovalStatus() == 5&&invoice.getInvoiceType()==0){
                     remoteResult.setSuccess(true);
                     remoteResult.setT(invoice);
                     remoteResult.setResultCode(InvoiceShopCode.SUCCESS);
                     remoteResult.setResultMsg("成功！");
-                } else {
+                }else {
                     remoteResult.setResultCode(InvoiceShopCode.FAIL);
                     remoteResult.setResultMsg("未审核通过!");
                 }
