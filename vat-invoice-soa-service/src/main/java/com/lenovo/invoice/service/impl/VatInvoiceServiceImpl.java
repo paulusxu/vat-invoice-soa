@@ -144,8 +144,8 @@ public class VatInvoiceServiceImpl implements VatInvoiceService {
                 rows = vathrowBtcpMapper.insertVathrowBtcp(vathrowBtcp);
                 //自动审核增票
                 VatInvoice vatInvoice = getVatInvoiceByZid(zid, shopId + "");
-                if(vatInvoice!=null){
-                    String customername=vatInvoice.getCustomername();
+                if (vatInvoice != null && vatInvoice.getIscheck() == 0) {
+                    String customername = vatInvoice.getCustomername();
                     String taxNo = vatInvoice.getTaxno();
                     String autoTaxNo = AutoCheckInvoiceUtil.getTaxNo(customername);
                     if (Strings.isNullOrEmpty(autoTaxNo)) {
@@ -153,11 +153,11 @@ public class VatInvoiceServiceImpl implements VatInvoiceService {
                         vatInvoice.setCheckBy("admin_check");
                         vatInvoice.setIscheck(4);
                         vatInvoiceMapper.updateVatInvoiceAutoCheck(vatInvoice);
-                    }else {
+                    } else {
                         if (!autoTaxNo.equals(taxNo)) {
                             vatInvoice.setCheckBy("admin_check");
                             vatInvoice.setIscheck(4);
-                        }else {
+                        } else {
                             vatInvoice.setCheckBy("admin_check");
                             vatInvoice.setIscheck(1);
                         }
