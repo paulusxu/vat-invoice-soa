@@ -1202,9 +1202,10 @@ public class InvoiceApiServiceImpl extends BaseService implements InvoiceApiServ
             return null;
         }
         HashSet<Integer> fatypesets = new HashSet<Integer>();
-        fatypesets.add(1);
-        fatypesets.add(2);
-        fatypesets.add(4);
+        String [] noZy=getInvoiceTypes.getNoZy().split(",");
+        for (int i=0;i<noZy.length;i++){
+            fatypesets.add(Integer.parseInt(noZy[i]));
+        }
         if (shopId == 8) {
             return new InvoiceList(Arrays.asList(new InvoiceType[]{InvoiceType.PTFP}), Arrays.asList(new InvoiceType[]{InvoiceType.ZZFP, InvoiceType.PTFP}));
         }
@@ -1234,8 +1235,10 @@ public class InvoiceApiServiceImpl extends BaseService implements InvoiceApiServ
             return new InvoiceList(Arrays.asList(new InvoiceType[]{InvoiceType.PTFP}), Arrays.asList(new InvoiceType[]{InvoiceType.PTFP}));
         }
         HashSet<Integer> zyFaTye = new HashSet<Integer>();
-        zyFaTye.add(0);
-        zyFaTye.add(3);
+        String [] Zy=getInvoiceTypes.getZy().split(",");
+        for (int i=0;i<Zy.length;i++){
+            zyFaTye.add(Integer.parseInt(Zy[i]));
+        }
         if (zyFaTye.contains(fatype)) {//直营 fatypes.contains(0/3)
             if (openZy.equals("on")) {
                 return new InvoiceList(Arrays.asList(new InvoiceType[]{InvoiceType.DZFP, InvoiceType.PTFP}), Arrays.asList(new InvoiceType[]{InvoiceType.PTFP, InvoiceType.ZZFP, InvoiceType.DZFP}));
@@ -1255,9 +1258,10 @@ public class InvoiceApiServiceImpl extends BaseService implements InvoiceApiServ
             return null;
         }
         HashSet<Integer> fatypesets = new HashSet<Integer>();
-        fatypesets.add(1);
-        fatypesets.add(2);
-        fatypesets.add(4);
+        String [] noZy=getInvoiceTypes.getNoZy().split(",");
+        for (int i=0;i<noZy.length;i++){
+            fatypesets.add(Integer.parseInt(noZy[i]));
+        }
         if (shopId == 8) {
             return new InvoiceList(Arrays.asList(new InvoiceType[]{InvoiceType.PTFP}), Arrays.asList(new InvoiceType[]{InvoiceType.ZZFP, InvoiceType.PTFP}));
         }
@@ -1287,8 +1291,10 @@ public class InvoiceApiServiceImpl extends BaseService implements InvoiceApiServ
             return new InvoiceList(Arrays.asList(new InvoiceType[]{InvoiceType.PTFP}), Arrays.asList(new InvoiceType[]{InvoiceType.PTFP}));
         }
         HashSet<Integer> zyFaTye = new HashSet<Integer>();
-        zyFaTye.add(0);
-        zyFaTye.add(3);
+        String [] Zy=getInvoiceTypes.getZy().split(",");
+        for (int i=0;i<Zy.length;i++){
+            zyFaTye.add(Integer.parseInt(Zy[i]));
+        }
         if (zyFaTye.contains(fatype)) {//直营 fatypes.contains(0/3)
             if (openZy.equals("on")) {
                 return new InvoiceList(Arrays.asList(new InvoiceType[]{InvoiceType.PTFP}), Arrays.asList(new InvoiceType[]{InvoiceType.PTFP, InvoiceType.ZZFP}));
@@ -1314,11 +1320,18 @@ public class InvoiceApiServiceImpl extends BaseService implements InvoiceApiServ
     }
 
     public static void main(String[] args) {
-        String [] c=new String[]{"1","2","3","4","5","6","7"};
-        int max=c.length-1;
-        int min=0;
-        Random random = new Random();
-        int s = random.nextInt(max)%(max-min+1) + min;
-        System.out.println(c[s]);
+//        String [] c=new String[]{"1","2","3","4","5","6","7"};
+//        int max=c.length-1;
+//        int min=0;
+//        Random random = new Random();
+//        int s = random.nextInt(max)%(max-min+1) + min;
+//        System.out.println(c[s]);
+
+        String aaa="1,2,3,4";
+        String []bbb=aaa.split(",");
+        System.out.println(bbb);
+
+        Set<String> staffsSet = new HashSet<String>(Arrays.asList(bbb));
+        System.out.println(bbb);
     }
 }
