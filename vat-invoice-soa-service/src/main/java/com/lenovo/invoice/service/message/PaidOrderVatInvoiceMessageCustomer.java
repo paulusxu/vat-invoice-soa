@@ -9,6 +9,7 @@ import com.lenovo.kafka.api.core.handler.BaseConsumerHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.HashSet;
 import java.util.Map;
 
 /**
@@ -40,7 +41,9 @@ public class PaidOrderVatInvoiceMessageCustomer {
                 Integer orderCode = (Integer) map.get("orderCode");
                 Integer shopId = (Integer) map.get("shopId");
                 Integer type = (Integer) map.get("type");
-                if (type == 2) {
+                Integer faType = (Integer) map.get("faType");
+                HashSet<Integer> faTypes=new HashSet<Integer>(0,3);
+                if (type == 2&&faTypes.contains(faType)) {
                     long rows = vatInvoiceService.initVathrowBtcp(orderCode + "", zid, shopId);
                     LOGGER.info("PaidOrderVatInvoiceMessageCustomer End:{},{}", msg, rows);
                     invoiceService.updateIsvalid(zid);
