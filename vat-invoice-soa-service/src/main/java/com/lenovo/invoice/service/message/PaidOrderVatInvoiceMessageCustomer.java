@@ -41,9 +41,7 @@ public class PaidOrderVatInvoiceMessageCustomer {
                 Integer orderCode = (Integer) map.get("orderCode");
                 Integer shopId = (Integer) map.get("shopId");
                 Integer type = (Integer) map.get("type");
-                Integer faType = (Integer) map.get("faType");
-                HashSet<Integer> faTypes=new HashSet<Integer>(0,3);
-                if (type == 2&&faTypes.contains(faType)) {
+                if (type == 2) {
                     long rows = vatInvoiceService.initVathrowBtcp(orderCode + "", zid, shopId);
                     LOGGER.info("PaidOrderVatInvoiceMessageCustomer End:{},{}", msg, rows);
                     invoiceService.updateIsvalid(zid);
