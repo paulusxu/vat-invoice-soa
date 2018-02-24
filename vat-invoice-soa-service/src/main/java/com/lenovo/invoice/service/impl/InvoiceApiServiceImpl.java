@@ -16,7 +16,6 @@ import com.lenovo.invoice.domain.result.*;
 import com.lenovo.invoice.service.BaseService;
 import com.lenovo.invoice.service.MemberVatInvoiceService;
 import com.lenovo.invoice.service.VatInvoiceService;
-import com.lenovo.invoice.service.message.param.ThrowStatusParam;
 import com.lenovo.invoice.service.redisObject.RedisObjectManager;
 import com.lenovo.m2.arch.framework.domain.PageModel2;
 import com.lenovo.m2.arch.framework.domain.PageQuery;
@@ -32,15 +31,12 @@ import com.lenovo.m2.ordercenter.soa.domain.forward.Invoice;
 import com.lenovo.m2.ordercenter.soa.domain.forward.Main;
 import com.lenovo.m2.stock.soa.api.service.StoreInfoApiService;
 import com.lenovo.m2.stock.soa.domain.param.GetStoreInfoIdParam;
-import com.lenovo.my.common.utils.ErrorUtil;
 import org.apache.commons.beanutils.BeanUtils;
-import org.apache.poi.ss.formula.functions.Roman;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.rmi.Remote;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -1090,53 +1086,55 @@ public class InvoiceApiServiceImpl extends BaseService implements InvoiceApiServ
                 String customername = vatInvoice.getCustomername();
                 if (!listNotCheck.contains(customername)) {
                     String taxNo = vatInvoice.getTaxno();
-                    String autoTaxNo = AutoCheckInvoiceUtil.getTaxNo(customername);
-                    if (Strings.isNullOrEmpty(autoTaxNo)) {
-                        //自动审核失败
-                        vatInvoice.setCheckBy("admin_check");
-                        vatInvoice.setIscheck(4);
-                        long rows = vatInvoiceMapper.updateVatInvoiceAutoCheck(vatInvoice);
-                        if (rows > 0) {
-                            //未自动审核成功，发邮件
-                            //拼邮件1.下单账号，2.发票抬头，3.识别码类型，4.税号，5.发票类型，6.订单号，7.收货人，8.收货电话。税务登记证（15位）统一社会信用代码（18位）
-                            Integer taxNoType = vatInvoice.getTaxNoType();
-                            String taxNoTypeStr;
-                            if (taxNoType == 1) {
-                                taxNoTypeStr = "税务登记证（15位）";
-                            } else if (taxNoType == 3) {
-                                taxNoTypeStr = "无（政府机构，事业单位，非企业单位）";
-                            } else {
-                                taxNoTypeStr = "统一社会信用代码（18位）";
+                    if (vatInvoice.getIscheck() == 0) {
+                        String autoTaxNo = AutoCheckInvoiceUtil.getTaxNo(customername);
+                        if (Strings.isNullOrEmpty(autoTaxNo)) {
+                            //自动审核失败
+                            vatInvoice.setCheckBy("admin_check");
+                            vatInvoice.setIscheck(4);
+                            long rows = vatInvoiceMapper.updateVatInvoiceAutoCheck(vatInvoice);
+                            if (rows > 0) {
+                                //未自动审核成功，发邮件
+                                //拼邮件1.下单账号，2.发票抬头，3.识别码类型，4.税号，5.发票类型，6.订单号，7.收货人，8.收货电话。税务登记证（15位）统一社会信用代码（18位）
+                                Integer taxNoType = vatInvoice.getTaxNoType();
+                                String taxNoTypeStr;
+                                if (taxNoType == 1) {
+                                    taxNoTypeStr = "税务登记证（15位）";
+                                } else if (taxNoType == 3) {
+                                    taxNoTypeStr = "无（政府机构，事业单位，非企业单位）";
+                                } else {
+                                    taxNoTypeStr = "统一社会信用代码（18位）";
+                                }
+                                String typeStr;
+                                Integer type = vatInvoice.getInvoiceType();
+                                if (type == 0) {
+                                    typeStr = "电子票";
+                                } else {
+                                    typeStr = "普通发票";
+                                }
+                                String content = "您好，有待审核发票请您尽快去审核，信息如下：" + "发票抬头:" + vatInvoice.getCustomername()
+                                        + ";识别码类型:" + taxNoTypeStr + ";税号:" + vatInvoice.getTaxno() + ";发票类型:" + typeStr + "。";
+                                String title = "发票审核";
+                                emailUtil.sendEmail(title, content);
                             }
-                            String typeStr;
-                            Integer type = vatInvoice.getInvoiceType();
-                            if (type == 0) {
-                                typeStr = "电子票";
-                            } else {
-                                typeStr = "普通发票";
+                        } else {
+                            if (!autoTaxNo.equals(taxNo)) {
+                                //设置history表
+                                changeInvoiceHistoryMapper.insertChangeInvoiceHistory(new ChangeInvoiceHistory(vatInvoice.getId(), vatInvoice.getCustomername(), vatInvoice.getTaxno(), autoTaxNo));
+                                vatInvoice.setTaxno(autoTaxNo);
+                                int len = autoTaxNo.length();
+                                //识别码类型，1是15、20位，2是18位，3是无
+                                vatInvoice.setTaxNoType(len == 15 || len == 20 ? 1 : 2);
                             }
-                            String content = "您好，有待审核发票请您尽快去审核，信息如下：" + "发票抬头:" + vatInvoice.getCustomername()
-                                    + ";识别码类型:" + taxNoTypeStr + ";税号:" + vatInvoice.getTaxno() + ";发票类型:" + typeStr + "。";
-                            String title = "发票审核";
-                            emailUtil.sendEmail(title, content);
-                        }
-                    } else {
-                        if (!autoTaxNo.equals(taxNo)) {
-                            //设置history表
-                            changeInvoiceHistoryMapper.insertChangeInvoiceHistory(new ChangeInvoiceHistory(vatInvoice.getId(), vatInvoice.getCustomername(), vatInvoice.getTaxno(), autoTaxNo));
-                            vatInvoice.setTaxno(autoTaxNo);
-                            int len = autoTaxNo.length();
-                            //识别码类型，1是15、20位，2是18位，3是无
-                            vatInvoice.setTaxNoType(len == 15 || len == 20 ? 1 : 2);
-                        }
-                        vatInvoice.setCheckBy("admin_check");
-                        vatInvoice.setIscheck(1);
-                        long rows = vatInvoiceMapper.updateVatInvoiceAutoCheck(vatInvoice);
-                        if (rows > 0) {
-                            listNotCheck.add(customername);
-                            commonInvoiceService.deleteTheSameTitleInvoice(customername, vatInvoice.getId());
-                        }
+                            vatInvoice.setCheckBy("admin_check");
+                            vatInvoice.setIscheck(1);
+                            long rows = vatInvoiceMapper.updateVatInvoiceAutoCheck(vatInvoice);
+                            if (rows > 0) {
+                                listNotCheck.add(customername);
+                                commonInvoiceService.deleteTheSameTitleInvoice(customername, vatInvoice.getId());
+                            }
 
+                        }
                     }
                 }
             }
