@@ -35,6 +35,30 @@ public class PropertiesConfig implements ILeconfUpdate{
 	@Value(value = "")
 	private String sts="";
 
+	@Value(value = "0,3")
+	private String zy="0,3";
+
+	@Value(value = "1,2,4")
+	private String noZy="1,2,4";
+
+	@LeconfFileItem(name = "zy")
+	public String getZy() {
+		return zy;
+	}
+
+	public void setZy(String zy) {
+		this.zy = zy;
+	}
+
+	@LeconfFileItem(name = "noZy")
+	public String getNoZy() {
+		return noZy;
+	}
+
+	public void setNoZy(String noZy) {
+		this.noZy = noZy;
+	}
+
 	@Value(value = "")
 	private String smbUrl="";
 	@LeconfFileItem(name = "smbUrl")
