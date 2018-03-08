@@ -95,15 +95,17 @@ public class VatInvoiceServiceImpl implements VatInvoiceService {
                         vathrowBtcp.setPaidTime(main.getPaidTime());
 
                         VatInvoice vatInvoice = getVatInvoiceByZid(zid, shopid);
-                        if (vatInvoice != null && vatInvoice.getIscheck() == 0) {
+                        if (vatInvoice != null) {
                             String customername = vatInvoice.getCustomername();
                             String taxno = vatInvoice.getTaxno();
-                            //自动校验抬头和税号
-                            String autoTaxNo = AutoCheckInvoiceUtil.getTaxNo(customername);
-                            if (Strings.isNullOrEmpty(autoTaxNo) || !autoTaxNo.equals(taxno)) {
-                                //自动审核失败 需要人工审核
-                                vatInvoice.setCheckBy("admin_check");
-                                vatInvoice.setIscheck(4);
+                            if (vatInvoice.getIscheck() == 0) {
+                                //自动校验抬头和税号
+                                String autoTaxNo = AutoCheckInvoiceUtil.getTaxNo(customername);
+                                if (Strings.isNullOrEmpty(autoTaxNo) || !autoTaxNo.equals(taxno)) {
+                                    //自动审核失败 需要人工审核
+                                    vatInvoice.setCheckBy("admin_check");
+                                    vatInvoice.setIscheck(4);
+                                }
                             }
 
                             vathrowBtcp.setTitle(customername);//发票抬头
