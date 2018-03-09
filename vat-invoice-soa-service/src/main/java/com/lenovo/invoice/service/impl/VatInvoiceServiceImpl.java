@@ -5,18 +5,15 @@ import com.google.common.collect.Maps;
 import com.lenovo.invoice.common.utils.*;
 import com.lenovo.invoice.dao.VatInvoiceMapper;
 import com.lenovo.invoice.dao.VathrowBtcpMapper;
-import com.lenovo.invoice.domain.ChangeInvoiceHistory;
 import com.lenovo.invoice.domain.VatInvoice;
 import com.lenovo.invoice.domain.VathrowBtcp;
 import com.lenovo.invoice.service.VatInvoiceService;
 import com.lenovo.m2.arch.framework.domain.RemoteResult;
 import com.lenovo.m2.ordercenter.soa.api.query.order.OrderDetailService;
 import com.lenovo.m2.ordercenter.soa.api.vat.VatApiOrderCenter;
+import com.lenovo.m2.ordercenter.soa.domain.forward.DeliveryAddress;
 import com.lenovo.m2.ordercenter.soa.domain.forward.Invoice;
 import com.lenovo.m2.ordercenter.soa.domain.forward.Main;
-import com.lenovo.m2.ordercenter.soa.domain.forward.DeliveryAddress;
-
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -101,12 +98,14 @@ public class VatInvoiceServiceImpl implements VatInvoiceService {
                         if (vatInvoice != null) {
                             String customername = vatInvoice.getCustomername();
                             String taxno = vatInvoice.getTaxno();
-                            //自动校验抬头和税号
-                            String autoTaxNo = AutoCheckInvoiceUtil.getTaxNo(customername);
-                            if (Strings.isNullOrEmpty(autoTaxNo) || !autoTaxNo.equals(taxno)) {
-                                //自动审核失败 需要人工审核
-                                vatInvoice.setCheckBy("admin_check");
-                                vatInvoice.setIscheck(4);
+                            if (vatInvoice.getIscheck() == 0) {
+                                //自动校验抬头和税号
+                                String autoTaxNo = AutoCheckInvoiceUtil.getTaxNo(customername);
+                                if (Strings.isNullOrEmpty(autoTaxNo) || !autoTaxNo.equals(taxno)) {
+                                    //自动审核失败 需要人工审核
+                                    vatInvoice.setCheckBy("admin_check");
+                                    vatInvoice.setIscheck(4);
+                                }
                             }
 
                             vathrowBtcp.setTitle(customername);//发票抬头
