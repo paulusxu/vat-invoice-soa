@@ -1222,9 +1222,9 @@ public class InvoiceApiServiceImpl extends BaseService implements InvoiceApiServ
         if (salesType == 97) {//salesType=ZC_SALES(众筹)
             return new InvoiceList(Arrays.asList(new InvoiceType[]{InvoiceType.PTFP}), Arrays.asList(new InvoiceType[]{InvoiceType.ZZFP, InvoiceType.PTFP}));
         }
-        if ("36d0caa1-af7a-459b-b147-04b86ad25dd7".equals(faid)) {//faids.contains(zukFaid)
-            return new InvoiceList(Arrays.asList(new InvoiceType[]{InvoiceType.DZFP}), null);
-        }
+//        if ("36d0caa1-af7a-459b-b147-04b86ad25dd7".equals(faid)) {//faids.contains(zukFaid)
+//            return new InvoiceList(Arrays.asList(new InvoiceType[]{InvoiceType.DZFP}), null);
+//        }
         if (fatypesets.contains(fatype)) {//非直营 fatypesets.congtains(1/2/4)
             return new InvoiceList(Arrays.asList(new InvoiceType[]{InvoiceType.PTFP}), Arrays.asList(new InvoiceType[]{InvoiceType.PTFP}));
         }
@@ -1278,9 +1278,9 @@ public class InvoiceApiServiceImpl extends BaseService implements InvoiceApiServ
         if (salesType == 97) {//salesType=ZC_SALES(众筹)
             return new InvoiceList(Arrays.asList(new InvoiceType[]{InvoiceType.PTFP}), Arrays.asList(new InvoiceType[]{InvoiceType.ZZFP, InvoiceType.PTFP}));
         }
-        if ("36d0caa1-af7a-459b-b147-04b86ad25dd7".equals(faid)) {//faids.contains(zukFaid)
-            return new InvoiceList(null, null);
-        }
+//        if ("36d0caa1-af7a-459b-b147-04b86ad25dd7".equals(faid)) {//faids.contains(zukFaid)
+//            return new InvoiceList(null, null);
+//        }
         if (fatypesets.contains(fatype)) {//非直营 fatypesets.congtains(1/2/4)
             return new InvoiceList(Arrays.asList(new InvoiceType[]{InvoiceType.PTFP}), Arrays.asList(new InvoiceType[]{InvoiceType.PTFP}));
         }
